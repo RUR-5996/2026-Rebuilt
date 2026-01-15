@@ -77,11 +77,11 @@ public class Intake extends SubsystemBase{
 
     public Command intakeFlipOut() {
         if (intakeState == IntakeState.IN){
+            intakeState = IntakeState.OUT;
             return Commands.runOnce(() -> {
             moveByRotations(2, intakeFlipOutEncoder1, intakeFlipOutController1);
             moveByRotations(2, intakeFlipOutEncoder2, intakeFlipOutController2);
             intakePowerMotor.set(.8);
-            intakeState = IntakeState.OUT;
             });
         } else {
             return Commands.none();
@@ -90,11 +90,11 @@ public class Intake extends SubsystemBase{
 
     public Command intakeFlipIn() {
         if (intakeState == IntakeState.OUT){
+            intakeState = IntakeState.IN;
             return Commands.runOnce(() -> {
             moveByRotations(-2, intakeFlipOutEncoder1, intakeFlipOutController1);
             moveByRotations(-2, intakeFlipOutEncoder2, intakeFlipOutController2);
             intakePowerMotor.stopMotor();
-            intakeState = IntakeState.IN;
             });
         } else {
             return Commands.none();
