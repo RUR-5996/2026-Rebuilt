@@ -9,6 +9,7 @@ import frc.robot.subsystems.SwerveDrive;
 import frc.robot.subsystems.LEDs;
 
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.commands.PathPlannerAuto;
@@ -20,7 +21,7 @@ public class RobotContainer {
   public LEDs LEDS;
   public SwerveDrive SWERVE;
 
-  // 1. Initialize the Swerve Subsystem
+  // 1. Initialize 1the Swerve Subsystem
   private final SwerveDrive m_swerveDrive = SwerveDrive.getInstance();
 
   // 2. Initialize the Controller
@@ -55,6 +56,8 @@ public class RobotContainer {
     loadPaths();
     autoChooser = AutoBuilder.buildAutoChooser();
     autoBranchChooser = AutoBuilder.buildAutoChooser();
+
+    SmartDashboard.putData("Autonomous", autoChooser);
   }
 
 
@@ -100,7 +103,6 @@ public class RobotContainer {
   }
 
   public Command getAutonomousCommand() {
-    return new PathPlannerAuto("Test");
-    // return autoChooser.getSelected();
+    return autoChooser.getSelected();
   }
 }
