@@ -20,7 +20,7 @@ public class RobotContainer {
 
   public RobotContainer() {
 
-    INTAKE = new Intake(); //TODO Fill in motor IDs
+    INTAKE = Intake.getInstance();
 
     // 3. Set Default Command for Driving
     // We pass the joystick inputs to the subsystem's drive method.

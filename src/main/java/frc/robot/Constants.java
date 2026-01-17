@@ -110,4 +110,10 @@ public final class Constants {
     public static final double DRIVE_SLEW_RATE = 3.0;
     public static final double TURN_SLEW_RATE = 4.0;
   }
+
+  public static class IntakeConstants{ //TODO fill in
+    public static final int flipOutMotor1Id = 0;
+    public static final int flipOutMotor2Id = 0;
+    public static final int powerMotorId = 0;
+  }
 }

@@ -20,7 +20,11 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.signals.InvertedValue;
 
+import frc.robot.Constants.IntakeConstants;
+
 public class Intake extends SubsystemBase{
+
+    private static Intake INTAKE;
 
     SparkMax intakeFlipOutMotor1;
     RelativeEncoder intakeFlipOutEncoder1;
@@ -33,11 +37,9 @@ public class Intake extends SubsystemBase{
 
     IntakeState intakeState = IntakeState.IN;
 
-    public Intake() {}; //for testing
-
-    public Intake(int flipOutMotor1Id,int flipOutMotor2Id, int powerMotorId) {
+    public Intake() {
         
-        intakeFlipOutMotor1 = new SparkMax(flipOutMotor1Id, MotorType.kBrushless);
+        intakeFlipOutMotor1 = new SparkMax(IntakeConstants.flipOutMotor1Id, MotorType.kBrushless);
 
         SparkMaxConfig intakeFlipOutConfig = new SparkMaxConfig();
         intakeFlipOutConfig
@@ -54,7 +56,7 @@ public class Intake extends SubsystemBase{
         intakeFlipOutController1 = intakeFlipOutMotor1.getClosedLoopController();
         intakeFlipOutEncoder1.setPosition(0);
 
-        intakeFlipOutMotor2 = new SparkMax(flipOutMotor2Id, MotorType.kBrushless);
+        intakeFlipOutMotor2 = new SparkMax(IntakeConstants.flipOutMotor2Id, MotorType.kBrushless);
 
         intakeFlipOutConfig
             .inverted(true);
@@ -65,7 +67,7 @@ public class Intake extends SubsystemBase{
         intakeFlipOutEncoder2.setPosition(0);
 
 
-        intakePowerMotor = new TalonFX(powerMotorId);
+        intakePowerMotor = new TalonFX(IntakeConstants.powerMotorId);
         intakePowerConfig = new TalonFXConfiguration();
         intakePowerConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
         intakePowerConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
@@ -73,6 +75,13 @@ public class Intake extends SubsystemBase{
         intakePowerConfig.Slot0.kI = 0.0;
         intakePowerConfig.Slot0.kD = 0.0;
         intakePowerMotor.getConfigurator().apply(intakePowerConfig);
+    }
+
+    public static Intake getInstance() {
+        if(INTAKE == null) {
+            INTAKE = new Intake();
+        }
+        return INTAKE;
     }
 
     public Command intakeFlipOut() {
