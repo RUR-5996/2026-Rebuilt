@@ -119,6 +119,10 @@ public class SwerveDrive extends SubsystemBase {
       return gyro.getRotation2d();
    }
 
+   public double getSpinRate() {
+      return gyro.getRate();
+   }
+
    public Pose2d getPose() {
       return m_odometry.getEstimatedPosition();
    }
