@@ -5,11 +5,11 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.subsystems.SwerveDrive;
-import frc.robot.subsystems.Intake;
+import frc.robot.subsystems.Shooter;
 
 public class RobotContainer {
 
-  public Intake INTAKE;
+  public Shooter SHOOTER;
 
   // 1. Initialize the Swerve Subsystem
   private final SwerveDrive m_swerveDrive = SwerveDrive.getInstance();
@@ -20,7 +20,7 @@ public class RobotContainer {
 
   public RobotContainer() {
 
-    INTAKE = new Intake(); //TODO Fill in motor IDs
+    SHOOTER = new Shooter(9,10); //TODO Fill in motor IDs
 
     // 3. Set Default Command for Driving
     // We pass the joystick inputs to the subsystem's drive method.
@@ -46,8 +46,8 @@ public class RobotContainer {
         .onTrue(Commands.runOnce(() -> m_swerveDrive.setSlowmode(true)))
         .onFalse(Commands.runOnce(() -> m_swerveDrive.setSlowmode(false)));
     
-    m_driverController.x().onTrue(INTAKE.intakeFlipOut());
-    m_driverController.b().onTrue(INTAKE.intakeFlipIn());
+    m_driverController.rightTrigger().onTrue(SHOOTER.shooterOn());
+    m_driverController.rightTrigger().onFalse(SHOOTER.shooterOff());
   }
 
   public Command getAutonomousCommand() {
