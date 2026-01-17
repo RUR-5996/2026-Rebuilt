@@ -11,6 +11,7 @@ import frc.robot.subsystems.LEDs;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.config.RobotConfig;
 
 
@@ -99,7 +100,7 @@ public class RobotContainer {
   }
 
   public Command getAutonomousCommand() {
-    // For now, return a command that does nothing (or your auto routine)
-    return autoChooser.getSelected();
+    return new PathPlannerAuto("Test");
+    // return autoChooser.getSelected();
   }
 }
