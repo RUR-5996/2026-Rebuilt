@@ -19,6 +19,7 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.signals.InvertedValue;
+import com.ctre.phoenix6.controls.VelocityVoltage;
 
 import frc.robot.Constants.IntakeConstants;
 
@@ -34,6 +35,7 @@ public class Intake extends SubsystemBase{
     SparkClosedLoopController intakeFlipOutController2;
     TalonFX intakePowerMotor;
     TalonFXConfiguration intakePowerConfig;
+    private final VelocityVoltage intakeVelocityRequest = new VelocityVoltage(0);
 
     IntakeState intakeState = IntakeState.IN;
 
@@ -74,6 +76,7 @@ public class Intake extends SubsystemBase{
         intakePowerConfig.Slot0.kP = 1.0;
         intakePowerConfig.Slot0.kI = 0.0;
         intakePowerConfig.Slot0.kD = 0.0;
+        intakePowerConfig.Slot0.kV = 0.12;
         intakePowerMotor.getConfigurator().apply(intakePowerConfig);
     }
 
@@ -90,7 +93,7 @@ public class Intake extends SubsystemBase{
             return Commands.runOnce(() -> {
             moveByRotations(2, intakeFlipOutEncoder1, intakeFlipOutController1);
             moveByRotations(2, intakeFlipOutEncoder2, intakeFlipOutController2);
-            intakePowerMotor.set(.8);
+            intakePowerMotor.setControl(intakeVelocityRequest.withVelocity(50));
             });
         } else {
             return Commands.none();
