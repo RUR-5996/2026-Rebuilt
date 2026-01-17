@@ -19,7 +19,7 @@ public class Limelight {
         return LIMELIGHT;
     }
 
-    public Pose2d updateOdometry() {
+    public Pose2d apriltagBasedPosition() {
         LimelightHelpers.SetRobotOrientation("limelight", SWERVE.getHeading().getDegrees(), 0, 0, 0, 0, 0);
         LimelightHelpers.PoseEstimate positionEstimate = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight");
         boolean spinningTooFastToBeUseful = Math.abs(SWERVE.getSpinRate()) > 720;
