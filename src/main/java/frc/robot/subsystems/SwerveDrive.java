@@ -32,8 +32,15 @@ public class SwerveDrive extends SubsystemBase {
    private boolean holdAngleEnabled = false;
    private double holdAngle = 0;
 
+   private boolean fieldRelative = true; 
+
+
    private final SwerveDrivePoseEstimator m_odometry;
    private final AHRS gyro;
+
+   Pose2d robotPose = new Pose2d();
+   SwerveModulePosition[] modulePositions = new SwerveModulePosition[4];
+   ChassisSpeeds chassisSpeeds;
 
    private final PIDController rotationController;
 
@@ -51,13 +58,21 @@ public class SwerveDrive extends SubsystemBase {
          new Pose2d()           // 4. Initial Pose
       );
 
+      setFieldOriented();
+
+
       rotationController = new PIDController(
          SwerveConstants.steerKP, // Use your constants here
          SwerveConstants.steerKI, 
          SwerveConstants.steerKD
       );
+      
       rotationController.enableContinuousInput(-180, 180);
       rotationController.setTolerance(2);
+   
+      chassisSpeeds = ChassisSpeeds.fromRobotRelativeSpeeds(0, 0, 0, new Rotation2d(Math.toRadians(gyro.getAngle())));
+      resetOdometry(new Pose2d(7.3, 4.2, gyro.getRotation2d()));
+   
    }
 
    @Override
@@ -126,6 +141,73 @@ public class SwerveDrive extends SubsystemBase {
    public void resetOdometry(Pose2d pose) {
       m_odometry.resetPosition(getHeading(), DRIVETRAIN.getModulePositions(), pose);
    }
+
+       public double getOdometryDegrees() {
+        return getPose().getRotation().getDegrees();
+    }
+
+    public double getGyroDegrees() {
+        return getHeading().getDegrees();
+    }  
+
+    public DoubleSupplier supplyOdometryDegrees() {
+        DoubleSupplier angle = () -> getOdometryDegrees();
+        return angle;
+    }
+
+    public double getyMeters() {
+        return m_odometry.getEstimatedPosition().getY();
+    }
+
+    public double getxMeters() {
+        return m_odometry.getEstimatedPosition().getX();
+    }
+
+    public double getHoldAngle() {
+        return holdAngle;
+    }
+
+    public ChassisSpeeds getChassisSpeeds() {
+        return chassisSpeeds;
+    }
+
+    public Pose2d getOdometryPose() {
+        return m_odometry.getEstimatedPosition();
+    }
+
+    public SwerveDriveKinematics getKinematics() {
+        return DRIVETRAIN.swerveKinematics;
+    }
+
+    public boolean getHoldAngleEnabled() {
+        return holdAngleEnabled;
+    }
+
+    public ChassisSpeeds getActualSpeeds() {
+        return DRIVETRAIN.getSpeeds();
+    }
+    
+    public void setFieldOriented() {
+        fieldRelative = true;
+        holdAngle = Math.toRadians(gyro.getAngle());
+    }
+
+    public void setHoldAngle(double angle) { //in DEGREES
+        holdAngle = angle;
+    }
+
+    public void setHoldAngleFlag(boolean flag) {
+        holdAngleEnabled = flag;
+    }
+
+    public void setAutoModuleStates(SwerveModuleState[] states) {
+        DRIVETRAIN.setModuleSpeeds(states);
+    }
+
+    public void setAutoChassisSpeeds(ChassisSpeeds speeds) {
+        chassisSpeeds = speeds;
+        setAutoModuleStates(getKinematics().toSwerveModuleStates(speeds));
+    }
 
    public Command resetGyro() {
       return Commands.runOnce(() -> {

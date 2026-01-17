@@ -9,6 +9,8 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import frc.robot.Constants.SwerveConstants;
 
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
+
 public class DriveTrain extends SubsystemBase {
     private static DriveTrain instance;
 
@@ -45,6 +47,10 @@ public class DriveTrain extends SubsystemBase {
             m_backLeft.getModulePosition(),
             m_backRight.getModulePosition()
         };
+    }
+
+    public ChassisSpeeds getSpeeds() {
+        return swerveKinematics.toChassisSpeeds(new SwerveModuleState[]{m_frontLeft.getModuleState(), m_frontRight.getModuleState(), m_backLeft.getModuleState(), m_backRight.getModuleState()});
     }
 
     // Helper to set speeds from the SwerveDrive subsystem
