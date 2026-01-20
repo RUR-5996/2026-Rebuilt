@@ -9,10 +9,14 @@ import com.revrobotics.spark.SparkMax;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj.motorcontrol.Talon;
 import edu.wpi.first.wpilibj2.command.Command;
 
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+
+import java.security.Key;
+
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.controls.VelocityVoltage;
@@ -28,10 +32,13 @@ public class Shooter extends SubsystemBase{
     TalonFX powerMotor1;
     TalonFX powerMotor2;
     TalonFXConfiguration powerConfig;
+    TalonFX feederMotor;
+    TalonFXConfiguration feederConfig;
     private final VelocityVoltage intakeVelocityRequest = new VelocityVoltage(0);
+    private final VelocityVoltage feederVelocityVoltage = new VelocityVoltage(0);
 
 
-    public Shooter(int powerMotor1Id, int powerMotor2Id) {
+    public Shooter(int powerMotor1Id, int powerMotor2Id, int feederMotorId) {
 
 
         powerMotor1 = new TalonFX(powerMotor1Id);
@@ -46,6 +53,16 @@ public class Shooter extends SubsystemBase{
         powerMotor1.getConfigurator().apply(powerConfig);
         powerConfig.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
         powerMotor2.getConfigurator().apply(powerConfig);
+
+        feederMotor = new TalonFX(feederMotorId);
+        feederConfig = new TalonFXConfiguration();
+        feederConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
+        feederConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+        feederConfig.Slot0.kP = 1.0;
+        feederConfig.Slot0.kI = 0.0;
+        feederConfig.Slot0.kD = 0.0;
+        feederConfig.Slot0.kV = 0.12;
+        feederMotor.getConfigurator().apply(feederConfig);
     }
 
     public Command shooterOn() {
@@ -60,5 +77,17 @@ public class Shooter extends SubsystemBase{
         powerMotor1.stopMotor();
         powerMotor2.stopMotor();
         });  
+    }
+
+    public Command feederOn() {
+        return Commands.runOnce(() -> {
+            feederMotor.setControl(feederVelocityVoltage.withVelocity(50));    
+        });
+    }
+
+    public Command feederOff() {
+        return Commands.runOnce(() -> {
+            feederMotor.stopMotor();
+        });
     }
 }
