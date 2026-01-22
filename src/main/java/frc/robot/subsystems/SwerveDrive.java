@@ -71,7 +71,7 @@ public class SwerveDrive extends SubsystemBase {
       rotationController.setTolerance(2);
    
       chassisSpeeds = ChassisSpeeds.fromRobotRelativeSpeeds(0, 0, 0, new Rotation2d(Math.toRadians(gyro.getAngle())));
-      resetOdometry(new Pose2d(7.3, 4.2, gyro.getRotation2d()));
+      // resetOdometry(new Pose2d(7.3, 4.2, gyro.getRotation2d()));
    
    }
 

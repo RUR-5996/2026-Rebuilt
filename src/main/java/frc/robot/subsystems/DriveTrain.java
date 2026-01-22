@@ -16,10 +16,10 @@ public class DriveTrain extends SubsystemBase {
 
     // Kinematics (Wheel locations relative to robot center)
     public final SwerveDriveKinematics swerveKinematics = new SwerveDriveKinematics(
-        new Translation2d(0.3, 0.3),   // FL
-        new Translation2d(0.3, -0.3),  // FR
-        new Translation2d(-0.3, 0.3),  // BL
-        new Translation2d(-0.3, -0.3)  // BR
+        new Translation2d(0.26, 0.26),   // FL
+        new Translation2d(0.26, -0.26),  // FR
+        new Translation2d(-0.26, 0.26),  // BL
+        new Translation2d(-0.26, -0.26)  // BR
     );
 
     private final SwerveModuleDef m_frontLeft;
