@@ -59,9 +59,9 @@ public class Shooter extends SubsystemBase{
             .inverted(false)
             .idleMode(IdleMode.kCoast);
         powerConfig.closedLoop
-            .p(1)
-            .i(0)
-            .d(0);
+            .p(Constants.ShooterConstants.POWER_MOTOR_P)
+            .i(Constants.ShooterConstants.POWER_MOTOR_I)
+            .d(Constants.ShooterConstants.POWER_MOTOR_D);
             
 
         powerMotor1.configure(powerConfig, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
