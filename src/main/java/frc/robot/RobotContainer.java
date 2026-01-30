@@ -20,7 +20,7 @@ public class RobotContainer {
 
   public RobotContainer() {
 
-    SHOOTER = new Shooter(9, 10, 11); //TODO Fill in motor IDs
+    SHOOTER = new Shooter(Constants.ShooterConstants.POWER_MOTOR_1_ID, Constants.ShooterConstants.POWER_MOTOR_1_ID, Constants.ShooterConstants.FEEDER_MOTOR_ID, Constants.ShooterConstants.TURRET_CANCODER_ID, Constants.ShooterConstants.TURRET_MOTOR_ID); //TODO Fill in motor IDs
 
     // 3. Set Default Command for Driving
     // We pass the joystick inputs to the subsystem's drive method.

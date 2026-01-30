@@ -85,6 +85,15 @@ public final class Constants {
     public static final double MAX_ANGULAR_SPEED = 2 * Math.PI;
   }
 
+  public final class ShooterConstants {
+    public static final int POWER_MOTOR_1_ID = 9;
+    public static final int POWER_MOTOR_2_ID = 10;
+    public static final int FEEDER_MOTOR_ID = 11;
+
+    public static final int TURRET_CANCODER_ID = 12; //TODO replace with actual value
+    public static final int TURRET_MOTOR_ID = 13; //TODO replace with actual value
+  }
+
   public final class DriverConstants {
 
     // --- Controller Ports ---
