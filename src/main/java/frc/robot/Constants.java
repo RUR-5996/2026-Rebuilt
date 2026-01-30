@@ -92,6 +92,8 @@ public final class Constants {
 
     public static final int TURRET_CANCODER_ID = 12; //TODO replace with actual value
     public static final int TURRET_MOTOR_ID = 13; //TODO replace with actual value
+
+    public static final double CANCODER_TO_TURRET_RATIO = 1; //TODO replace with actual value
   }
 
   public final class DriverConstants {

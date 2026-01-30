@@ -11,12 +11,15 @@ import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.Command;
 
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+import com.ctre.phoenix6.signals.SensorDirectionValue;
+import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.controls.VelocityVoltage;
@@ -37,9 +40,11 @@ public class Shooter extends SubsystemBase{
     TalonFX feederMotor;
     TalonFXConfiguration feederConfig;
 
-    CANcoder turretCANcoder;
     SparkMax turretMotor;
     SparkMaxConfig turretConfig;
+
+    CANcoder turretCANcoder;
+    CANcoderConfiguration turretCANcoderConfig;
 
     private final VelocityVoltage feederVelocityVoltage = new VelocityVoltage(0);
 
@@ -73,9 +78,7 @@ public class Shooter extends SubsystemBase{
         feederConfig.Slot0.kV = 0.12;
         feederMotor.getConfigurator().apply(feederConfig);
 
-        turretCANcoder = new CANcoder(turretCANcoderId);
         turretMotor = new SparkMax(turretMotorId, MotorType.kBrushless);
-
         turretConfig = new SparkMaxConfig();
         
         turretConfig
@@ -83,6 +86,14 @@ public class Shooter extends SubsystemBase{
             .idleMode(IdleMode.kBrake);
 
         turretMotor.configure(turretConfig, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
+
+        turretCANcoder = new CANcoder(turretCANcoderId);
+        turretCANcoderConfig = new CANcoderConfiguration();
+
+        turretCANcoderConfig.MagnetSensor.SensorDirection = SensorDirectionValue.Clockwise_Positive;
+
+        turretCANcoder.getConfigurator().apply(turretCANcoderConfig);
+
     }
 
     public Command shooterOn() {
@@ -109,5 +120,10 @@ public class Shooter extends SubsystemBase{
         return Commands.runOnce(() -> {
             feederMotor.stopMotor();
         });
+    }
+
+    public double getCANcoderAngle () {
+        double rotationDegrees = turretCANcoder.getAbsolutePosition().getValueAsDouble() * 360;
+        return rotationDegrees * Constants.ShooterConstants.CANCODER_TO_TURRET_RATIO;
     }
 }
