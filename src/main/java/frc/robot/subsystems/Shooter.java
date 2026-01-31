@@ -8,6 +8,7 @@ import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.config.ClosedLoopConfig;
+import com.revrobotics.spark.config.ExternalEncoderConfig;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
@@ -46,6 +47,7 @@ public class Shooter extends SubsystemBase{
 
     SparkMax turretMotor;
     SparkClosedLoopController turretController;
+    ExternalEncoderConfig turretEncoderConfig;
     SparkMaxConfig turretConfig;
 
     CANcoder turretCANcoder;
@@ -92,6 +94,10 @@ public class Shooter extends SubsystemBase{
         turretMotor.configure(turretConfig, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
 
         turretController = turretMotor.getClosedLoopController();
+
+        turretEncoderConfig = new ExternalEncoderConfig()
+            .positionConversionFactor(360.0 / ShooterConstants.MOTOR_TO_TURRET_RATIO) // degrees per rotation
+            .velocityConversionFactor(360.0 / ShooterConstants.MOTOR_TO_TURRET_RATIO); // degrees/sec
 
         turretCANcoder = new CANcoder(ShooterConstants.TURRET_CANCODER_ID);
         turretCANcoderConfig = new CANcoderConfiguration();
