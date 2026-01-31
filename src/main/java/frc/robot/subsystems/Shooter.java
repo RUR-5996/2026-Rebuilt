@@ -6,12 +6,14 @@ import com.revrobotics.RelativeEncoder;
 import com.revrobotics.ResetMode;
 import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.SparkBase.ControlType;
+import com.revrobotics.spark.config.ClosedLoopConfig;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants;
+import frc.robot.Constants.ShooterConstants;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.Command;
 
@@ -25,6 +27,8 @@ import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 
 public class Shooter extends SubsystemBase{
+
+    private static Shooter SHOOTER;
 
     SparkMax intakeFlipOutMotor1;
     RelativeEncoder intakeFlipOutEncoder1;
@@ -41,6 +45,7 @@ public class Shooter extends SubsystemBase{
     TalonFXConfiguration feederConfig;
 
     SparkMax turretMotor;
+    SparkClosedLoopController turretController;
     SparkMaxConfig turretConfig;
 
     CANcoder turretCANcoder;
@@ -49,26 +54,25 @@ public class Shooter extends SubsystemBase{
     private final VelocityVoltage feederVelocityVoltage = new VelocityVoltage(0);
 
 
-    public Shooter (int powerMotor1Id, int powerMotor2Id, int feederMotorId, int turretCANcoderId, int turretMotorId) {
+    public Shooter () {
 
-        powerMotor1 = new SparkMax(powerMotor1Id, MotorType.kBrushless);
-        powerMotor2 = new SparkMax(powerMotor2Id, MotorType.kBrushless);
+        powerMotor1 = new SparkMax(ShooterConstants.POWER_MOTOR_1_ID, MotorType.kBrushless);
+        powerMotor2 = new SparkMax(ShooterConstants.POWER_MOTOR_2_ID, MotorType.kBrushless);
         powerConfig = new SparkMaxConfig();
 
         powerConfig
             .inverted(false)
             .idleMode(IdleMode.kCoast);
         powerConfig.closedLoop
-            .p(Constants.ShooterConstants.POWER_MOTOR_P)
-            .i(Constants.ShooterConstants.POWER_MOTOR_I)
-            .d(Constants.ShooterConstants.POWER_MOTOR_D);
+            .p(ShooterConstants.POWER_MOTOR_P)
+            .i(ShooterConstants.POWER_MOTOR_I)
+            .d(ShooterConstants.POWER_MOTOR_D);
             
 
         powerMotor1.configure(powerConfig, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
-        powerConfig.inverted(true);
-        powerMotor1.configure(powerConfig, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
+        powerMotor2.configure(powerConfig, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
 
-        feederMotor = new TalonFX(feederMotorId);
+        feederMotor = new TalonFX(ShooterConstants.FEEDER_MOTOR_ID);
         feederConfig = new TalonFXConfiguration();
         feederConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
         feederConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
@@ -78,7 +82,7 @@ public class Shooter extends SubsystemBase{
         feederConfig.Slot0.kV = 0.12;
         feederMotor.getConfigurator().apply(feederConfig);
 
-        turretMotor = new SparkMax(turretMotorId, MotorType.kBrushless);
+        turretMotor = new SparkMax(ShooterConstants.TURRET_MOTOR_ID, MotorType.kBrushless);
         turretConfig = new SparkMaxConfig();
         
         turretConfig
@@ -87,7 +91,9 @@ public class Shooter extends SubsystemBase{
 
         turretMotor.configure(turretConfig, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
 
-        turretCANcoder = new CANcoder(turretCANcoderId);
+        turretController = turretMotor.getClosedLoopController();
+
+        turretCANcoder = new CANcoder(ShooterConstants.TURRET_CANCODER_ID);
         turretCANcoderConfig = new CANcoderConfiguration();
 
         turretCANcoderConfig.MagnetSensor.SensorDirection = SensorDirectionValue.Clockwise_Positive;
@@ -96,10 +102,17 @@ public class Shooter extends SubsystemBase{
 
     }
 
+    public static Shooter getInstance() {
+        if(SHOOTER == null) {
+            SHOOTER = new Shooter();
+        }
+        return SHOOTER;
+    }
+
     public Command shooterOn() {
             return Commands.runOnce(() -> {
-            powerMotor1.set(1.0);
-            powerMotor2.set(1.0);
+            powerMotor1.set(0.8);
+            powerMotor2.set(0.8);
             });
         }
 
@@ -122,8 +135,19 @@ public class Shooter extends SubsystemBase{
         });
     }
 
-    public double getCANcoderAngle () {
+    public double getCANcoderAngle () { //everything is in degrees
         double rotationDegrees = turretCANcoder.getAbsolutePosition().getValueAsDouble() * 360;
-        return rotationDegrees * Constants.ShooterConstants.CANCODER_TO_TURRET_RATIO;
+        return rotationDegrees * ShooterConstants.CANCODER_TO_TURRET_RATIO;
     }
+
+  public Command rotateTurret (double targetAngle) { //everything is in degrees
+    return Commands.runOnce(() -> {
+        double[] targetAngleArray = new double[]{targetAngle}; //to get around Java's final requirement in enclosing scopes
+        if (targetAngle >= ShooterConstants.MAX_TURRET_ANGLE || 
+      targetAngle <= ShooterConstants.MIN_TURRET_ANGLE) {
+            targetAngleArray[0] %= 360;
+        }
+        turretController.setSetpoint(targetAngle, ControlType.kPosition);
+    });
+  }
 }
