@@ -6,6 +6,10 @@ package frc.robot;
 
 import com.ctre.phoenix6.signals.InvertedValue;
 
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.geometry.Translation3d;
+
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
  * constants. This class should not be used for any other purpose. All constants should be declared
@@ -109,5 +113,22 @@ public final class Constants {
     // Units are units-per-second (e.g., 3.0 means it takes 0.33s to reach full speed).
     public static final double DRIVE_SLEW_RATE = 3.0;
     public static final double TURN_SLEW_RATE = 4.0;
+  }
+
+
+  public final class LimelightConstants {
+    public static final String ROBOT_LIMELIGHT_NAME = "robot";
+    public static final Transform3d ROBOT_LIMELIGHT_OFFSET = new Transform3d(
+      new Translation3d( // in metres
+          0.2728,   // X (+ is forward)
+          0.2489,   // Y (+ is left)
+          0.2189   // Z (+ is up)
+      ),
+      new Rotation3d( //in radians
+        0.0, // roll
+        Math.toRadians(60.0), // pitch (+ is up)
+        0.0 // yaw
+      )
+    );
   }
 }

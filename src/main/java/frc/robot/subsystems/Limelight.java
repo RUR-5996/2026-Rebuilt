@@ -2,6 +2,7 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import frc.robot.Constants.LimelightConstants;
 
 public class Limelight {
 
@@ -10,6 +11,16 @@ public class Limelight {
 
     public Limelight() {
         SWERVE = SwerveDrive.getInstance();
+
+        LimelightHelpers.setCameraPose_RobotSpace(
+            LimelightConstants.ROBOT_LIMELIGHT_NAME,
+            LimelightConstants.ROBOT_LIMELIGHT_OFFSET.getX(),
+            LimelightConstants.ROBOT_LIMELIGHT_OFFSET.getY(),
+            LimelightConstants.ROBOT_LIMELIGHT_OFFSET.getZ(),
+            Math.toDegrees(LimelightConstants.ROBOT_LIMELIGHT_OFFSET.getRotation().getX()), // roll
+            Math.toDegrees(LimelightConstants.ROBOT_LIMELIGHT_OFFSET.getRotation().getY()), // pitch
+            Math.toDegrees(LimelightConstants.ROBOT_LIMELIGHT_OFFSET.getRotation().getZ())  // yaw
+            );
     }
 
     public static Limelight getInstance() {
