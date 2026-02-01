@@ -128,7 +128,9 @@ public final class Constants {
         0.0, // roll
         Math.toRadians(60.0), // pitch (+ is up)
         0.0 // yaw
-      )
-    );
+      ));
+
+
+    public static final String TURRET_LIMELIGHT_NAME = "turret";
   }
 }
