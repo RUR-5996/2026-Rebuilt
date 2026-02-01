@@ -103,7 +103,7 @@ public class Shooter extends SubsystemBase{
         turretCANcoder = new CANcoder(ShooterConstants.TURRET_CANCODER_ID);
         turretCANcoderConfig = new CANcoderConfiguration();
 
-        turretCANcoderConfig.MagnetSensor.SensorDirection = SensorDirectionValue.Clockwise_Positive;
+        turretCANcoderConfig.MagnetSensor.SensorDirection = SensorDirectionValue.CounterClockwise_Positive;
 
         turretCANcoder.getConfigurator().apply(turretCANcoderConfig);
 
