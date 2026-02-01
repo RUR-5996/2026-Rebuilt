@@ -5,8 +5,12 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.subsystems.SwerveDrive;
+import frc.robot.subsystems.Shooter;
 
 public class RobotContainer {
+
+  public Shooter SHOOTER;
+
   // 1. Initialize the Swerve Subsystem
   private final SwerveDrive m_swerveDrive = SwerveDrive.getInstance();
 
@@ -15,6 +19,9 @@ public class RobotContainer {
       new CommandXboxController(OperatorConstants.kDriverControllerPort);
 
   public RobotContainer() {
+
+    SHOOTER = Shooter.getInstance();
+
     // 3. Set Default Command for Driving
     // We pass the joystick inputs to the subsystem's drive method.
     // Note: Xbox Left Y is usually Forward (X), Left X is Strafe (Y), Right X is Rotation.
@@ -38,6 +45,15 @@ public class RobotContainer {
     m_driverController.leftBumper()
         .onTrue(Commands.runOnce(() -> m_swerveDrive.setSlowmode(true)))
         .onFalse(Commands.runOnce(() -> m_swerveDrive.setSlowmode(false)));
+    
+    m_driverController.rightTrigger().onTrue(SHOOTER.shooterOn());
+    m_driverController.rightTrigger().onFalse(SHOOTER.shooterOff());
+
+    m_driverController.leftTrigger().onTrue(SHOOTER.feederOn());
+    m_driverController.leftTrigger().onFalse(SHOOTER.feederOff());
+
+    m_driverController.leftBumper().onTrue(SHOOTER.rotateTurret(90));
+    m_driverController.rightBumper().onTrue(SHOOTER.rotateTurret(-90));
   }
 
   public Command getAutonomousCommand() {
