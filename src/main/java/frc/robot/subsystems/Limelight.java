@@ -51,10 +51,11 @@ public class Limelight {
         LimelightHelpers.SetRobotOrientation(limelightName, SWERVE.getHeading().getDegrees(), 0, 0, 0, 0, 0);
         LimelightHelpers.PoseEstimate positionEstimate = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(limelightName);
 
+        boolean spinningTooFastToBeUseful = false;
         if (limelightName == LimelightConstants.ROBOT_LIMELIGHT_NAME) {
-            boolean spinningTooFastToBeUseful = Math.abs(SWERVE.getSpinRate()) > LimelightConstants.MAX_VISION_SPIN;
-        } else (limelightName == LimelightConstants.ROBOT_LIMELIGHT_NAME) {
-            boolean spinningTooFastToBeUseful = (Math.abs(LIMELIGHT.getTurretVelocity()) + Math.abs(SWERVE.getSpinRate())) > LimelightConstants.MAX_VISION_SPIN;
+            spinningTooFastToBeUseful = Math.abs(SWERVE.getSpinRate()) > LimelightConstants.MAX_VISION_SPIN;
+        } else if (limelightName == LimelightConstants.TURRET_LIMELIGHT_NAME) {
+            spinningTooFastToBeUseful = (Math.abs(SHOOTER.getTurretVelocity() + SWERVE.getSpinRate())) > LimelightConstants.MAX_VISION_SPIN;
         }
 
         boolean tagsVisible = positionEstimate.tagCount > 0;
