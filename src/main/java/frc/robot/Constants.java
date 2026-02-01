@@ -44,11 +44,6 @@ public final class Constants {
     public static final double MAX_SPEED_METERS_PER_SECOND = DRIVE_FACTOR;        
     public static final double MAX_ANGULAR_SPEED = (MAX_SPEED_METERS_PER_SECOND / METERS_PER_ROBOT_REVOLUTION) * (2 * Math.PI);
 
-    // public static final Translation2d FL_LOC = new Translation2d(SwerveConstants.WHEEL_BASE_WIDTH / 2, SwerveConstants.TRACK_WIDTH / 2);
-    // public static final Translation2d FR_LOC = new Translation2d(SwerveConstants.WHEEL_BASE_WIDTH / 2, -SwerveConstants.TRACK_WIDTH / 2);
-    // public static final Translation2d RL_LOC = new Translation2d(-SwerveConstants.WHEEL_BASE_WIDTH / 2, SwerveConstants.TRACK_WIDTH / 2);
-    // public static final Translation2d RR_LOC = new Translation2d(-SwerveConstants.WHEEL_BASE_WIDTH / 2, -SwerveConstants.TRACK_WIDTH / 2);
-
     public static final boolean FL_STEER_INVERT = true;
     public static final boolean FR_STEER_INVERT = true;
     public static final boolean BL_STEER_INVERT = true;
