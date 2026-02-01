@@ -13,8 +13,10 @@ import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants.ShooterConstants;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.Command;
 
 import com.ctre.phoenix6.hardware.CANcoder;
@@ -154,5 +156,9 @@ public class Shooter extends SubsystemBase{
         }
         turretController.setSetpoint(targetAngle, ControlType.kPosition);
     });
+  }
+
+  public Command shootOut () {
+    return new SequentialCommandGroup(feederOn(), shooterOn(), new WaitCommand(5.0), feederOff(), shooterOff());
   }
 }
