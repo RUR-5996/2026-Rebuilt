@@ -51,6 +51,9 @@ public class RobotContainer {
 
     m_driverController.leftTrigger().onTrue(SHOOTER.feederOn());
     m_driverController.leftTrigger().onFalse(SHOOTER.feederOff());
+
+    m_driverController.leftBumper().onTrue(SHOOTER.rotateTurret(90));
+    m_driverController.rightBumper().onTrue(SHOOTER.rotateTurret(-90));
   }
 
   public Command getAutonomousCommand() {
