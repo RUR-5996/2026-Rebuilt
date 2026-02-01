@@ -1,0 +1,44 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "sequential",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "startRight_centerRight"
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "centerRight_centerRightEnd"
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "centerRightEnd_shooting1"
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "shooting1_climbing"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": true,
+  "folder": null,
+  "choreoAuto": false
+}
