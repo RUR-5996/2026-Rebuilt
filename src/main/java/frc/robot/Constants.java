@@ -151,5 +151,7 @@ public final class Constants {
 
 
     public static final String TURRET_LIMELIGHT_NAME = "turret";
+
+    public static final double MAX_VISION_SPIN = 720; // degrees per second TODO test if good
   }
 }

@@ -46,6 +46,7 @@ public class Shooter extends SubsystemBase{
     TalonFXConfiguration feederConfig;
 
     SparkMax turretMotor;
+    RelativeEncoder turretEncoder;
     SparkClosedLoopController turretController;
     ExternalEncoderConfig turretEncoderConfig;
     SparkMaxConfig turretConfig;
@@ -85,6 +86,7 @@ public class Shooter extends SubsystemBase{
         feederMotor.getConfigurator().apply(feederConfig);
 
         turretMotor = new SparkMax(ShooterConstants.TURRET_MOTOR_ID, MotorType.kBrushless);
+        turretEncoder = turretMotor.getEncoder();
         turretConfig = new SparkMaxConfig();
         
         turretConfig
@@ -144,6 +146,10 @@ public class Shooter extends SubsystemBase{
     public double getCANcoderAngle () { //everything is in degrees
         double rotationDegrees = turretCANcoder.getAbsolutePosition().getValueAsDouble() * 360;
         return rotationDegrees * ShooterConstants.CANCODER_TO_TURRET_RATIO;
+    }
+
+    public double getTurretVelocity () {
+        return turretEncoder.getVelocity();
     }
 
   public Command rotateTurret (double targetAngle) { //everything is in degrees

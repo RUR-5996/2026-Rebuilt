@@ -10,11 +10,13 @@ public class Limelight {
     private static Limelight TURRET_LIMELIGHT;
 
     SwerveDrive SWERVE;
+    Shooter SHOOTER;
 
     private final String limelightName;
 
     public Limelight(String name) {
         SWERVE = SwerveDrive.getInstance();
+        SHOOTER = Shooter.getInstance();
 
         limelightName = name;
 
@@ -48,7 +50,13 @@ public class Limelight {
     public Pose2d apriltagBasedPosition() {
         LimelightHelpers.SetRobotOrientation(limelightName, SWERVE.getHeading().getDegrees(), 0, 0, 0, 0, 0);
         LimelightHelpers.PoseEstimate positionEstimate = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(limelightName);
-        boolean spinningTooFastToBeUseful = Math.abs(SWERVE.getSpinRate()) > 720;
+
+        if (limelightName == LimelightConstants.ROBOT_LIMELIGHT_NAME) {
+            boolean spinningTooFastToBeUseful = Math.abs(SWERVE.getSpinRate()) > LimelightConstants.MAX_VISION_SPIN;
+        } else (limelightName == LimelightConstants.ROBOT_LIMELIGHT_NAME) {
+            boolean spinningTooFastToBeUseful = (Math.abs(LIMELIGHT.getTurretVelocity()) + Math.abs(SWERVE.getSpinRate())) > LimelightConstants.MAX_VISION_SPIN;
+        }
+
         boolean tagsVisible = positionEstimate.tagCount > 0;
         if (!spinningTooFastToBeUseful && tagsVisible) {
             return positionEstimate.pose;
