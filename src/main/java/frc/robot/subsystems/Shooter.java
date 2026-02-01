@@ -7,7 +7,6 @@ import com.revrobotics.ResetMode;
 import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkBase.ControlType;
-import com.revrobotics.spark.config.ClosedLoopConfig;
 import com.revrobotics.spark.config.ExternalEncoderConfig;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
@@ -78,10 +77,10 @@ public class Shooter extends SubsystemBase{
         feederConfig = new TalonFXConfiguration();
         feederConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
         feederConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-        feederConfig.Slot0.kP = 1.0;
-        feederConfig.Slot0.kI = 0.0;
-        feederConfig.Slot0.kD = 0.0;
-        feederConfig.Slot0.kV = 0.12;
+        feederConfig.Slot0.kP = ShooterConstants.FEEDER_MOTOR_P;
+        feederConfig.Slot0.kI = ShooterConstants.FEEDER_MOTOR_I;
+        feederConfig.Slot0.kD = ShooterConstants. FEEDER_MOTOR_D;
+        feederConfig.Slot0.kV = ShooterConstants.FEEDER_MOTOR_V;
         feederMotor.getConfigurator().apply(feederConfig);
 
         turretMotor = new SparkMax(ShooterConstants.TURRET_MOTOR_ID, MotorType.kBrushless);
