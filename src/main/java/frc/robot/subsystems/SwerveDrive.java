@@ -121,6 +121,10 @@ public class SwerveDrive extends SubsystemBase {
       return m_odometry.getEstimatedPosition();
    }
 
+   public double getAngleDegrees() {
+      return getHeading().getDegrees();
+   }
+
    public void resetOdometry(Pose2d pose) {
       m_odometry.resetPosition(getHeading(), DRIVETRAIN.getModulePositions(), pose);
    }
