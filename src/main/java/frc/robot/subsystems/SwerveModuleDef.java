@@ -127,4 +127,19 @@ public class SwerveModuleDef {
         config.MotorOutput.NeutralMode = mode;
         steerMotor.getConfigurator().apply(config);
     }
+
+    // Debugging
+    public void forceSteerRotation(double rotationsToSpin) {
+        // 1. Get current position in rotations
+        double currentRotations = steerMotor.getPosition().getValueAsDouble();
+        
+        // 2. Calculate target (Current + Desired)
+        double targetRotations = currentRotations + rotationsToSpin;
+
+        // 3. Set the steer motor directly (Bypassing optimization)
+        steerMotor.setControl(m_positionSetter.withPosition(targetRotations));
+        
+        // 4. Ensure drive motor is stopped so the robot doesn't move
+        driveMotor.setControl(m_velocitySetter.withVelocity(0));
+    }
 }

@@ -113,6 +113,20 @@ public class SwerveDrive extends SubsystemBase {
 
    // --- Helpers ---
 
+   public void drive(double xSpeed, double ySpeed, double rot, boolean fieldRelative) {
+      ChassisSpeeds speeds;
+      
+      if (fieldRelative) {
+         speeds = ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rot, getHeading());
+      } else {
+         speeds = new ChassisSpeeds(xSpeed, ySpeed, rot);
+      }
+
+      SwerveModuleState[] states = DRIVETRAIN.swerveKinematics.toSwerveModuleStates(speeds);
+      SwerveDriveKinematics.desaturateWheelSpeeds(states, SwerveConstants.MAX_SPEED_METERS_PER_SECOND);
+      DRIVETRAIN.setModuleSpeeds(states);
+   }
+
    public Rotation2d getHeading() {
       return gyro.getRotation2d();
    }
@@ -141,4 +155,41 @@ public class SwerveDrive extends SubsystemBase {
       var alliance = DriverStation.getAlliance();
       return alliance.isPresent() && alliance.get() == Alliance.Red;
    }
+
+   
+    // Debugging
+    public Command driveWheelSpins(double spins) {
+        // Calculate distance: 3 rotations * Circumference
+        double wheelCircumference = 2 * Math.PI * SwerveConstants.WHEEL_RADIUS_METERS;
+        double targetDistanceMeters = spins * wheelCircumference;
+
+        return Commands.runOnce(() -> {
+            // 1. Reset Pose to 0,0,0 so we can measure distance easily 
+            // (Only do this if you are testing in isolation, otherwise capture starting pose)
+            resetOdometry(new Pose2d()); 
+        }, this)
+        .andThen(
+            // 2. Drive forward at 1.0 m/s
+            Commands.run(() -> {
+                ChassisSpeeds speeds = new ChassisSpeeds(1.0, 0, 0);
+                
+                // Convert to module states
+                SwerveModuleState[] states = DRIVETRAIN.swerveKinematics.toSwerveModuleStates(speeds);
+                DRIVETRAIN.setModuleSpeeds(states);
+            }, this)
+            // 3. Stop when X position > target
+            .until(() -> getPose().getX() >= targetDistanceMeters)
+        )
+        .finallyDo(() -> {
+            // 4. Stop the robot when done
+            drive(0, 0, 0, false); // You might need to create a simple helper for stopping or send 0 speeds
+        });
+    }
+
+    public Command spinSteerMotors(double spins) {
+        return Commands.runOnce(() -> {
+            // 1080 degrees = 3.0 Rotations
+            DRIVETRAIN.spinAllSteerMotors(spins);
+        }, this);
+    }
 }
