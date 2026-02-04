@@ -48,6 +48,9 @@ public class RobotContainer {
     
     m_driverController.rightTrigger().onTrue(SHOOTER.shooterOn());
     m_driverController.rightTrigger().onFalse(SHOOTER.shooterOff());
+
+    m_driverController.a().onTrue(m_swerveDrive.driveWheelSpins(3));
+    m_driverController.b().onTrue(m_swerveDrive.spinSteerMotors(3));
   }
 
   public Command getAutonomousCommand() {
