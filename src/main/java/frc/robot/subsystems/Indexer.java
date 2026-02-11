@@ -24,14 +24,14 @@ public class Indexer extends SubsystemBase{
     public Indexer () {
 
 
-        indexerMotor = new TalonFX(ShooterConstants.FEEDER_MOTOR_ID);
+        indexerMotor = new TalonFX(ShooterConstants.INDEXER_MOTOR_ID);
         indexerConfig = new TalonFXConfiguration();
-        indexerConfig.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
+        indexerConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
         indexerConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-        indexerConfig.Slot0.kP = ShooterConstants.FEEDER_MOTOR_P;
-        indexerConfig.Slot0.kI = ShooterConstants.FEEDER_MOTOR_I;
-        indexerConfig.Slot0.kD = ShooterConstants. FEEDER_MOTOR_D;
-        indexerConfig.Slot0.kV = ShooterConstants.FEEDER_MOTOR_V;
+        indexerConfig.Slot0.kP = ShooterConstants.INDEXER_MOTOR_P;
+        indexerConfig.Slot0.kI = ShooterConstants.INDEXER_MOTOR_I;
+        indexerConfig.Slot0.kD = ShooterConstants. INDEXER_MOTOR_D;
+        indexerConfig.Slot0.kV = ShooterConstants.INDEXER_MOTOR_V;
         indexerMotor.getConfigurator().apply(indexerConfig);
 
     }

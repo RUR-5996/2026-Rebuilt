@@ -77,7 +77,7 @@ public class Shooter extends SubsystemBase{
 
         feederMotor = new TalonFX(ShooterConstants.FEEDER_MOTOR_ID);
         feederConfig = new TalonFXConfiguration();
-        feederConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
+        feederConfig.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
         feederConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
         feederConfig.Slot0.kP = ShooterConstants.FEEDER_MOTOR_P;
         feederConfig.Slot0.kI = ShooterConstants.FEEDER_MOTOR_I;
@@ -118,8 +118,8 @@ public class Shooter extends SubsystemBase{
 
     public Command shooterOn() {
             return Commands.runOnce(() -> {
-            powerMotor1.set(0.8);
-            powerMotor2.set(0.8);
+            powerMotor1.set(ShooterConstants.SHOOTER_SPEED);
+            powerMotor2.set(ShooterConstants.SHOOTER_SPEED);
             });
         }
 
@@ -132,7 +132,7 @@ public class Shooter extends SubsystemBase{
 
     public Command feederOn() {
         return Commands.runOnce(() -> {
-            feederMotor.setControl(feederVelocityVoltage.withVelocity(50));    
+            feederMotor.setControl(feederVelocityVoltage.withVelocity(ShooterConstants.FEEDER_VELOCITY));    
         });
     }
 

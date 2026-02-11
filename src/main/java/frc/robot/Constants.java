@@ -86,9 +86,14 @@ public final class Constants {
   }
 
   public final class ShooterConstants {
-    public static final int POWER_MOTOR_1_ID = 9;
-    public static final int POWER_MOTOR_2_ID = 10;
-    public static final int FEEDER_MOTOR_ID = 11;
+
+    public static final double SHOOTER_SPEED = 0.3; // 0.8
+    public static final double FEEDER_VELOCITY = 50;
+
+    public static final int INDEXER_MOTOR_ID = 9;
+    public static final int FEEDER_MOTOR_ID = 10;
+    public static final int POWER_MOTOR_1_ID = 11;
+    public static final int POWER_MOTOR_2_ID = 12;
 
     public static final double POWER_MOTOR_P = 1;
     public static final double POWER_MOTOR_I = 0;
