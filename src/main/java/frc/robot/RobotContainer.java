@@ -2,14 +2,17 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.subsystems.SwerveDrive;
+import frc.robot.subsystems.Indexer;
 import frc.robot.subsystems.Shooter;
 
 public class RobotContainer {
 
   public Shooter SHOOTER;
+  public Indexer INDEXER;
 
   // 1. Initialize the Swerve Subsystem
   private final SwerveDrive m_swerveDrive = SwerveDrive.getInstance();
@@ -21,6 +24,7 @@ public class RobotContainer {
   public RobotContainer() {
 
     SHOOTER = Shooter.getInstance();
+    INDEXER = Indexer.getInstance();
 
     // 3. Set Default Command for Driving
     // We pass the joystick inputs to the subsystem's drive method.
@@ -49,8 +53,12 @@ public class RobotContainer {
     m_driverController.rightTrigger().onTrue(SHOOTER.shooterOn());
     m_driverController.rightTrigger().onFalse(SHOOTER.shooterOff());
 
-    m_driverController.leftTrigger().onTrue(SHOOTER.feederOn());
-    m_driverController.leftTrigger().onFalse(SHOOTER.feederOff());
+
+
+    m_driverController.leftTrigger().onTrue(new ParallelCommandGroup(SHOOTER.feederOn(), INDEXER.indexerOn()));
+    m_driverController.leftTrigger().onFalse(new ParallelCommandGroup(SHOOTER.feederOff(), INDEXER.indexerOff()));
+
+
 
     m_driverController.leftBumper().onTrue(SHOOTER.rotateTurret(90));
     m_driverController.rightBumper().onTrue(SHOOTER.rotateTurret(-90));

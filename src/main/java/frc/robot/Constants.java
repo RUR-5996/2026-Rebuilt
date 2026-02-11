@@ -94,10 +94,15 @@ public final class Constants {
     public static final double POWER_MOTOR_I = 0;
     public static final double POWER_MOTOR_D = 0;
 
-  public static final double FEEDER_MOTOR_P = 1.0;
-  public static final double FEEDER_MOTOR_I = 0.0;
-  public static final double FEEDER_MOTOR_D = 0.0;
-  public static final double FEEDER_MOTOR_V = 0.12;
+    public static final double FEEDER_MOTOR_P = 1.0;
+    public static final double FEEDER_MOTOR_I = 0.0;
+    public static final double FEEDER_MOTOR_D = 0.0;
+    public static final double FEEDER_MOTOR_V = 0.12;
+
+    public static final double INDEXER_MOTOR_P = 1.0;
+    public static final double INDEXER_MOTOR_I = 0.0;
+    public static final double INDEXER_MOTOR_D = 0.0;
+    public static final double INDEXER_MOTOR_V = 0.12;  
 
     public static final int TURRET_CANCODER_ID = 12; //TODO replace with actual value
     public static final int TURRET_MOTOR_ID = 13; //TODO replace with actual value
