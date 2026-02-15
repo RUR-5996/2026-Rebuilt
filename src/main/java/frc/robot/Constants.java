@@ -90,10 +90,10 @@ public final class Constants {
     public static final double SHOOTER_SPEED = 0.3; // 0.8
     public static final double FEEDER_VELOCITY = 50;
 
-    public static final int INDEXER_MOTOR_ID = 9;
-    public static final int FEEDER_MOTOR_ID = 10;
-    public static final int POWER_MOTOR_1_ID = 11;
-    public static final int POWER_MOTOR_2_ID = 12;
+    public static final int INDEXER_MOTOR_ID = 12;
+    public static final int FEEDER_MOTOR_ID = 13;
+    public static final int POWER_MOTOR_1_ID = 14;
+    public static final int POWER_MOTOR_2_ID = 15;
 
     public static final double POWER_MOTOR_P = 1;
     public static final double POWER_MOTOR_I = 0;
@@ -109,8 +109,8 @@ public final class Constants {
     public static final double INDEXER_MOTOR_D = 0.0;
     public static final double INDEXER_MOTOR_V = 0.12;  
 
-    public static final int TURRET_CANCODER_ID = 12; //TODO replace with actual value
-    public static final int TURRET_MOTOR_ID = 13; //TODO replace with actual value
+    public static final int TURRET_CANCODER_ID = 11; //TODO replace with actual value
+    public static final int TURRET_MOTOR_ID = 10; //TODO replace with actual value
 
 
     public static final double MOTOR_TO_TURRET_RATIO = 1; //TODO replace with actual value

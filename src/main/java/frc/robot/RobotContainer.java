@@ -58,10 +58,14 @@ public class RobotContainer {
     m_driverController.leftTrigger().onTrue(new ParallelCommandGroup(SHOOTER.feederOn(), INDEXER.indexerOn()));
     m_driverController.leftTrigger().onFalse(new ParallelCommandGroup(SHOOTER.feederOff(), INDEXER.indexerOff()));
 
+    m_driverController.pov(90).onTrue(SHOOTER.rotateRight());
+    m_driverController.pov(90).onFalse(SHOOTER.rotateStop());
+    m_driverController.pov(270).onTrue(SHOOTER.rotateLeft());
+    m_driverController.pov(270).onFalse(SHOOTER.rotateStop());
 
 
-    m_driverController.leftBumper().onTrue(SHOOTER.rotateTurret(90));
-    m_driverController.rightBumper().onTrue(SHOOTER.rotateTurret(-90));
+    /*m_driverController.leftBumper().onTrue(SHOOTER.rotateTurret(90));
+    m_driverController.rightBumper().onTrue(SHOOTER.rotateTurret(-90));*/
   }
 
   public Command getAutonomousCommand() {

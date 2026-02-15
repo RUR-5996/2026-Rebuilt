@@ -32,12 +32,6 @@ public class Shooter extends SubsystemBase{
 
     private static Shooter SHOOTER;
 
-    SparkMax intakeFlipOutMotor1;
-    RelativeEncoder intakeFlipOutEncoder1;
-    SparkClosedLoopController intakeFlipOutController1;
-    SparkMax intakeFlipOutMotor2;
-    RelativeEncoder intakeFlipOutEncoder2;
-    SparkClosedLoopController intakeFlipOutController2;
 
     SparkMax powerMotor1;
     SparkMax powerMotor2;
@@ -155,6 +149,24 @@ public class Shooter extends SubsystemBase{
             targetAngleArray[0] %= 360;
         }
         turretController.setSetpoint(targetAngle, ControlType.kPosition);
+    });
+  }
+
+  public Command rotateLeft() {
+    return Commands.runOnce(() -> {
+        turretMotor.set(0.3);
+    });
+  }
+
+  public Command rotateRight() {
+    return Commands.runOnce(() -> {
+        turretMotor.set(-0.3);
+    });
+  }
+
+  public Command rotateStop() {
+    return Commands.runOnce(() -> {
+        turretMotor.stopMotor();
     });
   }
 
