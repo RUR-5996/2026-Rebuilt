@@ -46,10 +46,17 @@ public class RobotContainer {
         .onTrue(Commands.runOnce(() -> m_swerveDrive.setSlowmode(true)))
         .onFalse(Commands.runOnce(() -> m_swerveDrive.setSlowmode(false)));
     
-    m_driverController.x().onTrue(INTAKE.intakeFlipOut());
-    m_driverController.b().onTrue(INTAKE.intakeFlipIn());
+    m_driverController.x().onTrue(INTAKE.intakeFlipIn());
+    m_driverController.b().onTrue(INTAKE.intakeFlipOut());
+    m_driverController.y().onTrue(INTAKE.intakeOn());
+    m_driverController.a().onTrue(INTAKE.intakeOff());
   }
+  
+  public void report() {
 
+    INTAKE.report();
+  }
+  
   public Command getAutonomousCommand() {
     // For now, return a command that does nothing (or your auto routine)
     return Commands.print("No autonomous command configured");

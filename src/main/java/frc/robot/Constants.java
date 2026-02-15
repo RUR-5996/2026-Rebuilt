@@ -111,9 +111,13 @@ public final class Constants {
     public static final double TURN_SLEW_RATE = 4.0;
   }
 
-  public static class IntakeConstants{ //TODO fill in
-    public static final int flipOutMotor1Id = 0;
-    public static final int flipOutMotor2Id = 0;
-    public static final int powerMotorId = 0;
+  public static class IntakeConstants{
+    public static final int flipOutMotorLId = 41;
+    public static final int flipOutMotorRId = 42;
+    public static final int powerMotorId = 43;
+
+    public static final double POS_IN = 0;
+    public static final double POS_OUT = 90/360.0;
+    public static final double FLIPOUT_COEFFICIENT = 1/15.0;
   }
 }

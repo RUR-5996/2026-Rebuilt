@@ -2,6 +2,7 @@
 package frc.robot.subsystems;
 
 import com.revrobotics.RelativeEncoder;
+import com.revrobotics.spark.FeedbackSensor;
 import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkMax;
@@ -13,71 +14,71 @@ import com.revrobotics.PersistMode;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 
-import com.ctre.phoenix6.hardware.TalonFX;
-import com.ctre.phoenix6.signals.NeutralModeValue;
-import com.ctre.phoenix6.configs.TalonFXConfiguration;
-import com.ctre.phoenix6.signals.InvertedValue;
-import com.ctre.phoenix6.controls.VelocityVoltage;
-
+import frc.robot.Constants;
 import frc.robot.Constants.IntakeConstants;
 
 public class Intake extends SubsystemBase{
 
     private static Intake INTAKE;
 
-    SparkMax intakeFlipOutMotor1;
-    RelativeEncoder intakeFlipOutEncoder1;
-    SparkClosedLoopController intakeFlipOutController1;
-    SparkMax intakeFlipOutMotor2;
-    RelativeEncoder intakeFlipOutEncoder2;
-    SparkClosedLoopController intakeFlipOutController2;
-    TalonFX intakePowerMotor;
-    TalonFXConfiguration intakePowerConfig;
-    private final VelocityVoltage intakeVelocityRequest = new VelocityVoltage(0);
+    SparkMax intakeFlipOutMotorL;
+    RelativeEncoder intakeFlipOutEncoderL;
+    SparkClosedLoopController intakeFlipOutControllerL;
+    SparkMax intakeFlipOutMotorR;
+    RelativeEncoder intakeFlipOutEncoderR;
+    SparkClosedLoopController intakeFlipOutControllerR;
+    
+    SparkMax intakePowerMotor;
+    SparkClosedLoopController intakePowerController;
 
     IntakeState intakeState = IntakeState.IN;
+    IntakeSpin intakeSpin = IntakeSpin.OFF;
 
     public Intake() {
         
-        intakeFlipOutMotor1 = new SparkMax(IntakeConstants.flipOutMotor1Id, MotorType.kBrushless);
+        intakeFlipOutMotorL = new SparkMax(IntakeConstants.flipOutMotorLId, MotorType.kBrushless);
 
         SparkMaxConfig intakeFlipOutConfig = new SparkMaxConfig();
         intakeFlipOutConfig
             .inverted(false)
             .idleMode(IdleMode.kBrake);
         intakeFlipOutConfig.closedLoop
-            .p(1.0)
+            .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
+            .p(1)
             .i(0.0)
             .d(0.0)
+            .outputRange(-0.15, 0.15)
             .positionWrappingEnabled(false);
-        intakeFlipOutMotor1.configure(intakeFlipOutConfig, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters);
+        intakeFlipOutConfig.encoder.positionConversionFactor(Constants.IntakeConstants.FLIPOUT_COEFFICIENT);
 
-        intakeFlipOutEncoder1 = intakeFlipOutMotor1.getEncoder();
-        intakeFlipOutController1 = intakeFlipOutMotor1.getClosedLoopController();
-        intakeFlipOutEncoder1.setPosition(0);
+        intakeFlipOutMotorL.configure(intakeFlipOutConfig, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters);
+        intakeFlipOutEncoderL = intakeFlipOutMotorL.getEncoder();
+        intakeFlipOutControllerL = intakeFlipOutMotorL.getClosedLoopController();
+        intakeFlipOutEncoderL.setPosition(0);
 
-        intakeFlipOutMotor2 = new SparkMax(IntakeConstants.flipOutMotor2Id, MotorType.kBrushless);
+
+        intakeFlipOutMotorR = new SparkMax(IntakeConstants.flipOutMotorRId, MotorType.kBrushless);
 
         intakeFlipOutConfig
             .inverted(true);
-        intakeFlipOutMotor2.configure(intakeFlipOutConfig, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters);
+        
+        intakeFlipOutMotorR.configure(intakeFlipOutConfig, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters);
+        intakeFlipOutEncoderR = intakeFlipOutMotorR.getEncoder();
+        intakeFlipOutControllerR = intakeFlipOutMotorR.getClosedLoopController();
+        intakeFlipOutEncoderR.setPosition(0);
 
-        intakeFlipOutEncoder2 = intakeFlipOutMotor2.getEncoder();
-        intakeFlipOutController2 = intakeFlipOutMotor2.getClosedLoopController();
-        intakeFlipOutEncoder2.setPosition(0);
 
+        intakePowerMotor = new SparkMax (IntakeConstants.powerMotorId, MotorType.kBrushless);
 
-        intakePowerMotor = new TalonFX(IntakeConstants.powerMotorId);
-        intakePowerConfig = new TalonFXConfiguration();
-        intakePowerConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
-        intakePowerConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
-        intakePowerConfig.Slot0.kP = 1.0;
-        intakePowerConfig.Slot0.kI = 0.0;
-        intakePowerConfig.Slot0.kD = 0.0;
-        intakePowerConfig.Slot0.kV = 0.12;
-        intakePowerMotor.getConfigurator().apply(intakePowerConfig);
+        SparkMaxConfig intakePowerConfig = new SparkMaxConfig();
+        intakePowerConfig
+            .inverted(false)
+            .idleMode(IdleMode.kCoast);
+        intakePowerMotor.configure(intakePowerConfig, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters);
+
     }
 
     public static Intake getInstance() {
@@ -87,30 +88,56 @@ public class Intake extends SubsystemBase{
         return INTAKE;
     }
 
+    public void report() {
+        SmartDashboard.putNumber("L_pos", intakeFlipOutEncoderL.getPosition());
+        SmartDashboard.putNumber("R_pos", intakeFlipOutEncoderR.getPosition());
+        SmartDashboard.putString("intakeState", getIntakeState());
+    }
+
     public Command intakeFlipOut() {
+        return Commands.runOnce(() -> {
+            intakeFlipOutControllerL.setSetpoint(Constants.IntakeConstants.POS_OUT, SparkMax.ControlType.kPosition);
+            intakeFlipOutControllerR.setSetpoint(Constants.IntakeConstants.POS_OUT, SparkMax.ControlType.kPosition);
+            if (intakeFlipOutEncoderL.getPosition() == Constants.IntakeConstants.POS_OUT) {
+                intakeState = IntakeState.OUT;
+            }});
+        /*return Commands.runOnce(() -> {
         if (intakeState == IntakeState.IN){
             intakeState = IntakeState.OUT;
-            return Commands.runOnce(() -> {
-            moveByRotations(2, intakeFlipOutEncoder1, intakeFlipOutController1);
-            moveByRotations(2, intakeFlipOutEncoder2, intakeFlipOutController2);
-            intakePowerMotor.setControl(intakeVelocityRequest.withVelocity(50));
-            });
-        } else {
-            return Commands.none();
-        } 
+            moveByRotations(2, intakeFlipOutEncoderL, intakeFlipOutControllerL);
+            moveByRotations(2, intakeFlipOutEncoderR, intakeFlipOutControllerR);
+            }
+        });*/
     }
 
     public Command intakeFlipIn() {
-        if (intakeState == IntakeState.OUT){
-            intakeState = IntakeState.IN;
-            return Commands.runOnce(() -> {
-            moveByRotations(-2, intakeFlipOutEncoder1, intakeFlipOutController1);
-            moveByRotations(-2, intakeFlipOutEncoder2, intakeFlipOutController2);
+        return Commands.runOnce(() -> {
+            intakeFlipOutControllerL.setSetpoint(Constants.IntakeConstants.POS_IN, SparkMax.ControlType.kPosition);
+            intakeFlipOutControllerR.setSetpoint(Constants.IntakeConstants.POS_IN, SparkMax.ControlType.kPosition);
+            if (intakeFlipOutEncoderL.getPosition() == Constants.IntakeConstants.POS_IN) {
+                intakeState = IntakeState.IN;
+        }});
+        /*return Commands.runOnce(() -> {
+        if (intakeState == IntakeState.IN){
+            intakeState = IntakeState.OUT;
+            moveByRotations(-2, intakeFlipOutEncoderL, intakeFlipOutControllerL);
+            moveByRotations(-2, intakeFlipOutEncoderR, intakeFlipOutControllerR);
+            }
+        });*/
+    }
+
+    public Command intakeOn() {
+        return Commands.runOnce(() -> {
+            intakeSpin = IntakeSpin.ON;
+            intakePowerMotor.set(0.3);
+        });
+    }
+
+    public Command intakeOff() {
+        return Commands.runOnce(() -> {
+            intakeSpin = IntakeSpin.OFF;
             intakePowerMotor.stopMotor();
-            });
-        } else {
-            return Commands.none();
-        } 
+        });
     }
 
     public String getIntakeState() {
@@ -120,6 +147,12 @@ public class Intake extends SubsystemBase{
     private enum IntakeState {
         IN,
         OUT,
+        ERROR,
+    }
+
+    private enum IntakeSpin {
+        ON,
+        OFF,
         ERROR,
     }
 
