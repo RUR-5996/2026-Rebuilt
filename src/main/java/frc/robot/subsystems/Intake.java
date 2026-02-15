@@ -75,7 +75,7 @@ public class Intake extends SubsystemBase{
 
         SparkMaxConfig intakePowerConfig = new SparkMaxConfig();
         intakePowerConfig
-            .inverted(false)
+            .inverted(true)
             .idleMode(IdleMode.kCoast);
         intakePowerMotor.configure(intakePowerConfig, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters);
 
@@ -129,7 +129,7 @@ public class Intake extends SubsystemBase{
     public Command intakeOn() {
         return Commands.runOnce(() -> {
             intakeSpin = IntakeSpin.ON;
-            intakePowerMotor.set(0.3);
+            intakePowerMotor.set(0.7);
         });
     }
 

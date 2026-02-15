@@ -46,8 +46,8 @@ public class RobotContainer {
         .onTrue(Commands.runOnce(() -> m_swerveDrive.setSlowmode(true)))
         .onFalse(Commands.runOnce(() -> m_swerveDrive.setSlowmode(false)));
     
-    m_driverController.x().onTrue(INTAKE.intakeFlipIn());
-    m_driverController.b().onTrue(INTAKE.intakeFlipOut());
+    //m_driverController.x().onTrue(INTAKE.intakeFlipIn());
+    //m_driverController.b().onTrue(INTAKE.intakeFlipOut());
     m_driverController.y().onTrue(INTAKE.intakeOn());
     m_driverController.a().onTrue(INTAKE.intakeOff());
   }
