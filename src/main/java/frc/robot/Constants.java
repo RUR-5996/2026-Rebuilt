@@ -96,10 +96,11 @@ public final class Constants {
     public static final int POWER_MOTOR_1_ID = 11;
     public static final int POWER_MOTOR_2_ID = 12;
     
-    public static final double POWER_MOTOR_P = 1;
-    public static final double POWER_MOTOR_I = 0;
-    public static final double POWER_MOTOR_D = 0;
+    public static final double POWER_MOTOR_P = 1.0;
+    public static final double POWER_MOTOR_I = 0.0;
+    public static final double POWER_MOTOR_D = 0.0;
     public static final double POWER_MOTOR_GEAR_RATIO = 37.0/27.0;
+    public static final double NEO_MAX_RPM = 5864.0;
 
     public static final double FEEDER_MOTOR_P = 1.0;
     public static final double FEEDER_MOTOR_I = 0.0;

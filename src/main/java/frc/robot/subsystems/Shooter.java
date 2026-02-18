@@ -6,6 +6,7 @@ import com.revrobotics.RelativeEncoder;
 import com.revrobotics.ResetMode;
 import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.ClosedLoopSlot;
 import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.config.ExternalEncoderConfig;
 import com.revrobotics.spark.config.SparkMaxConfig;
@@ -130,15 +131,17 @@ public class Shooter extends SubsystemBase{
 
     public Command shooterOn() {
             return Commands.runOnce(() -> {
-            powerMotor1.set(ShooterConstants.DEFAULT_SHOOTER_SPEED);
-            powerMotor2.set(ShooterConstants.DEFAULT_SHOOTER_SPEED);
+            double targetRPM = ShooterConstants.NEO_MAX_RPM * ShooterConstants.DEFAULT_SHOOTER_SPEED;
+            powerController1.setSetpoint(targetRPM, ControlType.kVelocity, ClosedLoopSlot.kSlot0);
+            powerController2.setSetpoint(targetRPM, ControlType.kVelocity, ClosedLoopSlot.kSlot0);
             });
         }
 
     public Command shooterOn(double speedPercentage) {
             return Commands.runOnce(() -> {
-            powerMotor1.set(speedPercentage);
-            powerMotor2.set(speedPercentage);
+            double targetRPM = ShooterConstants.NEO_MAX_RPM * speedPercentage;
+            powerController1.setSetpoint(targetRPM, ControlType.kVelocity, ClosedLoopSlot.kSlot0);
+            powerController2.setSetpoint(targetRPM, ControlType.kVelocity, ClosedLoopSlot.kSlot0);
             });
         }
 
