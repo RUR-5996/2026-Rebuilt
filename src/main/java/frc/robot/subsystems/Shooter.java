@@ -32,16 +32,13 @@ public class Shooter extends SubsystemBase{
 
     private static Shooter SHOOTER;
 
-    SparkMax intakeFlipOutMotor1;
-    RelativeEncoder intakeFlipOutEncoder1;
-    SparkClosedLoopController intakeFlipOutController1;
-    SparkMax intakeFlipOutMotor2;
-    RelativeEncoder intakeFlipOutEncoder2;
-    SparkClosedLoopController intakeFlipOutController2;
-
     SparkMax powerMotor1;
     SparkMax powerMotor2;
     SparkMaxConfig powerConfig;
+    RelativeEncoder powerEncoder1;
+    SparkClosedLoopController powerController1;
+    RelativeEncoder powerEncoder2;
+    SparkClosedLoopController powerController2;
 
     TalonFX feederMotor;
     TalonFXConfiguration feederConfig;
@@ -66,14 +63,29 @@ public class Shooter extends SubsystemBase{
         powerConfig
             .inverted(false)
             .idleMode(IdleMode.kCoast);
+        powerConfig.encoder
+            .positionConversionFactor(1.0 / ShooterConstants.POWER_MOTOR_GEAR_RATIO)
+            .velocityConversionFactor(1.0 / ShooterConstants.POWER_MOTOR_GEAR_RATIO);
         powerConfig.closedLoop
             .p(ShooterConstants.POWER_MOTOR_P)
             .i(ShooterConstants.POWER_MOTOR_I)
             .d(ShooterConstants.POWER_MOTOR_D);
             
-
+            
         powerMotor1.configure(powerConfig, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
+        powerEncoder1 = powerMotor1.getEncoder();
+        powerController1 = powerMotor1.getClosedLoopController();
+        powerEncoder1.setPosition(0);
+
+        powerConfig.inverted(true);
+
+
         powerMotor2.configure(powerConfig, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
+        powerEncoder2 = powerMotor2.getEncoder();
+        powerController2 = powerMotor2.getClosedLoopController();
+        powerEncoder2.setPosition(0);
+            
+
 
         feederMotor = new TalonFX(ShooterConstants.FEEDER_MOTOR_ID);
         feederConfig = new TalonFXConfiguration();
@@ -118,8 +130,15 @@ public class Shooter extends SubsystemBase{
 
     public Command shooterOn() {
             return Commands.runOnce(() -> {
-            powerMotor1.set(ShooterConstants.SHOOTER_SPEED);
-            powerMotor2.set(ShooterConstants.SHOOTER_SPEED);
+            powerMotor1.set(ShooterConstants.DEFAULT_SHOOTER_SPEED);
+            powerMotor2.set(ShooterConstants.DEFAULT_SHOOTER_SPEED);
+            });
+        }
+
+    public Command shooterOn(double speedPercentage) {
+            return Commands.runOnce(() -> {
+            powerMotor1.set(speedPercentage);
+            powerMotor2.set(speedPercentage);
             });
         }
 
