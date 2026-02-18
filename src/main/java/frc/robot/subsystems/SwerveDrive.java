@@ -80,9 +80,12 @@ public class SwerveDrive extends SubsystemBase {
    */
    public Command joystickDrive(DoubleSupplier lx, DoubleSupplier ly, DoubleSupplier rx) {
       return Commands.run(() -> {
+
+         boolean isRedAlliance = isRedAlliance();
+
          // Apply deadband and scaling
-         double xSpeed = MathUtil.applyDeadband(lx.getAsDouble(), 0.1) * SwerveConstants.MAX_SPEED_METERS_PER_SECOND;
-         double ySpeed = MathUtil.applyDeadband(ly.getAsDouble(), 0.1) * SwerveConstants.MAX_SPEED_METERS_PER_SECOND;
+         double xSpeed = (isRedAlliance ? -1 : 1) * MathUtil.applyDeadband(lx.getAsDouble(), 0.1) * SwerveConstants.MAX_SPEED_METERS_PER_SECOND;
+         double ySpeed = (isRedAlliance ? -1 : 1) * MathUtil.applyDeadband(ly.getAsDouble(), 0.1) * SwerveConstants.MAX_SPEED_METERS_PER_SECOND;
          double rot;
 
          if (holdAngleEnabled) {
@@ -98,7 +101,6 @@ public class SwerveDrive extends SubsystemBase {
          }
 
          // Create ChassisSpeeds (Field Relative)
-         // Note: ly is often forwarded/backward (X in robot frame), lx is strafe (Y in robot frame)
          ChassisSpeeds speeds = ChassisSpeeds.fromFieldRelativeSpeeds(
             xSpeed, ySpeed, rot, getHeading()
          );
@@ -141,9 +143,13 @@ public class SwerveDrive extends SubsystemBase {
 
    public Command resetGyro() {
       return Commands.runOnce(() -> {
-         gyro.reset();
+         Rotation2d matchStartRotation = isRedAlliance() ? Rotation2d.fromDegrees(180) : Rotation2d.fromDegrees(0);
+
+         // gyro.reset();
+         gyro.setAngleAdjustment(matchStartRotation.getDegrees());
+
          // Resetting gyro usually requires resetting odometry to keep them synced
-         resetOdometry(new Pose2d(getPose().getTranslation(), new Rotation2d()));
+         resetOdometry(new Pose2d(getPose().getTranslation(), matchStartRotation));
       });
    }
 
