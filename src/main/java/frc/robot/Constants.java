@@ -87,7 +87,7 @@ public final class Constants {
 
   public final class ShooterConstants {
 
-    public static final double SHOOTER_SPEED = 0.3; // 0.8
+    public static final double DEFAULT_SHOOTER_SPEED = 0.8;
     public static final double FEEDER_VELOCITY = 50;
 
     public static final int INDEXER_MOTOR_ID = 12;
@@ -95,9 +95,11 @@ public final class Constants {
     public static final int POWER_MOTOR_1_ID = 14;
     public static final int POWER_MOTOR_2_ID = 15;
 
-    public static final double POWER_MOTOR_P = 1;
-    public static final double POWER_MOTOR_I = 0;
-    public static final double POWER_MOTOR_D = 0;
+    public static final double POWER_MOTOR_P = 1.0;
+    public static final double POWER_MOTOR_I = 0.0;
+    public static final double POWER_MOTOR_D = 0.0;
+    public static final double POWER_MOTOR_GEAR_RATIO = 37.0/27.0;
+     public static final double NEO_MAX_RPM = 5864.0;
 
     public static final double FEEDER_MOTOR_P = 1.0;
     public static final double FEEDER_MOTOR_I = 0.0;

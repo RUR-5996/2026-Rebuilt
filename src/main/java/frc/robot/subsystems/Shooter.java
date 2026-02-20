@@ -11,6 +11,7 @@ import com.revrobotics.spark.config.ExternalEncoderConfig;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
+import com.revrobotics.spark.ClosedLoopSlot;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
@@ -36,6 +37,11 @@ public class Shooter extends SubsystemBase{
     SparkMax powerMotor1;
     SparkMax powerMotor2;
     SparkMaxConfig powerConfig;
+
+    RelativeEncoder powerEncoder1;
+    SparkClosedLoopController powerController1;
+    RelativeEncoder powerEncoder2;
+    SparkClosedLoopController powerController2;
 
     TalonFX feederMotor;
     TalonFXConfiguration feederConfig;
@@ -64,10 +70,21 @@ public class Shooter extends SubsystemBase{
             .p(ShooterConstants.POWER_MOTOR_P)
             .i(ShooterConstants.POWER_MOTOR_I)
             .d(ShooterConstants.POWER_MOTOR_D);
-            
+        powerConfig.encoder
+            .positionConversionFactor(1.0 / ShooterConstants.POWER_MOTOR_GEAR_RATIO)
+            .velocityConversionFactor(1.0 / ShooterConstants.POWER_MOTOR_GEAR_RATIO);
 
-        powerMotor1.configure(powerConfig, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
-        powerMotor2.configure(powerConfig, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
+        powerEncoder1 = powerMotor1.getEncoder();
+        powerController1 = powerMotor1.getClosedLoopController();
+        powerEncoder1.setPosition(0);
+        powerMotor1.configure(powerConfig, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters);
+
+        powerConfig.inverted(true);
+
+        powerEncoder2 = powerMotor2.getEncoder();
+        powerController2 = powerMotor2.getClosedLoopController();
+        powerEncoder2.setPosition(0);
+        powerMotor2.configure(powerConfig, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters);
 
         feederMotor = new TalonFX(ShooterConstants.FEEDER_MOTOR_ID);
         feederConfig = new TalonFXConfiguration();
@@ -101,6 +118,8 @@ public class Shooter extends SubsystemBase{
 
         turretCANcoder.getConfigurator().apply(turretCANcoderConfig);
 
+        
+
     }
 
     public static Shooter getInstance() {
@@ -112,8 +131,17 @@ public class Shooter extends SubsystemBase{
 
     public Command shooterOn() {
             return Commands.runOnce(() -> {
-            powerMotor1.set(ShooterConstants.SHOOTER_SPEED);
-            powerMotor2.set(ShooterConstants.SHOOTER_SPEED);
+            double targetRPM = ShooterConstants.NEO_MAX_RPM * ShooterConstants.DEFAULT_SHOOTER_SPEED;
+            powerController1.setSetpoint(targetRPM, ControlType.kVelocity, ClosedLoopSlot.kSlot0);
+            powerController2.setSetpoint(targetRPM, ControlType.kVelocity, ClosedLoopSlot.kSlot0);
+            });
+        }
+
+    public Command shooterOn(double speedPercentage) {
+            return Commands.runOnce(() -> {
+            double targetRPM = ShooterConstants.NEO_MAX_RPM * speedPercentage;
+            powerController1.setSetpoint(targetRPM, ControlType.kVelocity, ClosedLoopSlot.kSlot0);
+            powerController2.setSetpoint(targetRPM, ControlType.kVelocity, ClosedLoopSlot.kSlot0);
             });
         }
 
