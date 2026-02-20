@@ -18,6 +18,9 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants.ShooterConstants;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.Command;
 
 import com.ctre.phoenix6.hardware.CANcoder;
@@ -28,6 +31,8 @@ import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.controls.VelocityVoltage;
+
+import frc.robot.subsystems.SwerveDrive;
 
 public class Shooter extends SubsystemBase{
 
@@ -56,8 +61,20 @@ public class Shooter extends SubsystemBase{
 
     private final VelocityVoltage feederVelocityVoltage = new VelocityVoltage(0);
 
+    private double turretXabs = 0.0;
+    private double turretYabs = 0.0;
+    private double turretRotAbs = 0.0;
+    private double turretRotRel = 0.0;
+
+    private double targetX = 0.0;
+    private double targetY = 0.0;
+    private double targetDist = 0.0;
+
+    public SwerveDrive SWERVEDRIVE;
 
     public Shooter () {
+
+        SWERVEDRIVE.getInstance();
 
         powerMotor1 = new SparkMax(ShooterConstants.POWER_MOTOR_1_ID, MotorType.kBrushless);
         powerMotor2 = new SparkMax(ShooterConstants.POWER_MOTOR_2_ID, MotorType.kBrushless);
@@ -169,7 +186,7 @@ public class Shooter extends SubsystemBase{
         return rotationDegrees * ShooterConstants.CANCODER_TO_TURRET_RATIO;
     }
 
-  public Command rotateTurret (double targetAngle) { //everything is in degrees
+  public Command rotateTurret (double targetAngle) { //everything is in degrees   TODO make conversion do radians
     return Commands.runOnce(() -> {
         double[] targetAngleArray = new double[]{targetAngle}; //to get around Java's final requirement in enclosing scopes
         if (targetAngle >= ShooterConstants.MAX_TURRET_ANGLE || 
@@ -179,6 +196,75 @@ public class Shooter extends SubsystemBase{
         turretController.setSetpoint(targetAngle, ControlType.kPosition);
     });
   }
+
+
+  //autoaim functions
+
+
+  public void calcTurretXY() {   //position and rotation of robot
+    Pose2d pos = SWERVEDRIVE.getPose();
+    double phi = ShooterConstants.VEC_TURRET_PHI + pos.getRotation().getRadians();
+    turretXabs = ShooterConstants.VEC_TURRET_LEN*Math.cos(phi)+pos.getX();
+    turretYabs = ShooterConstants.VEC_TURRET_LEN*Math.sin(phi)+pos.getY();
+  }
+
+  public void calcTurretAbsRotation() {
+    double deltaX = targetX - turretXabs;
+    double deltaY = targetY - turretYabs;
+    targetDist = Math.sqrt(Math.pow(deltaX, 2) + Math.pow(deltaY, 2));
+    if (deltaX >= 0 && deltaY >= 0) {
+        turretRotAbs = Math.asin(deltaY/targetDist);
+    }   
+    else if (deltaX >= 0 && deltaY <= 0) {
+        turretRotAbs = Math.asin(deltaY/targetDist);
+    }       
+    else if (deltaX <= 0 && deltaY >= 0) {
+        turretRotAbs = Math.PI/2 + Math.acos(deltaY/targetDist);
+    }
+    else if (deltaX <= 0 && deltaY <= 0) {
+        turretRotAbs = Math.PI/2 + Math.acos(deltaY/targetDist);
+    } 
+  }
+
+  public void calcTurretRelRotation() { 
+    Rotation2d robotRot = SWERVEDRIVE.getPose().getRotation();
+    turretRotRel = turretRotAbs - robotRot.getRadians();
+  }
+
+  public double clampRot(double rot) {   //everything in radians currently unused
+    rot = Math.toDegrees(rot);
+    double newRot = rot % 360;
+    if (newRot > 180) {
+        newRot = newRot - 360;
+    }
+    else if (newRot < -180) {
+        newRot = newRot + 360;
+    }
+    return Math.toRadians(newRot);
+  }
+
+  public void setTarget(double newTargetX, double newTargetY) {
+    targetX = newTargetX;
+    targetY = newTargetY;
+  }
+
+  public Rotation2d getTurretRelRot() {
+    return Rotation2d.fromRadians(turretRotRel);
+  }
+
+  public Rotation2d getTurretAbsRot() {
+    return Rotation2d.fromRadians(turretRotAbs);
+  }
+
+  public Pose2d getTurrePosRelRot() {
+    return new Pose2d(turretXabs, turretYabs, Rotation2d.fromRadians(turretRotRel));
+  }
+
+  public Pose2d getTurrePosAbsRot() {
+    return new Pose2d(turretXabs, turretYabs, Rotation2d.fromRadians(turretRotAbs));
+  }
+
+  //test functions
 
   public Command rotateLeft() {
     return Commands.runOnce(() -> {
@@ -200,5 +286,19 @@ public class Shooter extends SubsystemBase{
 
   public Command shootOut () {
     return new SequentialCommandGroup(feederOn(), shooterOn(), new WaitCommand(5.0), feederOff(), shooterOff());
+  }
+
+  public void periodic() {
+    calcTurretXY();
+    calcTurretAbsRotation();
+    calcTurretRelRotation();
+  }
+
+  public void report() {
+    SmartDashboard.putNumber("target_dist", targetDist);
+    SmartDashboard.putNumber("turret_rel_rotation", getTurretRelRot().getDegrees());
+    SmartDashboard.putNumber("turret_abs_rotation", getTurretAbsRot().getDegrees());
+    SmartDashboard.putNumber("turret_abs_X", getTurrePosAbsRot().getX());
+    SmartDashboard.putNumber("turret_abs_Y", getTurrePosRelRot().getX());
   }
 }

@@ -111,14 +111,20 @@ public final class Constants {
     public static final double INDEXER_MOTOR_D = 0.0;
     public static final double INDEXER_MOTOR_V = 0.12;  
 
-    public static final int TURRET_CANCODER_ID = 11; //TODO replace with actual value
-    public static final int TURRET_MOTOR_ID = 10; //TODO replace with actual value
+    public static final int TURRET_CANCODER_ID = 11; 
+    public static final int TURRET_MOTOR_ID = 10; 
 
 
     public static final double MOTOR_TO_TURRET_RATIO = 1; //TODO replace with actual value
     public static final double CANCODER_TO_TURRET_RATIO = 1; //TODO replace with actual value
     public static final double MAX_TURRET_ANGLE = 380; //TODO replace with actual value
     public static final double MIN_TURRET_ANGLE = -20; //TODO replace with actual value
+
+    public static final double TURRET_X = -0.1373;
+    public static final double TURRET_Y = 0.1438;
+    public static final double VEC_TURRET_LEN = Math.sqrt(Math.pow(TURRET_X, 2) + Math.pow(TURRET_Y, 2));
+    public static final double VEC_TURRET_PHI = Math.acos(TURRET_X / TURRET_Y);
+
   }
 
   public final class DriverConstants {

@@ -68,6 +68,11 @@ public class RobotContainer {
     m_driverController.rightBumper().onTrue(SHOOTER.rotateTurret(-90));*/
   }
 
+  public void periodic() {
+    SHOOTER.periodic();
+    SHOOTER.report();
+  }
+
   public Command getAutonomousCommand() {
     // For now, return a command that does nothing (or your auto routine)
     return Commands.print("No autonomous command configured");
