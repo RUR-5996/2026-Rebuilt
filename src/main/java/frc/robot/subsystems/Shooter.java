@@ -71,8 +71,8 @@ public class Shooter extends SubsystemBase{
             .i(ShooterConstants.POWER_MOTOR_I)
             .d(ShooterConstants.POWER_MOTOR_D);
         powerConfig.encoder
-            .positionConversionFactor(1.0 / ShooterConstants.POWER_MOTOR_GEAR_RATIO)
-            .velocityConversionFactor(1.0 / ShooterConstants.POWER_MOTOR_GEAR_RATIO);
+            .positionConversionFactor(ShooterConstants.POWER_MOTOR_GEAR_RATIO)
+            .velocityConversionFactor(ShooterConstants.POWER_MOTOR_GEAR_RATIO);
 
         powerEncoder1 = powerMotor1.getEncoder();
         powerController1 = powerMotor1.getClosedLoopController();
