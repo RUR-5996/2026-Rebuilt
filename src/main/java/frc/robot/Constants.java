@@ -115,10 +115,10 @@ public final class Constants {
     public static final int TURRET_MOTOR_ID = 10; 
 
 
-    public static final double MOTOR_TO_TURRET_RATIO = 1; //TODO replace with actual value
-    public static final double CANCODER_TO_TURRET_RATIO = 1; //TODO replace with actual value
-    public static final double MAX_TURRET_ANGLE = 380; //TODO replace with actual value
-    public static final double MIN_TURRET_ANGLE = -20; //TODO replace with actual value
+    public static final double MOTOR_TO_TURRET_RATIO = (1/20)*(23/123); 
+    public static final double CANCODER_TO_TURRET_RATIO = (1/20)*(45/30);
+    public static final double MAX_TURRET_ANGLE = 180.0; //feederV2 +360 TODO replace with actual value
+    public static final double MIN_TURRET_ANGLE = -180.0; //feederV2 -270 TODO replace with actual value
 
     public static final double TURRET_X = -0.1373;
     public static final double TURRET_Y = 0.1438;

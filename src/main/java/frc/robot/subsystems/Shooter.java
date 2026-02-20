@@ -8,6 +8,7 @@ import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.config.ExternalEncoderConfig;
+import com.revrobotics.spark.config.SoftLimitConfig;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
@@ -55,6 +56,7 @@ public class Shooter extends SubsystemBase{
     SparkClosedLoopController turretController;
     ExternalEncoderConfig turretEncoderConfig;
     SparkMaxConfig turretConfig;
+    SoftLimitConfig turretLimitConfig;
 
     CANcoder turretCANcoder;
     CANcoderConfiguration turretCANcoderConfig;
@@ -115,10 +117,18 @@ public class Shooter extends SubsystemBase{
 
         turretMotor = new SparkMax(ShooterConstants.TURRET_MOTOR_ID, MotorType.kBrushless);
         turretConfig = new SparkMaxConfig();
+        turretLimitConfig = new SoftLimitConfig();
         
         turretConfig
             .inverted(false)
             .idleMode(IdleMode.kBrake);
+
+        turretLimitConfig.forwardSoftLimit(ShooterConstants.MAX_TURRET_ANGLE/360.0);
+        turretLimitConfig.reverseSoftLimit(ShooterConstants.MIN_TURRET_ANGLE/360.0);
+        turretLimitConfig.forwardSoftLimitEnabled(true);
+        turretLimitConfig.reverseSoftLimitEnabled(true);
+
+        turretConfig.apply(turretLimitConfig);
 
         turretMotor.configure(turretConfig, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
 
