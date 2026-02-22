@@ -1,6 +1,5 @@
 package frc.robot.subsystems;
 
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
@@ -22,8 +21,8 @@ public class SwerveModuleDef {
     public TalonFX driveMotor;
     public TalonFX steerMotor;
 
-    private TalonFXConfiguration driveConfig = new TalonFXConfiguration();
-    private TalonFXConfiguration steerConfig = new TalonFXConfiguration();
+    //private TalonFXConfiguration driveConfig = new TalonFXConfiguration();
+    //private TalonFXConfiguration steerConfig = new TalonFXConfiguration();
     
     // Create Control Requests once to avoid garbage collection pressure
     private final VelocityVoltage m_velocitySetter = new VelocityVoltage(0);
@@ -142,5 +141,20 @@ public class SwerveModuleDef {
         steerMotor.getConfigurator().refresh(config);
         config.MotorOutput.NeutralMode = mode;
         steerMotor.getConfigurator().apply(config);
+    }
+
+    // Debugging
+    public void forceSteerRotation(double rotationsToSpin) {
+        // 1. Get current position in rotations
+        double currentRotations = steerMotor.getPosition().getValueAsDouble();
+        
+        // 2. Calculate target (Current + Desired)
+        double targetRotations = currentRotations + rotationsToSpin;
+
+        // 3. Set the steer motor directly (Bypassing optimization)
+        steerMotor.setControl(m_positionSetter.withPosition(targetRotations));
+        
+        // 4. Ensure drive motor is stopped so the robot doesn't move
+        driveMotor.setControl(m_velocitySetter.withVelocity(0));
     }
 }

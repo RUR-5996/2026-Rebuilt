@@ -1,6 +1,5 @@
 package frc.robot.subsystems;
 
-import java.util.Optional;
 import java.util.function.DoubleSupplier;
 
 import com.studica.frc.AHRS;
@@ -12,7 +11,6 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
-import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
@@ -52,7 +50,7 @@ public class SwerveDrive extends SubsystemBase {
       );
 
       rotationController = new PIDController(
-         SwerveConstants.steerKP, // Use your constants here
+         SwerveConstants.steerKP,
          SwerveConstants.steerKI, 
          SwerveConstants.steerKD
       );
@@ -82,9 +80,12 @@ public class SwerveDrive extends SubsystemBase {
    */
    public Command joystickDrive(DoubleSupplier lx, DoubleSupplier ly, DoubleSupplier rx) {
       return Commands.run(() -> {
+
+         boolean isRedAlliance = isRedAlliance();
+
          // Apply deadband and scaling
-         double xSpeed = MathUtil.applyDeadband(lx.getAsDouble(), 0.1) * SwerveConstants.MAX_SPEED_METERS_PER_SECOND;
-         double ySpeed = MathUtil.applyDeadband(ly.getAsDouble(), 0.1) * SwerveConstants.MAX_SPEED_METERS_PER_SECOND;
+         double xSpeed = (isRedAlliance ? -1 : 1) * MathUtil.applyDeadband(lx.getAsDouble(), 0.1) * SwerveConstants.MAX_SPEED_METERS_PER_SECOND;
+         double ySpeed = (isRedAlliance ? -1 : 1) * MathUtil.applyDeadband(ly.getAsDouble(), 0.1) * SwerveConstants.MAX_SPEED_METERS_PER_SECOND;
          double rot;
 
          if (holdAngleEnabled) {
@@ -100,7 +101,6 @@ public class SwerveDrive extends SubsystemBase {
          }
 
          // Create ChassisSpeeds (Field Relative)
-         // Note: ly is often forwarded/backward (X in robot frame), lx is strafe (Y in robot frame)
          ChassisSpeeds speeds = ChassisSpeeds.fromFieldRelativeSpeeds(
             xSpeed, ySpeed, rot, getHeading()
          );
@@ -114,6 +114,20 @@ public class SwerveDrive extends SubsystemBase {
    }
 
    // --- Helpers ---
+
+   public void drive(double xSpeed, double ySpeed, double rot, boolean fieldRelative) {
+      ChassisSpeeds speeds;
+      
+      if (fieldRelative) {
+         speeds = ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rot, getHeading());
+      } else {
+         speeds = new ChassisSpeeds(xSpeed, ySpeed, rot);
+      }
+
+      SwerveModuleState[] states = DRIVETRAIN.swerveKinematics.toSwerveModuleStates(speeds);
+      SwerveDriveKinematics.desaturateWheelSpeeds(states, SwerveConstants.MAX_SPEED_METERS_PER_SECOND);
+      DRIVETRAIN.setModuleSpeeds(states);
+   }
 
    public Rotation2d getHeading() {
       return gyro.getRotation2d();
@@ -129,9 +143,13 @@ public class SwerveDrive extends SubsystemBase {
 
    public Command resetGyro() {
       return Commands.runOnce(() -> {
-         gyro.reset();
+         Rotation2d matchStartRotation = isRedAlliance() ? Rotation2d.fromDegrees(180) : Rotation2d.fromDegrees(0);
+
+         // gyro.reset();
+         gyro.setAngleAdjustment(matchStartRotation.getDegrees());
+
          // Resetting gyro usually requires resetting odometry to keep them synced
-         resetOdometry(new Pose2d(getPose().getTranslation(), new Rotation2d()));
+         resetOdometry(new Pose2d(getPose().getTranslation(), matchStartRotation));
       });
    }
 
@@ -143,4 +161,41 @@ public class SwerveDrive extends SubsystemBase {
       var alliance = DriverStation.getAlliance();
       return alliance.isPresent() && alliance.get() == Alliance.Red;
    }
+
+   
+    // Debugging
+    public Command driveWheelSpins(double spins) {
+        // Calculate distance: 3 rotations * Circumference
+        double wheelCircumference = 2 * Math.PI * SwerveConstants.WHEEL_RADIUS_METERS;
+        double targetDistanceMeters = spins * wheelCircumference;
+
+        return Commands.runOnce(() -> {
+            // 1. Reset Pose to 0,0,0 so we can measure distance easily 
+            // (Only do this if you are testing in isolation, otherwise capture starting pose)
+            resetOdometry(new Pose2d()); 
+        }, this)
+        .andThen(
+            // 2. Drive forward at 1.0 m/s
+            Commands.run(() -> {
+                ChassisSpeeds speeds = new ChassisSpeeds(1.0, 0, 0);
+                
+                // Convert to module states
+                SwerveModuleState[] states = DRIVETRAIN.swerveKinematics.toSwerveModuleStates(speeds);
+                DRIVETRAIN.setModuleSpeeds(states);
+            }, this)
+            // 3. Stop when X position > target
+            .until(() -> getPose().getX() >= targetDistanceMeters)
+        )
+        .finallyDo(() -> {
+            // 4. Stop the robot when done
+            drive(0, 0, 0, false); // You might need to create a simple helper for stopping or send 0 speeds
+        });
+    }
+
+    public Command spinSteerMotors(double spins) {
+        return Commands.runOnce(() -> {
+            // 1080 degrees = 3.0 Rotations
+            DRIVETRAIN.spinAllSteerMotors(spins);
+        }, this);
+    }
 }

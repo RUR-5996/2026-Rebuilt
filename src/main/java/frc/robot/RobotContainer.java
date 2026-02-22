@@ -74,6 +74,8 @@ public class RobotContainer {
   public void periodic() {
     SHOOTER.periodic();
     SHOOTER.report();
+    m_driverController.a().onTrue(m_swerveDrive.driveWheelSpins(3));
+    m_driverController.b().onTrue(m_swerveDrive.spinSteerMotors(3));
   }
 
   public Command getAutonomousCommand() {

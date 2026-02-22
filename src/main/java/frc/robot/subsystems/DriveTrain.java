@@ -54,4 +54,12 @@ public class DriveTrain extends SubsystemBase {
         m_backLeft.setState(states[2]);
         m_backRight.setState(states[3]);
     }
+
+    // Debugging
+    public void spinAllSteerMotors(double rotations) {
+        m_frontLeft.forceSteerRotation(rotations);
+        m_frontRight.forceSteerRotation(rotations);
+        m_backLeft.forceSteerRotation(rotations);
+        m_backRight.forceSteerRotation(rotations);
+    }
 }
