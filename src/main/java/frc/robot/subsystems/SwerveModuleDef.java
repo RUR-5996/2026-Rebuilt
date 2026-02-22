@@ -11,11 +11,13 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.*;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+import com.revrobotics.RelativeEncoder;
 import com.ctre.phoenix6.configs.Slot0Configs;
 
 import frc.robot.Constants.SwerveConstants;
 
 public class SwerveModuleDef {
+    public RelativeEncoder steerEncoder;
 
     public TalonFX driveMotor;
     public TalonFX steerMotor;
@@ -72,6 +74,10 @@ public class SwerveModuleDef {
         steerConfigs.ClosedLoopGeneral.ContinuousWrap = true;
 
         steerMotor.getConfigurator().apply(steerConfigs);
+
+        //steerEncoder = steerMotor.getPosition();
+
+        resetSteerEncoder();
     }
 
     public void resetSteerEncoder() {
@@ -113,6 +119,14 @@ public class SwerveModuleDef {
 
         // Debugging
         SmartDashboard.putNumber("Module Angle Error", desiredState.angle.getDegrees() - currentAngle.getDegrees());
+    }
+
+    public double getSteerAngle() {
+        return steerMotor.getPosition().getValueAsDouble();
+    }
+
+    public double getSpeed() {
+        return driveMotor.getVelocity().getValueAsDouble()/M_DRIVE_ROTATIONS_PER_METER;
     }
 
     public void setDriveNeutralMode(NeutralModeValue mode) {

@@ -5,6 +5,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants.OperatorConstants;
+import frc.robot.Util.Dashboard;
 import frc.robot.subsystems.SwerveDrive;
 import frc.robot.subsystems.Indexer;
 import frc.robot.subsystems.Shooter;
@@ -13,6 +14,7 @@ public class RobotContainer {
 
   public Shooter SHOOTER;
   public Indexer INDEXER;
+  public Dashboard DASHBOARD;
 
   // 1. Initialize the Swerve Subsystem
   private final SwerveDrive m_swerveDrive = SwerveDrive.getInstance();
@@ -25,6 +27,7 @@ public class RobotContainer {
 
     SHOOTER = Shooter.getInstance();
     INDEXER = Indexer.getInstance();
+    DASHBOARD = new Dashboard();
 
     // 3. Set Default Command for Driving
     // We pass the joystick inputs to the subsystem's drive method.
@@ -71,5 +74,9 @@ public class RobotContainer {
   public Command getAutonomousCommand() {
     // For now, return a command that does nothing (or your auto routine)
     return Commands.print("No autonomous command configured");
+  }
+
+  public void periodic () {
+    DASHBOARD.periodic();
   }
 }
