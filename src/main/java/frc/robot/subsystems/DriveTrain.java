@@ -47,6 +47,16 @@ public class DriveTrain extends SubsystemBase {
         };
     }
 
+    public SwerveModuleState[] getModuleStates() {
+        return new SwerveModuleState[] {
+            m_frontLeft.getModuleState(),
+            m_frontRight.getModuleState(),
+            m_backLeft.getModuleState(),
+            m_backRight.getModuleState()
+        };
+    }
+
+    // Helper to set speeds from the SwerveDrive subsystem
     // Helper to set speeds from the SwerveDrive subsystem
     public void setModuleSpeeds(SwerveModuleState[] states) {
         m_frontLeft.setState(states[0]);
