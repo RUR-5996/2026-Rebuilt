@@ -20,6 +20,12 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants;
 import frc.robot.Constants.IntakeConstants;
 
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.InvertedValue;
+import com.ctre.phoenix6.signals.NeutralModeValue;
+import com.ctre.phoenix6.controls.VelocityVoltage;
+
 public class Intake extends SubsystemBase{
 
     private static Intake INTAKE;
@@ -31,11 +37,14 @@ public class Intake extends SubsystemBase{
     RelativeEncoder intakeFlipOutEncoderR;
     SparkClosedLoopController intakeFlipOutControllerR;
     
-    SparkMax intakePowerMotor;
-    SparkClosedLoopController intakePowerController;
+    //SparkMax intakePowerMotor;
+    TalonFX intakePowerMotor;
+    TalonFXConfiguration intakePowerConfig;
+    //SparkClosedLoopController intakePowerController;
 
     IntakeState intakeState = IntakeState.IN;
     IntakeSpin intakeSpin = IntakeSpin.OFF;
+    
 
     public Intake() {
         
@@ -70,15 +79,19 @@ public class Intake extends SubsystemBase{
         intakeFlipOutControllerR = intakeFlipOutMotorR.getClosedLoopController();
         intakeFlipOutEncoderR.setPosition(0);
 
+        //intakePowerMotor = new SparkMax (IntakeConstants.powerMotorId, MotorType.kBrushless);
+        intakePowerMotor = new TalonFX(IntakeConstants.powerMotorId);
+        intakePowerConfig = new TalonFXConfiguration();
+        intakePowerConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
+        intakePowerConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+        intakePowerMotor.getConfigurator().apply(intakePowerConfig);
 
-        intakePowerMotor = new SparkMax (IntakeConstants.powerMotorId, MotorType.kBrushless);
-
-        SparkMaxConfig intakePowerConfig = new SparkMaxConfig();
+        /*SparkMaxConfig intakePowerConfig = new SparkMaxConfig();
         intakePowerConfig
             .inverted(true)
             .idleMode(IdleMode.kCoast);
         intakePowerMotor.configure(intakePowerConfig, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters);
-
+        */
     }
 
     public static Intake getInstance() {
@@ -129,7 +142,7 @@ public class Intake extends SubsystemBase{
     public Command intakeOn() {
         return Commands.runOnce(() -> {
             intakeSpin = IntakeSpin.ON;
-            intakePowerMotor.set(0.7);
+            intakePowerMotor.set(Constants.IntakeConstants.SPEED);
         });
     }
 

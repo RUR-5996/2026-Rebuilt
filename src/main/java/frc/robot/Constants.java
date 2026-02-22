@@ -67,7 +67,7 @@ public final class Constants {
 
   public final class ShooterConstants {
 
-    public static final double DEFAULT_SHOOTER_SPEED = 0.8;
+    public static final double DEFAULT_SHOOTER_SPEED = 0.65;
     public static final double FEEDER_VELOCITY = 50;
 
     public static final int INDEXER_MOTOR_ID = 12;
@@ -92,7 +92,7 @@ public final class Constants {
     public static final double INDEXER_MOTOR_V = 0.12;  
 
     public static final int TURRET_CANCODER_ID = 11; 
-    public static final int TURRET_MOTOR_ID = 10; 
+    public static final int TURRET_MOTOR_ID = 20; 
 
 
     public static final double MOTOR_TO_TURRET_RATIO = (1/20)*(23/123); 
@@ -121,5 +121,7 @@ public final class Constants {
     public static final double POS_IN = 0;
     public static final double POS_OUT = 90/360.0;
     public static final double FLIPOUT_COEFFICIENT = 1/15.0;
+
+    public static final double SPEED = 0.5;
   }
 }

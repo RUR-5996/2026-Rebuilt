@@ -72,11 +72,11 @@ public class Shooter extends SubsystemBase{
     private double targetY = 0.0;
     private double targetDist = 0.0;
 
-    public SwerveDrive SWERVEDRIVE;
+    public SwerveDrive SWERVE;
 
     public Shooter () {
 
-        SWERVEDRIVE.getInstance();
+        SWERVE = SwerveDrive.getInstance();
 
         powerMotor1 = new SparkMax(ShooterConstants.POWER_MOTOR_1_ID, MotorType.kBrushless);
         powerMotor2 = new SparkMax(ShooterConstants.POWER_MOTOR_2_ID, MotorType.kBrushless);
@@ -123,10 +123,10 @@ public class Shooter extends SubsystemBase{
             .inverted(false)
             .idleMode(IdleMode.kBrake);
 
-        turretLimitConfig.forwardSoftLimit(ShooterConstants.MAX_TURRET_ANGLE/360.0);
-        turretLimitConfig.reverseSoftLimit(ShooterConstants.MIN_TURRET_ANGLE/360.0);
-        turretLimitConfig.forwardSoftLimitEnabled(true);
-        turretLimitConfig.reverseSoftLimitEnabled(true);
+        //turretLimitConfig.forwardSoftLimit(ShooterConstants.MAX_TURRET_ANGLE/360.0);
+        //turretLimitConfig.reverseSoftLimit(ShooterConstants.MIN_TURRET_ANGLE/360.0);
+        turretLimitConfig.forwardSoftLimitEnabled(false); 
+        turretLimitConfig.reverseSoftLimitEnabled(false);
 
         turretConfig.apply(turretLimitConfig);
 
@@ -212,7 +212,7 @@ public class Shooter extends SubsystemBase{
 
 
   public void calcTurretXY() {   //position and rotation of robot
-    Pose2d pos = SWERVEDRIVE.getPose();
+    Pose2d pos = SWERVE.getPose();
     double phi = ShooterConstants.VEC_TURRET_PHI + pos.getRotation().getRadians();
     turretXabs = ShooterConstants.VEC_TURRET_LEN*Math.cos(phi)+pos.getX();
     turretYabs = ShooterConstants.VEC_TURRET_LEN*Math.sin(phi)+pos.getY();
@@ -237,7 +237,7 @@ public class Shooter extends SubsystemBase{
   }
 
   public void calcTurretRelRotation() { 
-    Rotation2d robotRot = SWERVEDRIVE.getPose().getRotation();
+    Rotation2d robotRot = SWERVE.getPose().getRotation();
     turretRotRel = turretRotAbs - robotRot.getRadians();
   }
 
@@ -278,13 +278,13 @@ public class Shooter extends SubsystemBase{
 
   public Command rotateLeft() {
     return Commands.runOnce(() -> {
-        turretMotor.set(0.3);
+        turretMotor.set(0.5);
     });
   }
 
   public Command rotateRight() {
     return Commands.runOnce(() -> {
-        turretMotor.set(-0.3);
+        turretMotor.set(-0.5);
     });
   }
 
