@@ -28,6 +28,7 @@ public class RobotContainer {
     SHOOTER = Shooter.getInstance();
     INDEXER = Indexer.getInstance();
     DASHBOARD = new Dashboard();
+    INTAKE = Intake.getInstance();
 
     // 3. Set Default Command for Driving
     // We pass the joystick inputs to the subsystem's drive method.
@@ -76,14 +77,23 @@ public class RobotContainer {
     SHOOTER.report();
     m_driverController.a().onTrue(m_swerveDrive.driveWheelSpins(3));
     m_driverController.b().onTrue(m_swerveDrive.spinSteerMotors(3));
+    //m_driverController.x().onTrue(INTAKE.intakeFlipIn());
+    //m_driverController.b().onTrue(INTAKE.intakeFlipOut());
+    m_driverController.y().onTrue(INTAKE.intakeOn());
+    m_driverController.a().onTrue(INTAKE.intakeOff());
   }
+  
+  public void report() {
 
+    INTAKE.report();
+  }
+  
   public Command getAutonomousCommand() {
     // For now, return a command that does nothing (or your auto routine)
     return Commands.print("No autonomous command configured");
   }
 
-  public void periodic () {
+  public void periodic() {
     DASHBOARD.periodic();
   }
 }

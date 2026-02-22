@@ -112,4 +112,14 @@ public final class Constants {
     // When slow mode is toggled, speeds are multiplied by this ratio.
     public static final double PRECISION_RATIO = 0.35;
   }
+
+  public static class IntakeConstants{
+    public static final int flipOutMotorLId = 41;
+    public static final int flipOutMotorRId = 42;
+    public static final int powerMotorId = 43;
+
+    public static final double POS_IN = 0;
+    public static final double POS_OUT = 90/360.0;
+    public static final double FLIPOUT_COEFFICIENT = 1/15.0;
+  }
 }
