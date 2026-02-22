@@ -20,10 +20,10 @@ public class DriveTrain extends SubsystemBase {
         new Translation2d(-0.3, -0.3)  // BR
     );
 
-    private final SwerveModuleDef m_frontLeft;
-    private final SwerveModuleDef m_frontRight;
-    private final SwerveModuleDef m_backLeft;
-    private final SwerveModuleDef m_backRight;
+    public final SwerveModuleDef m_frontLeft;
+    public final SwerveModuleDef m_frontRight;
+    public final SwerveModuleDef m_backLeft;
+    public final SwerveModuleDef m_backRight;
 
     private DriveTrain() {
         m_frontLeft = new SwerveModuleDef(new TalonFX(2), new TalonFX(1), SwerveConstants.FL_STEER_INVERT, InvertedValue.CounterClockwise_Positive);

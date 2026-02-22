@@ -65,6 +65,48 @@ public final class Constants {
     public static final double RR_STEER_OFFSET = 0;
   }
 
+  public final class ShooterConstants {
+
+    public static final double DEFAULT_SHOOTER_SPEED = 0.8;
+    public static final double FEEDER_VELOCITY = 50;
+
+    public static final int INDEXER_MOTOR_ID = 12;
+    public static final int FEEDER_MOTOR_ID = 13;
+    public static final int POWER_MOTOR_1_ID = 14;
+    public static final int POWER_MOTOR_2_ID = 15;
+
+    public static final double POWER_MOTOR_P = 1.0;
+    public static final double POWER_MOTOR_I = 0.0;
+    public static final double POWER_MOTOR_D = 0.0;
+    public static final double POWER_MOTOR_GEAR_RATIO = 37.0/27.0;
+     public static final double NEO_MAX_RPM = 5864.0;
+
+    public static final double FEEDER_MOTOR_P = 1.0;
+    public static final double FEEDER_MOTOR_I = 0.0;
+    public static final double FEEDER_MOTOR_D = 0.0;
+    public static final double FEEDER_MOTOR_V = 0.12;
+
+    public static final double INDEXER_MOTOR_P = 1.0;
+    public static final double INDEXER_MOTOR_I = 0.0;
+    public static final double INDEXER_MOTOR_D = 0.0;
+    public static final double INDEXER_MOTOR_V = 0.12;  
+
+    public static final int TURRET_CANCODER_ID = 11; 
+    public static final int TURRET_MOTOR_ID = 10; 
+
+
+    public static final double MOTOR_TO_TURRET_RATIO = (1/20)*(23/123); 
+    public static final double CANCODER_TO_TURRET_RATIO = (1/20)*(45/30);
+    public static final double MAX_TURRET_ANGLE = 180.0; //feederV2 +360 TODO replace with actual value
+    public static final double MIN_TURRET_ANGLE = -180.0; //feederV2 -270 TODO replace with actual value
+
+    public static final double TURRET_X = -0.1373;
+    public static final double TURRET_Y = 0.1438;
+    public static final double VEC_TURRET_LEN = Math.sqrt(Math.pow(TURRET_X, 2) + Math.pow(TURRET_Y, 2));
+    public static final double VEC_TURRET_PHI = Math.acos(TURRET_X / TURRET_Y);
+
+  }
+
   public final class DriverConstants {
     // --- Slow Mode / Precision Mode ---
     // When slow mode is toggled, speeds are multiplied by this ratio.
