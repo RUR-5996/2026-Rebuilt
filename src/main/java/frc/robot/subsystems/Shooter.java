@@ -123,7 +123,9 @@ public class Shooter extends SubsystemBase{
         
         turretConfig
             .inverted(false)
-            .idleMode(IdleMode.kBrake);
+            .idleMode(IdleMode.kBrake)
+            .openLoopRampRate(0.2);
+        
 
         //turretLimitConfig.forwardSoftLimit(ShooterConstants.MAX_TURRET_ANGLE/360.0);
         //turretLimitConfig.reverseSoftLimit(ShooterConstants.MIN_TURRET_ANGLE/360.0);
@@ -186,6 +188,8 @@ public class Shooter extends SubsystemBase{
         return Commands.runOnce(() -> {
             powerMotor1.set(0.0);
             powerMotor2.set(0.0);
+            powerMotor1.stopMotor();
+            powerMotor2.stopMotor();
         });  
     }
 
@@ -220,9 +224,9 @@ public class Shooter extends SubsystemBase{
   public Command adjustShooterSpeed(boolean faster) {
     return Commands.runOnce(() -> {
         if (faster) {
-          currentShooterSpeed += 0.2;
+          currentShooterSpeed += 0.02;
         } else {
-          currentShooterSpeed -= 0.2;
+          currentShooterSpeed -= 0.02;
         }
     });
   }
@@ -298,13 +302,13 @@ public class Shooter extends SubsystemBase{
 
   public Command rotateLeft() {
     return Commands.runOnce(() -> {
-        turretMotor.set(0.5);
+        turretMotor.set(0.15);
     });
   }
 
   public Command rotateRight() {
     return Commands.runOnce(() -> {
-        turretMotor.set(-0.5);
+        turretMotor.set(-0.25);
     });
   }
 
@@ -333,5 +337,6 @@ public class Shooter extends SubsystemBase{
     SmartDashboard.putNumber("current shooting speed", powerEncoder1.getVelocity());
     SmartDashboard.putNumber("requested shooting speed", powerController1.getSetpoint());
     SmartDashboard.putNumber("calculated relative turret heading", turretRotRel);
+    SmartDashboard.putNumber("current shooter speed", currentShooterSpeed);
   }
 }
