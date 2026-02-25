@@ -61,6 +61,8 @@ public class RobotContainer {
     m_driverController.pov(90).onFalse(SHOOTER.rotateStop());
     m_driverController.pov(270).onTrue(SHOOTER.rotateLeft());
     m_driverController.pov(270).onFalse(SHOOTER.rotateStop());
+    m_driverController.pov(0).toggleOnTrue(SHOOTER.adjustShooterSpeed(true));
+    m_driverController.pov(180).toggleOnTrue(SHOOTER.adjustShooterSpeed(false));
 
     //m_driverController.a().onTrue(SWERVE.driveWheelSpins(3));
     m_driverController.b().onTrue(SWERVE.spinSteerMotors(3));

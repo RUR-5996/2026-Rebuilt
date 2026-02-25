@@ -63,13 +63,15 @@ public class Shooter extends SubsystemBase{
 
     private final VelocityVoltage feederVelocityVoltage = new VelocityVoltage(0);
 
+    private double currentShooterSpeed = 0.5;
+
     private double turretXabs = 0.0;
     private double turretYabs = 0.0;
     private double turretRotAbs = 0.0;
     private double turretRotRel = 0.0;
 
-    private double targetX = 0.0;
-    private double targetY = 0.0;
+    private double targetX = 3.0;
+    private double targetY = 5.0;
     private double targetDist = 0.0;
 
     public SwerveDrive SWERVE;
@@ -130,7 +132,7 @@ public class Shooter extends SubsystemBase{
 
         turretConfig.apply(turretLimitConfig);
 
-        turretMotor.configure(turretConfig, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
+        turretMotor.configure(turretConfig, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters);
 
         turretController = turretMotor.getClosedLoopController();
 
@@ -156,9 +158,9 @@ public class Shooter extends SubsystemBase{
         return SHOOTER;
     }
 
-    public Command shooterOn() {
+    public Command shooterOnDefault() {
             return Commands.runOnce(() -> {
-            double targetRPM = ShooterConstants.NEO_MAX_RPM * ShooterConstants.DEFAULT_SHOOTER_SPEED;
+            double targetRPM = ShooterConstants.NEO_MAX_RPM * ShooterConstants.POWER_MOTOR_GEAR_RATIO * ShooterConstants.DEFAULT_SHOOTER_SPEED;
             powerController1.setSetpoint(targetRPM, ControlType.kVelocity, ClosedLoopSlot.kSlot0);
             powerController2.setSetpoint(targetRPM, ControlType.kVelocity, ClosedLoopSlot.kSlot0);
             });
@@ -166,7 +168,15 @@ public class Shooter extends SubsystemBase{
 
     public Command shooterOn(double speedPercentage) {
             return Commands.runOnce(() -> {
-            double targetRPM = ShooterConstants.NEO_MAX_RPM * speedPercentage;
+            double targetRPM = ShooterConstants.NEO_MAX_RPM * ShooterConstants.POWER_MOTOR_GEAR_RATIO * speedPercentage;
+            powerController1.setSetpoint(targetRPM, ControlType.kVelocity, ClosedLoopSlot.kSlot0);
+            powerController2.setSetpoint(targetRPM, ControlType.kVelocity, ClosedLoopSlot.kSlot0);
+            });
+        }
+
+    public Command shooterOn() {
+        return Commands.runOnce(() -> {
+            double targetRPM = ShooterConstants.NEO_MAX_RPM * ShooterConstants.POWER_MOTOR_GEAR_RATIO * currentShooterSpeed;
             powerController1.setSetpoint(targetRPM, ControlType.kVelocity, ClosedLoopSlot.kSlot0);
             powerController2.setSetpoint(targetRPM, ControlType.kVelocity, ClosedLoopSlot.kSlot0);
             });
@@ -204,6 +214,16 @@ public class Shooter extends SubsystemBase{
             targetAngleArray[0] %= 360;
         }
         turretController.setSetpoint(targetAngle, ControlType.kPosition);
+    });
+  }
+
+  public Command adjustShooterSpeed(boolean faster) {
+    return Commands.runOnce(() -> {
+        if (faster) {
+          currentShooterSpeed += 0.2;
+        } else {
+          currentShooterSpeed -= 0.2;
+        }
     });
   }
 
@@ -310,5 +330,8 @@ public class Shooter extends SubsystemBase{
     SmartDashboard.putNumber("turret_abs_rotation", getTurretAbsRot().getDegrees());
     SmartDashboard.putNumber("turret_abs_X", getTurrePosAbsRot().getX());
     SmartDashboard.putNumber("turret_abs_Y", getTurrePosRelRot().getX());
+    SmartDashboard.putNumber("current shooting speed", powerEncoder1.getVelocity());
+    SmartDashboard.putNumber("requested shooting speed", powerController1.getSetpoint());
+    SmartDashboard.putNumber("calculated relative turret heading", turretRotRel);
   }
 }

@@ -102,7 +102,8 @@ public class SwerveDrive extends SubsystemBase {
 
          // Create ChassisSpeeds (Field Relative)
          ChassisSpeeds speeds = ChassisSpeeds.fromFieldRelativeSpeeds(
-            xSpeed, ySpeed, rot, getHeading()
+            //xSpeed, ySpeed, rot, getHeading()
+            xSpeed, ySpeed, rot, new Rotation2d(Math.toRadians(gyro.getAngle()))
          );
 
          // Convert to module states and desaturate
@@ -119,7 +120,8 @@ public class SwerveDrive extends SubsystemBase {
       ChassisSpeeds speeds;
       
       if (fieldRelative) {
-         speeds = ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rot, getHeading());
+         //speeds = ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rot, getHeading());
+         speeds = ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rot, new Rotation2d(Math.toRadians(gyro.getAngle())));
       } else {
          speeds = new ChassisSpeeds(xSpeed, ySpeed, rot);
       }
@@ -129,7 +131,8 @@ public class SwerveDrive extends SubsystemBase {
       DRIVETRAIN.setModuleSpeeds(states);
    }
 
-   public Rotation2d getHeading() {
+   //DO NOT USE FOR ROBOT DRIVING!
+   public Rotation2d getHeading() { 
       return gyro.getRotation2d();
    }
 
