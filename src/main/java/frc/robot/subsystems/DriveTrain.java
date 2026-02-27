@@ -24,10 +24,10 @@ public class DriveTrain extends SubsystemBase {
         new Translation2d(-0.26, -0.26)  // BR
     );
 
-    private final SwerveModuleDef m_frontLeft;
-    private final SwerveModuleDef m_frontRight;
-    private final SwerveModuleDef m_backLeft;
-    private final SwerveModuleDef m_backRight;
+    public final SwerveModuleDef m_frontLeft;
+    public final SwerveModuleDef m_frontRight;
+    public final SwerveModuleDef m_backLeft;
+    public final SwerveModuleDef m_backRight;
 
     private DriveTrain() {
         m_frontLeft = new SwerveModuleDef(new TalonFX(2), new TalonFX(1), SwerveConstants.FL_STEER_INVERT, InvertedValue.CounterClockwise_Positive);
@@ -55,6 +55,16 @@ public class DriveTrain extends SubsystemBase {
         return swerveKinematics.toChassisSpeeds(new SwerveModuleState[]{m_frontLeft.getModuleState(), m_frontRight.getModuleState(), m_backLeft.getModuleState(), m_backRight.getModuleState()});
     }
 
+    public SwerveModuleState[] getModuleStates() {
+        return new SwerveModuleState[] {
+            m_frontLeft.getModuleState(),
+            m_frontRight.getModuleState(),
+            m_backLeft.getModuleState(),
+            m_backRight.getModuleState()
+        };
+    }
+
+    // Helper to set speeds from the SwerveDrive subsystem
     // Helper to set speeds from the SwerveDrive subsystem
     public void setModuleSpeeds(SwerveModuleState[] states) {
         m_frontLeft.setState(states[0]);
@@ -86,5 +96,11 @@ public class DriveTrain extends SubsystemBase {
         m_frontRight.setSteerNeutralMode(NeutralModeValue.Brake);
         m_backLeft.setSteerNeutralMode(NeutralModeValue.Brake);
         m_backRight.setSteerNeutralMode(NeutralModeValue.Brake);
+    // Debugging
+    public void spinAllSteerMotors(double rotations) {
+        m_frontLeft.forceSteerRotation(rotations);
+        m_frontRight.forceSteerRotation(rotations);
+        m_backLeft.forceSteerRotation(rotations);
+        m_backRight.forceSteerRotation(rotations);
     }
 }

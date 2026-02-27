@@ -17,18 +17,17 @@ import com.pathplanner.lib.controllers.PPHolonomicDriveController;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
+
   public static class OperatorConstants {
     public static final int kDriverControllerPort = 0;
   }
+
   public static class SwerveConstants {
     public static final double driveKP = 0.5;
     public static final double driveKI = 0;
     public static final double driveKD = 0;
-    public static final double deriveKIzone = 300;
 
-    public static final double LOOP_RAMP_TIME = 0.3;
     public static final double CURRENT_LIMIT = 30;
-    public static final double ROTOR_SENSOR_RAT = 1;
 
     public static final double steerKP = 50;
     public static final double steerKI = 0;
@@ -36,7 +35,6 @@ public final class Constants {
 
     public static final double DRIVE_MOTOR_GEARING = 5.355;
     public static final double STEER_MOTOR_GEARING = 21.43;
-    public static final double STEER_MOTOR_COEFFICIENT = 1.0 / STEER_MOTOR_GEARING * 360.0;
     public static final double WHEEL_RADIUS_METERS = 0.10/2;
     public static final double FALCON_RPM = 6379.0;
     public static final double DRIVE_FACTOR = FALCON_RPM / (60.0 * DRIVE_MOTOR_GEARING) * 2 * Math.PI * WHEEL_RADIUS_METERS; //mps
@@ -44,23 +42,9 @@ public final class Constants {
     public static final double WHEEL_BASE_WIDTH = 0.517;
     public static final double TRACK_WIDTH = 0.516;
 
-    public static final double SECONDSper100MS = .1;
-    public static final double TICKSperTALONFX_Rotation = 2048;
-    public static final double DRIVE_MOTOR_TICKSperREVOLUTION = DRIVE_MOTOR_GEARING * TICKSperTALONFX_Rotation;
-    public static final double METERSperWHEEL_REVOLUTION = 2 * Math.PI * WHEEL_RADIUS_METERS;
-    public static final double METERSperROBOT_REVOLUTION = 2 * Math.PI
-            * Math.hypot(TRACK_WIDTH, WHEEL_BASE_WIDTH);
-    public static final double MAX_SPEED_METERSperSECOND = DRIVE_FACTOR;        
-    public static final double MAX_SPEED_RADIANSperSECOND = MAX_SPEED_METERSperSECOND / METERSperROBOT_REVOLUTION
-    * (2 * Math.PI);
-    public static final double P_ROTATION_CONTROLLER = 0.055;
-    public static final double I_ROTATION_CONTROLLER = 0.0;
-    public static final double D_ROTATION_CONTROLLER = 0.0;
-
-    // public static final Translation2d FL_LOC = new Translation2d(SwerveConstants.WHEEL_BASE_WIDTH / 2, SwerveConstants.TRACK_WIDTH / 2);
-    // public static final Translation2d FR_LOC = new Translation2d(SwerveConstants.WHEEL_BASE_WIDTH / 2, -SwerveConstants.TRACK_WIDTH / 2);
-    // public static final Translation2d RL_LOC = new Translation2d(-SwerveConstants.WHEEL_BASE_WIDTH / 2, SwerveConstants.TRACK_WIDTH / 2);
-    // public static final Translation2d RR_LOC = new Translation2d(-SwerveConstants.WHEEL_BASE_WIDTH / 2, -SwerveConstants.TRACK_WIDTH / 2);
+    public static final double METERS_PER_ROBOT_REVOLUTION = 2 * Math.PI * Math.hypot(TRACK_WIDTH, WHEEL_BASE_WIDTH);
+    public static final double MAX_SPEED_METERS_PER_SECOND = DRIVE_FACTOR;        
+    public static final double MAX_ANGULAR_SPEED = (MAX_SPEED_METERS_PER_SECOND / METERS_PER_ROBOT_REVOLUTION) * (2 * Math.PI);
 
     public static final boolean FL_STEER_INVERT = true;
     public static final boolean FR_STEER_INVERT = true;
@@ -92,30 +76,64 @@ public final class Constants {
       new PIDConstants(2, 0, 0)); //steer //TODO change constants so the robot moves accurately
   }
 
+  public final class ShooterConstants {
+
+    public static final double DEFAULT_SHOOTER_SPEED = 0.65;
+    public static final double FEEDER_VELOCITY = 50;
+
+    public static final int INDEXER_MOTOR_ID = 12;
+    public static final int FEEDER_MOTOR_ID = 13;
+    public static final int POWER_MOTOR_1_ID = 14;
+    public static final int POWER_MOTOR_2_ID = 15;
+
+    public static final double POWER_MOTOR_P = 0.75;
+    public static final double POWER_MOTOR_I = 0.0;
+    public static final double POWER_MOTOR_D = 0.0;
+    public static final double POWER_MOTOR_GEAR_RATIO = 37.0/27.0;
+    public static final double NEO_MAX_RPM = 5600.0;
+
+    public static final double FEEDER_MOTOR_P = 1.0;
+    public static final double FEEDER_MOTOR_I = 0.0;
+    public static final double FEEDER_MOTOR_D = 0.0;
+    public static final double FEEDER_MOTOR_V = 0.12;
+
+    public static final double INDEXER_MOTOR_P = 1.0;
+    public static final double INDEXER_MOTOR_I = 0.0;
+    public static final double INDEXER_MOTOR_D = 0.0;
+    public static final double INDEXER_MOTOR_V = 0.12;  
+
+    public static final int TURRET_CANCODER_ID = 11; 
+    public static final int TURRET_MOTOR_ID = 20; 
+
+
+    public static final double MOTOR_TO_TURRET_RATIO = (14.0/45.0) * (23.0/123.0); //(1/20)*(23/123)
+    public static final double CANCODER_TO_TURRET_RATIO = (30.0/45.0) * (23.0/123.0); //(1/20)*(45/30)
+    public static final double MAX_TURRET_ANGLE = 180.0; //feederV2 +360 TODO replace with actual value
+    public static final double MIN_TURRET_ANGLE = -180.0; //feederV2 -270 TODO replace with actual value
+
+    public static final double TURRET_X = -0.1373;
+    public static final double TURRET_Y = 0.1438;
+    public static final double VEC_TURRET_LEN = Math.sqrt(Math.pow(TURRET_X, 2) + Math.pow(TURRET_Y, 2));
+    public static final double VEC_TURRET_PHI = Math.acos(TURRET_X / TURRET_Y);
+
+  }
+
   public final class DriverConstants {
-
-    // --- Controller Ports ---
-    public static final int DRIVER_CONTROLLER_PORT = 0;
-    public static final int OPERATOR_CONTROLLER_PORT = 1;
-
-    // --- Deadbands ---
-    public static final double CONTROLLER_DEADBAND = 0.1;
-
-    // --- Drive Scaling (Governors) ---
-    // 1.0 = 100% speed, 0.5 = 50% speed. 
-    // Use these to keep the robot manageable during testing.
-    public static final double DRIVE_GOVERNOR = 0.85; 
-    public static final double TURN_GOVERNOR = 0.70;
-
     // --- Slow Mode / Precision Mode ---
     // When slow mode is toggled, speeds are multiplied by this ratio.
     public static final double PRECISION_RATIO = 0.35;
+  }
 
-    // --- Slew Rate Limiters ---
-    // Higher values = more "snappy", lower values = smoother acceleration.
-    // Units are units-per-second (e.g., 3.0 means it takes 0.33s to reach full speed).
-    public static final double DRIVE_SLEW_RATE = 3.0;
-    public static final double TURN_SLEW_RATE = 4.0;
+  public static class IntakeConstants{
+    public static final int flipOutMotorLId = 41;
+    public static final int flipOutMotorRId = 42;
+    public static final int powerMotorId = 43;
+
+    public static final double POS_IN = 0;
+
+    public static final double SPEED = 0.5;
+    public static final double POS_OUT = 90;
+    public static final double FLIPOUT_COEFFICIENT = 1/15.0*18.0/42.0*1/360.0;
   }
 
   public static class ColorConstants {

@@ -1,6 +1,5 @@
 package frc.robot.subsystems;
 
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
@@ -11,17 +10,19 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.*;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+import com.revrobotics.RelativeEncoder;
 import com.ctre.phoenix6.configs.Slot0Configs;
 
 import frc.robot.Constants.SwerveConstants;
 
 public class SwerveModuleDef {
+    public RelativeEncoder steerEncoder;
 
     public TalonFX driveMotor;
     public TalonFX steerMotor;
 
-    private TalonFXConfiguration driveConfig = new TalonFXConfiguration();
-    private TalonFXConfiguration steerConfig = new TalonFXConfiguration();
+    //private TalonFXConfiguration driveConfig = new TalonFXConfiguration();
+    //private TalonFXConfiguration steerConfig = new TalonFXConfiguration();
     
     // Create Control Requests once to avoid garbage collection pressure
     private final VelocityVoltage m_velocitySetter = new VelocityVoltage(0);
@@ -72,6 +73,10 @@ public class SwerveModuleDef {
         steerConfigs.ClosedLoopGeneral.ContinuousWrap = true;
 
         steerMotor.getConfigurator().apply(steerConfigs);
+
+        //steerEncoder = steerMotor.getPosition();
+
+        resetSteerEncoder();
     }
 
     public void resetSteerEncoder() {
@@ -115,6 +120,14 @@ public class SwerveModuleDef {
         SmartDashboard.putNumber("Module Angle Error", desiredState.angle.getDegrees() - currentAngle.getDegrees());
     }
 
+    public double getSteerAngle() {
+        return steerMotor.getPosition().getValueAsDouble();
+    }
+
+    public double getSpeed() {
+        return driveMotor.getVelocity().getValueAsDouble()/M_DRIVE_ROTATIONS_PER_METER;
+    }
+
     public void setDriveNeutralMode(NeutralModeValue mode) {
         TalonFXConfiguration config = new TalonFXConfiguration();
         // We "refresh" so we don't overwrite other existing settings
@@ -128,5 +141,20 @@ public class SwerveModuleDef {
         steerMotor.getConfigurator().refresh(config);
         config.MotorOutput.NeutralMode = mode;
         steerMotor.getConfigurator().apply(config);
+    }
+
+    // Debugging
+    public void forceSteerRotation(double rotationsToSpin) {
+        // 1. Get current position in rotations
+        double currentRotations = steerMotor.getPosition().getValueAsDouble();
+        
+        // 2. Calculate target (Current + Desired)
+        double targetRotations = currentRotations + rotationsToSpin;
+
+        // 3. Set the steer motor directly (Bypassing optimization)
+        steerMotor.setControl(m_positionSetter.withPosition(targetRotations));
+        
+        // 4. Ensure drive motor is stopped so the robot doesn't move
+        driveMotor.setControl(m_velocitySetter.withVelocity(0));
     }
 }
