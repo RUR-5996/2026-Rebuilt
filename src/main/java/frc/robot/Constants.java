@@ -88,7 +88,7 @@ public final class Constants {
 
 
     public static final PPHolonomicDriveController autoConfig = new PPHolonomicDriveController(
-      new PIDConstants(7, 0, 0), //drive
+      new PIDConstants(7.5, 0, 0), //drive
       new PIDConstants(2, 0, 0)); //steer //TODO change constants so the robot moves accurately
   }
 
