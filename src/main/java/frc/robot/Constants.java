@@ -87,7 +87,9 @@ public final class Constants {
     public static final double MAX_ANGULAR_SPEED = 2 * Math.PI;
 
 
-    public static final PPHolonomicDriveController autoConfig = new PPHolonomicDriveController(new PIDConstants(4, 0, 0), new PIDConstants(.5, 0, 0)); //TODO change constants so the robot moves accurately
+    public static final PPHolonomicDriveController autoConfig = new PPHolonomicDriveController(
+      new PIDConstants(7, 0, 0), //drive
+      new PIDConstants(2, 0, 0)); //steer //TODO change constants so the robot moves accurately
   }
 
   public final class DriverConstants {

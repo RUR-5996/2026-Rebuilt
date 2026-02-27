@@ -12,7 +12,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.commands.PathPlannerAuto;
+//import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.config.RobotConfig;
 
 
@@ -30,7 +30,7 @@ public class RobotContainer {
 
 
   private final SendableChooser<Command> autoChooser;
-  private static SendableChooser<Command> autoBranchChooser;
+  //private static SendableChooser<Command> autoBranchChooser;
   RobotConfig config;
 
 
@@ -38,6 +38,7 @@ public class RobotContainer {
 
     LEDS = LEDs.getInstance();
     SWERVE = SwerveDrive.getInstance();
+  
 
     // 3. Set Default Command for Driving
     // We pass the joystick inputs to the subsystem's drive method.
@@ -55,13 +56,13 @@ public class RobotContainer {
 
     loadPaths();
     autoChooser = AutoBuilder.buildAutoChooser();
-    autoBranchChooser = AutoBuilder.buildAutoChooser();
+    //autoBranchChooser = AutoBuilder.buildAutoChooser();
 
     SmartDashboard.putData("Autonomous", autoChooser);
   }
 
 
-    private void configureBindings() {
+  private void configureBindings() {
     // 4. Reset Gyro Binding (Start Button)
       m_driverController.start().onTrue(m_swerveDrive.resetGyro());
 
@@ -72,16 +73,16 @@ public class RobotContainer {
           .onFalse(Commands.runOnce(() -> m_swerveDrive.setSlowmode(false)));
 
       m_driverController.a().onTrue(LEDS.changeColor());
-    }
+  }
 
 
-    private void loadPaths() {
-      try {
+  private void loadPaths() {
+    try {
         config = RobotConfig.fromGUISettings();
-      } catch (Exception e) {
+    } catch (Exception e) {
           // Handle exception as needed
           e.printStackTrace();
-      }
+    }
 
     AutoBuilder.configure(
       SWERVE::getOdometryPose,

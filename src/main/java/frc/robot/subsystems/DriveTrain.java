@@ -7,6 +7,8 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
+import com.ctre.phoenix6.signals.NeutralModeValue;
+
 import frc.robot.Constants.SwerveConstants;
 
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -59,5 +61,30 @@ public class DriveTrain extends SubsystemBase {
         m_frontRight.setState(states[1]);
         m_backLeft.setState(states[2]);
         m_backRight.setState(states[3]);
+    }
+
+    public void setToCoast() {
+        m_frontLeft.setDriveNeutralMode(NeutralModeValue.Coast);
+        m_frontRight.setDriveNeutralMode(NeutralModeValue.Coast);
+        m_backLeft.setDriveNeutralMode(NeutralModeValue.Coast);
+        m_backRight.setDriveNeutralMode(NeutralModeValue.Coast);
+
+        m_frontLeft.setSteerNeutralMode(NeutralModeValue.Coast);
+        m_frontRight.setSteerNeutralMode(NeutralModeValue.Coast);
+        m_backLeft.setSteerNeutralMode(NeutralModeValue.Coast);
+        m_backRight.setSteerNeutralMode(NeutralModeValue.Coast);
+    }
+
+    
+    public void setToBrake() {
+        m_frontLeft.setDriveNeutralMode(NeutralModeValue.Brake);
+        m_frontRight.setDriveNeutralMode(NeutralModeValue.Brake);
+        m_backLeft.setDriveNeutralMode(NeutralModeValue.Brake);
+        m_backRight.setDriveNeutralMode(NeutralModeValue.Brake); 
+        
+        m_frontLeft.setSteerNeutralMode(NeutralModeValue.Brake);
+        m_frontRight.setSteerNeutralMode(NeutralModeValue.Brake);
+        m_backLeft.setSteerNeutralMode(NeutralModeValue.Brake);
+        m_backRight.setSteerNeutralMode(NeutralModeValue.Brake);
     }
 }
