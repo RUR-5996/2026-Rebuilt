@@ -5,6 +5,8 @@
 package frc.robot;
 
 import com.ctre.phoenix6.signals.InvertedValue;
+import com.pathplanner.lib.config.PIDConstants;
+import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
@@ -63,6 +65,15 @@ public final class Constants {
     public static final double FR_STEER_OFFSET = 0;
     public static final double RL_STEER_OFFSET = 0;
     public static final double RR_STEER_OFFSET = 0;
+
+    // --- Speed Constants ---
+    public static final double MAX_SPEED_METERS_PER_SECOND = 4; // 4.5
+    public static final double MAX_ANGULAR_SPEED = 2 * Math.PI;
+
+
+    public static final PPHolonomicDriveController autoConfig = new PPHolonomicDriveController(
+      new PIDConstants(7.5, 0, 0), //drive
+      new PIDConstants(2, 0, 0)); //steer //TODO change constants so the robot moves accurately
   }
 
   public final class ShooterConstants {
@@ -123,5 +134,20 @@ public final class Constants {
     public static final double SPEED = 0.5;
     public static final double POS_OUT = 90;
     public static final double FLIPOUT_COEFFICIENT = 1/15.0*18.0/42.0*1/360.0;
+  }
+
+  public static class ColorConstants {
+    public static double RAINBOW = -.99;
+    public static double VIOLET = .91;
+    public static double PINK = .57;
+    public static double FLASHBANG = .93;
+    public static double BLUEGREEN = .79;
+    public static double LIGHTBLUE = .83;
+    public static double DARKBLUE = .85;
+    public static double BLUEPINK = .89;
+    public static double STROBERED = -.11;
+    public static double STROBEBLUE = -.09;
+    public static double STROBEGOLD = -.07;
+    public static double STROBEWHITE = -.05;
   }
 }
