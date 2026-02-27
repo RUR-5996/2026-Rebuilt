@@ -67,8 +67,8 @@ public final class Constants {
     public static final double RR_STEER_OFFSET = 0;
 
     // --- Speed Constants ---
-    public static final double MAX_SPEED_METERS_PER_SECOND = 4; // 4.5
-    public static final double MAX_ANGULAR_SPEED = 2 * Math.PI;
+    //public static final double MAX_SPEED_METERS_PER_SECOND = 4; // 4.5
+    //public static final double MAX_ANGULAR_SPEED = 2 * Math.PI;
 
 
     public static final PPHolonomicDriveController autoConfig = new PPHolonomicDriveController(

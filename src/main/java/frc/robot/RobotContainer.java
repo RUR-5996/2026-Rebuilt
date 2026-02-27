@@ -67,13 +67,13 @@ public class RobotContainer {
 
   private void configureBindings() {
     // 4. Reset Gyro Binding (Start Button)
-      m_driverController.start().onTrue(m_swerveDrive.resetGyro());
+      m_driverController.start().onTrue(SWERVE.resetGyro());
 
     // 5. Slow Mode Binding (Left Bumper)
     // While held, slow mode is active; when released, it returns to normal.
       m_driverController.leftBumper()
-          .onTrue(Commands.runOnce(() -> m_swerveDrive.setSlowmode(true)))
-          .onFalse(Commands.runOnce(() -> m_swerveDrive.setSlowmode(false)));
+          .onTrue(Commands.runOnce(() -> SWERVE.setSlowmode(true)))
+          .onFalse(Commands.runOnce(() -> SWERVE.setSlowmode(false)));
 
         m_driverController.start().onTrue(SWERVE.resetGyro());
 

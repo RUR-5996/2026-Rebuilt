@@ -96,6 +96,8 @@ public class DriveTrain extends SubsystemBase {
         m_frontRight.setSteerNeutralMode(NeutralModeValue.Brake);
         m_backLeft.setSteerNeutralMode(NeutralModeValue.Brake);
         m_backRight.setSteerNeutralMode(NeutralModeValue.Brake);
+    }
+    
     // Debugging
     public void spinAllSteerMotors(double rotations) {
         m_frontLeft.forceSteerRotation(rotations);
