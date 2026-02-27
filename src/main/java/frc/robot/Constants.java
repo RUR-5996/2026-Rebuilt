@@ -119,9 +119,9 @@ public final class Constants {
     public static final int powerMotorId = 43;
 
     public static final double POS_IN = 0;
-    public static final double POS_OUT = 90/360.0;
-    public static final double FLIPOUT_COEFFICIENT = 1/15.0;
 
     public static final double SPEED = 0.5;
+    public static final double POS_OUT = 90;
+    public static final double FLIPOUT_COEFFICIENT = 1/15.0*18.0/42.0*1/360.0;
   }
 }

@@ -71,6 +71,11 @@ public class RobotContainer {
     m_driverController.y().onTrue(INTAKE.intakeOn());
     m_driverController.a().onTrue(INTAKE.intakeOff());
 
+    m_driverController.povUp().onTrue(INTAKE.nudgeUp());
+    m_driverController.povDown().onTrue(INTAKE.nudgeDown());
+  }
+  
+  public void report() {
 
     /*m_driverController.leftBumper().onTrue(SHOOTER.rotateTurret(90));
     m_driverController.rightBumper().onTrue(SHOOTER.rotateTurret(-90));*/

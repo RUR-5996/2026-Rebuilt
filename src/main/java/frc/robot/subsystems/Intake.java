@@ -24,7 +24,6 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
-import com.ctre.phoenix6.controls.VelocityVoltage;
 
 public class Intake extends SubsystemBase{
 
@@ -46,6 +45,8 @@ public class Intake extends SubsystemBase{
     IntakeSpin intakeSpin = IntakeSpin.OFF;
     
 
+    private double setPoint = 0;
+
     public Intake() {
         
         intakeFlipOutMotorL = new SparkMax(IntakeConstants.flipOutMotorLId, MotorType.kBrushless);
@@ -56,7 +57,7 @@ public class Intake extends SubsystemBase{
             .idleMode(IdleMode.kBrake);
         intakeFlipOutConfig.closedLoop
             .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
-            .p(1)
+            .p(1) //TODO make motors turn the same angle
             .i(0.0)
             .d(0.0)
             .outputRange(-0.15, 0.15)
@@ -104,6 +105,7 @@ public class Intake extends SubsystemBase{
     public void report() {
         SmartDashboard.putNumber("L_pos", intakeFlipOutEncoderL.getPosition());
         SmartDashboard.putNumber("R_pos", intakeFlipOutEncoderR.getPosition());
+        SmartDashboard.putNumber("setPoint", setPoint);
         SmartDashboard.putString("intakeState", getIntakeState());
     }
 
@@ -150,6 +152,22 @@ public class Intake extends SubsystemBase{
         return Commands.runOnce(() -> {
             intakeSpin = IntakeSpin.OFF;
             intakePowerMotor.stopMotor();
+        });
+    }
+
+    public Command nudgeUp() {
+        return Commands.runOnce(() -> {
+            setPoint -= .01;
+            intakeFlipOutControllerL.setSetpoint(setPoint, ControlType.kPosition);
+            intakeFlipOutControllerR.setSetpoint(setPoint, ControlType.kPosition);
+        });
+    }
+
+    public Command nudgeDown() {
+        return Commands.runOnce(() -> {
+            setPoint += .01;
+            intakeFlipOutControllerL.setSetpoint(setPoint, ControlType.kPosition);
+            intakeFlipOutControllerR.setSetpoint(setPoint, ControlType.kPosition);
         });
     }
 
