@@ -2,6 +2,7 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.LimelightConstants;
 
 public class Limelight {
@@ -31,6 +32,13 @@ public class Limelight {
                 Math.toDegrees(LimelightConstants.ROBOT_LIMELIGHT_OFFSET.getRotation().getZ())  // yaw
             );
         }
+    }
+
+    public void report() {
+        Pose2d estimated_position = apriltagBasedPosition();
+        SmartDashboard.putNumber("x_estimation", estimated_position.getX());
+        SmartDashboard.putNumber("y_estimation", estimated_position.getY());
+        SmartDashboard.putNumber("rot_estimation",  estimated_position.getRotation().getDegrees());
     }
 
     public static Limelight getInstance(String name) {
