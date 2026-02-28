@@ -8,8 +8,8 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 4.0128780785781135,
-        "y": 6.994515566247994
+        "x": 4.012892926758634,
+        "y": 7.0
       },
       "isLocked": false,
       "linkedName": null
@@ -20,12 +20,12 @@
         "y": 7.0
       },
       "prevControl": {
-        "x": 4.9867945365593656,
-        "y": 6.996780302222961
+        "x": 4.986789420900212,
+        "y": 7.0
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "test_rovne"
     }
   ],
   "rotationTargets": [],
@@ -33,10 +33,10 @@
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 5.0,
-    "maxAcceleration": 3.0,
-    "maxAngularVelocity": 180.0,
-    "maxAngularAcceleration": 360.0,
+    "maxVelocity": 3.0,
+    "maxAcceleration": 7.0,
+    "maxAngularVelocity": 450.0,
+    "maxAngularAcceleration": 500.0,
     "nominalVoltage": 12.0,
     "unlimited": false
   },

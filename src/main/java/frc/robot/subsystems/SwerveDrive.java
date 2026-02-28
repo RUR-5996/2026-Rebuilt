@@ -46,12 +46,13 @@ public class SwerveDrive extends SubsystemBase {
       DRIVETRAIN = DriveTrain.getInstance();
 
       gyro = new AHRS(AHRS.NavXComType.kMXP_SPI);
-      gyro.reset();
+      //gyro.reset();
+      //gyro.setAngleAdjustment(180-112.4);
 
       // The 2025/2026 Pose Estimator constructor
       m_odometry = new SwerveDrivePoseEstimator(
          DRIVETRAIN.swerveKinematics,   // 1. Kinematics
-         getHeading(),           // 2. Gyro Angle
+         new Rotation2d(Math.toRadians(gyro.getAngle())),           // 2. Gyro Angle
          DRIVETRAIN.getModulePositions(), // 3. Module Positions
          new Pose2d()           // 4. Initial Pose
       );
@@ -76,11 +77,11 @@ public class SwerveDrive extends SubsystemBase {
    @Override
    public void periodic() {
       // Update odometry with current gyro heading and module positions (from Phoenix 6)
-      m_odometry.update(getHeading(), DRIVETRAIN.getModulePositions());
+      m_odometry.update(new Rotation2d(Math.toRadians(gyro.getAngle())), DRIVETRAIN.getModulePositions());
 
       SmartDashboard.putNumber("Robot X", getPose().getX());
       SmartDashboard.putNumber("Robot Y", getPose().getY());
-      SmartDashboard.putNumber("Robot Gyro Angle", getHeading().getDegrees());
+      SmartDashboard.putNumber("Robot Gyro Angle", gyro.getAngle());
    }
 
    public static SwerveDrive getInstance() {
@@ -104,7 +105,7 @@ public class SwerveDrive extends SubsystemBase {
          double rot;
 
          if (holdAngleEnabled) {
-            rot = rotationController.calculate(getHeading().getDegrees(), holdAngle);
+            rot = rotationController.calculate(gyro.getAngle(), holdAngle);
          } else {
             rot = MathUtil.applyDeadband(rx.getAsDouble(), 0.1) * SwerveConstants.MAX_ANGULAR_SPEED;
          }
@@ -147,29 +148,29 @@ public class SwerveDrive extends SubsystemBase {
    }
 
    //DO NOT USE FOR ROBOT DRIVING!
-   public Rotation2d getHeading() { 
+   /*public Rotation2d getHeading() { 
       return gyro.getRotation2d();
    }
-
+*/
    public Pose2d getPose() {
       return m_odometry.getEstimatedPosition();
    }
 
-   public double getAngleDegrees() {
+   /*public double getAngleDegrees() {
       return getHeading().getDegrees();
-   }
+   }*/
 
    public void resetOdometry(Pose2d pose) {
-      m_odometry.resetPosition(getHeading(), DRIVETRAIN.getModulePositions(), pose);
+      m_odometry.resetPosition(new Rotation2d(Math.toRadians(gyro.getAngle())), DRIVETRAIN.getModulePositions(), pose);
    }
 
        public double getOdometryDegrees() {
         return getPose().getRotation().getDegrees();
     }
 
-    public double getGyroDegrees() {
+    /*public double getGyroDegrees() {
         return getHeading().getDegrees();
-    }  
+    }  */
 
     public DoubleSupplier supplyOdometryDegrees() {
         DoubleSupplier angle = () -> getOdometryDegrees();
@@ -234,7 +235,7 @@ public class SwerveDrive extends SubsystemBase {
       return Commands.runOnce(() -> {
          Rotation2d matchStartRotation = isRedAlliance() ? Rotation2d.fromDegrees(180) : Rotation2d.fromDegrees(0);
 
-         // gyro.reset();
+         gyro.reset();
          gyro.setAngleAdjustment(matchStartRotation.getDegrees());
 
          // Resetting gyro usually requires resetting odometry to keep them synced

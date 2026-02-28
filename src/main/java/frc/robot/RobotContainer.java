@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
 //import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.config.RobotConfig;
 import frc.robot.Util.Dashboard;
@@ -42,6 +43,10 @@ public class RobotContainer {
     INDEXER = Indexer.getInstance();
     DASHBOARD = new Dashboard();
     INTAKE = Intake.getInstance();
+
+    // register named commands
+    NamedCommands.registerCommand("aimOn", SHOOTER.aimOn());
+    NamedCommands.registerCommand("aimOff", SHOOTER.aimOff());
 
     // 3. Set Default Command for Driving
     // We pass the joystick inputs to the subsystem's drive method.
@@ -90,18 +95,21 @@ public class RobotContainer {
     m_driverController.leftTrigger().onFalse(new ParallelCommandGroup(SHOOTER.feederOff(), INDEXER.indexerOff()));
 
     m_driverController.pov(90).onTrue(SHOOTER.rotateRight());
-    m_driverController.pov(90).onFalse(SHOOTER.rotateStop());
+    m_driverController.pov(90).onFalse(SHOOTER.rotateStopCommand());
     m_driverController.pov(270).onTrue(SHOOTER.rotateLeft());
-    m_driverController.pov(270).onFalse(SHOOTER.rotateStop());
+    m_driverController.pov(270).onFalse(SHOOTER.rotateStopCommand());
     m_driverController.pov(0).toggleOnTrue(SHOOTER.adjustShooterSpeed(true));
     m_driverController.pov(180).toggleOnTrue(SHOOTER.adjustShooterSpeed(false));
 
     //m_driverController.a().onTrue(SWERVE.driveWheelSpins(3));
-    m_driverController.b().onTrue(SWERVE.spinSteerMotors(3));
+    //m_driverController.b().onTrue(SWERVE.spinSteerMotors(3));
     //m_driverController.x().onTrue(INTAKE.intakeFlipIn());
     //m_driverController.b().onTrue(INTAKE.intakeFlipOut());
-    m_driverController.y().onTrue(INTAKE.intakeOn());
-    m_driverController.a().onTrue(INTAKE.intakeOff());
+    //m_driverController.y().onTrue(INTAKE.intakeOn());
+    //m_driverController.a().onTrue(INTAKE.intakeOff());
+
+    m_driverController.a().onTrue(SHOOTER.aimOn());
+    m_driverController.x().onTrue(SHOOTER.aimOff());
 
     m_driverController.povUp().onTrue(INTAKE.nudgeUp());
     m_driverController.povDown().onTrue(INTAKE.nudgeDown());

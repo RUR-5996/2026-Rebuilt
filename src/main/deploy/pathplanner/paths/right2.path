@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.0,
+        "x": 6.0,
         "y": 7.0
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.0,
-        "y": 7.0
+        "x": 6.0,
+        "y": 6.045376102312691
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "test_rovne"
     },
     {
       "anchor": {
-        "x": 5.0,
-        "y": 7.0
+        "x": 6.0,
+        "y": 5.0
       },
       "prevControl": {
-        "x": 5.4065925683671185,
-        "y": 7.0
+        "x": 6.0,
+        "y": 5.6311505959411425
       },
       "nextControl": null,
       "isLocked": false,
@@ -42,7 +42,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 180.0
+    "rotation": 0.0
   },
   "reversed": false,
   "folder": null,

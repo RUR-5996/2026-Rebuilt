@@ -5,9 +5,15 @@
     "data": {
       "commands": [
         {
+          "type": "named",
+          "data": {
+            "name": "aimOn"
+          }
+        },
+        {
           "type": "path",
           "data": {
-            "pathName": "vpred_a_rotuj"
+            "pathName": "test_krivka_crazy"
           }
         }
       ]

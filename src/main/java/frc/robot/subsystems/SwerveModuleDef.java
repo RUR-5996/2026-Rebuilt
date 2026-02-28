@@ -54,6 +54,10 @@ public class SwerveModuleDef {
         driveConfigs.MotorOutput.Inverted = driveInverted;
         driveConfigs.MotorOutput.NeutralMode = NeutralModeValue.Brake;
 
+        driveConfigs.ClosedLoopRamps.DutyCycleClosedLoopRampPeriod = 0.2;
+        driveConfigs.ClosedLoopRamps.TorqueClosedLoopRampPeriod = 0.2;
+        driveConfigs.ClosedLoopRamps.VoltageClosedLoopRampPeriod = 0.2;
+
         driveMotor.getConfigurator().apply(driveConfigs);
 
         // --- Steer Motor Configuration ---
@@ -76,7 +80,7 @@ public class SwerveModuleDef {
 
         //steerEncoder = steerMotor.getPosition();
 
-        resetSteerEncoder();
+        //resetSteerEncoder(); TODO znovu zapnout
     }
 
     public void resetSteerEncoder() {

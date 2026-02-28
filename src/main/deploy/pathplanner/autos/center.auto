@@ -7,7 +7,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "vpred_a_rotuj"
+            "pathName": "center"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "aimOn"
           }
         }
       ]

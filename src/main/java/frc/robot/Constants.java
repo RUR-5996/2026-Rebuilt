@@ -43,8 +43,8 @@ public final class Constants {
     public static final double TRACK_WIDTH = 0.516;
 
     public static final double METERS_PER_ROBOT_REVOLUTION = 2 * Math.PI * Math.hypot(TRACK_WIDTH, WHEEL_BASE_WIDTH);
-    public static final double MAX_SPEED_METERS_PER_SECOND = DRIVE_FACTOR;        
-    public static final double MAX_ANGULAR_SPEED = (MAX_SPEED_METERS_PER_SECOND / METERS_PER_ROBOT_REVOLUTION) * (2 * Math.PI);
+    // public static final double MAX_SPEED_METERS_PER_SECOND = DRIVE_FACTOR;        
+    // public static final double MAX_ANGULAR_SPEED = (MAX_SPEED_METERS_PER_SECOND / METERS_PER_ROBOT_REVOLUTION) * (2 * Math.PI);
 
     public static final boolean FL_STEER_INVERT = true;
     public static final boolean FR_STEER_INVERT = true;
@@ -67,13 +67,13 @@ public final class Constants {
     public static final double RR_STEER_OFFSET = 0;
 
     // --- Speed Constants ---
-    //public static final double MAX_SPEED_METERS_PER_SECOND = 4; // 4.5
-    //public static final double MAX_ANGULAR_SPEED = 2 * Math.PI;
+    public static final double MAX_SPEED_METERS_PER_SECOND = 3; // 4.5
+    public static final double MAX_ANGULAR_SPEED = (450.0 /360.0) * (2 * Math.PI);
 
 
     public static final PPHolonomicDriveController autoConfig = new PPHolonomicDriveController(
       new PIDConstants(7.5, 0, 0), //drive
-      new PIDConstants(2, 0, 0)); //steer //TODO change constants so the robot moves accurately
+      new PIDConstants(5, 0, 0)); //steer //TODO change constants so the robot moves accurately
   }
 
   public final class ShooterConstants {
@@ -104,9 +104,12 @@ public final class Constants {
 
     public static final int TURRET_CANCODER_ID = 11; 
     public static final int TURRET_MOTOR_ID = 20; 
+    
+    public static final double TURRET_MOTOR_P = 0.01;
+    public static final double TURRET_MOTOR_I = 0.00000005;
+    public static final double TURRET_MOTOR_D = 0.01;
 
-
-    public static final double MOTOR_TO_TURRET_RATIO = (14.0/45.0) * (23.0/123.0); //(1/20)*(23/123)
+    public static final double MOTOR_TO_TURRET_RATIO = (14.0/45.0) * (23.0/123.0)*360.0; //(1/20)*(23/123)
     public static final double CANCODER_TO_TURRET_RATIO = (30.0/45.0) * (23.0/123.0); //(1/20)*(45/30)
     public static final double MAX_TURRET_ANGLE = 180.0; //feederV2 +360 TODO replace with actual value
     public static final double MIN_TURRET_ANGLE = -180.0; //feederV2 -270 TODO replace with actual value
@@ -121,7 +124,8 @@ public final class Constants {
   public final class DriverConstants {
     // --- Slow Mode / Precision Mode ---
     // When slow mode is toggled, speeds are multiplied by this ratio.
-    public static final double PRECISION_RATIO = 0.35;
+    public static final double PRECISION_RATIO = 0.35; //0.35
+
   }
 
   public static class IntakeConstants{
