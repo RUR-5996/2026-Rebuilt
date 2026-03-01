@@ -27,7 +27,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
-import com.ctre.phoenix6.signals.SensorDirectionValue;
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.signals.InvertedValue;
@@ -74,7 +73,6 @@ public class Shooter extends SubsystemBase{
     private double targetDist = 0.0;
 
     private AimBot aimBot = AimBot.OFF;
-    private SpeedCtrl speedCtrl = SpeedCtrl.OFF;
 
     public SwerveDrive SWERVE;
 
@@ -238,12 +236,13 @@ public class Shooter extends SubsystemBase{
     });
   }
 
-  public void calculShooterSpeed() {
-    currentShooterSpeed = 0.0206 * Math.pow(targetDist, 5) - 0.5112 * Math.pow(targetDist, 4) + 5.0321 * Math.pow(targetDist, 3) - 24.546 * Math.pow(targetDist, 2) + 59.318 * targetDist - 56.373;
+  public void calcShooterSpeed() {
+    double speed = - 0.0362 * Math.pow(targetDist, 4) + 0.6903 * Math.pow(targetDist, 3) - 4.8608 * Math.pow(targetDist, 2) + 15.046 * targetDist - 16.858;
+    if (speed <= 0.3) {
+      speed = 0.3;
+    }
+    currentShooterSpeed = speed;
   }
-
-
-  //autoaim functions
 
 
   public void calcTurretXY() {   //position and rotation of robot
@@ -357,25 +356,6 @@ public class Shooter extends SubsystemBase{
     }
   }
 
-  public Command speedCtrlOn() {
-    return Commands.runOnce(() -> {
-      speedCtrl = SpeedCtrl.ON;
-    });
-  }
-
-  public Command speedCtrlOff () {
-    return Commands.runOnce(() -> {
-      speedCtrl = SpeedCtrl.OFF;
-    });
-  }
-
-  public boolean isSpeedCtrlOn() {
-    if (speedCtrl == SpeedCtrl.ON) {
-      return true;
-    } else {
-      return false;
-    }
-  }
 
   public void periodic() {
     calcTurretXY();
@@ -383,13 +363,10 @@ public class Shooter extends SubsystemBase{
     calcTurretRelRotation();
     if (aimBot == AimBot.ON) {
       rotateTurret(Math.toDegrees(turretRotRel));
-      calculShooterSpeed();
+      calcShooterSpeed();
     } else {
       rotateStop();
     }
-
-
-    
   }
 
   public void report() {
@@ -408,11 +385,6 @@ public class Shooter extends SubsystemBase{
 
   private enum AimBot {
     ON,
-    OFF
-  }
-
-  private enum SpeedCtrl {
-    ON, 
     OFF
   }
 
