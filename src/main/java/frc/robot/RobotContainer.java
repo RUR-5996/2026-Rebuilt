@@ -26,6 +26,7 @@ public class RobotContainer {
   public Dashboard DASHBOARD;
   public Intake INTAKE;
   public SwerveDrive SWERVE;
+  public DriveTrain DRIVE_TRAIN;
 
   // 2. Initialize the Controller
   private final CommandXboxController m_driverController =
@@ -43,6 +44,7 @@ public class RobotContainer {
     INDEXER = Indexer.getInstance();
     DASHBOARD = new Dashboard();
     INTAKE = Intake.getInstance();
+    DRIVE_TRAIN = DriveTrain.getInstance();
 
     // register named commands
     NamedCommands.registerCommand("aimOn", SHOOTER.aimOn());
@@ -64,7 +66,7 @@ public class RobotContainer {
 
     loadPaths();
     autoChooser = AutoBuilder.buildAutoChooser();
-    //autoBranchChooser = AutoBuilder.buildAutoChooser();
+    //autoBranchChooser = AutoBuilder.buildAutoChooser();b
 
     SmartDashboard.putData("Autonomous", autoChooser);
   }
@@ -79,14 +81,6 @@ public class RobotContainer {
       m_driverController.leftBumper()
           .onTrue(Commands.runOnce(() -> SWERVE.setSlowmode(true)))
           .onFalse(Commands.runOnce(() -> SWERVE.setSlowmode(false)));
-
-        m_driverController.start().onTrue(SWERVE.resetGyro());
-
-    // 5. Slow Mode Binding (Left Bumper)
-    // While held, slow mode is active; when released, it returns to normal.
-    m_driverController.leftBumper()
-        .onTrue(Commands.runOnce(() -> SWERVE.setSlowmode(true)))
-        .onFalse(Commands.runOnce(() -> SWERVE.setSlowmode(false)));
     
     m_driverController.rightTrigger().onTrue(SHOOTER.shooterOn());
     m_driverController.rightTrigger().onFalse(SHOOTER.shooterOff());
@@ -105,14 +99,19 @@ public class RobotContainer {
     //m_driverController.b().onTrue(SWERVE.spinSteerMotors(3));
     //m_driverController.x().onTrue(INTAKE.intakeFlipIn());
     //m_driverController.b().onTrue(INTAKE.intakeFlipOut());
-    //m_driverController.y().onTrue(INTAKE.intakeOn());
-    //m_driverController.a().onTrue(INTAKE.intakeOff());
+
+    m_driverController.x().onTrue(INTAKE.intakeOn());
+    m_driverController.y().onTrue(INTAKE.intakeOff());
 
     m_driverController.a().onTrue(SHOOTER.aimOn());
-    m_driverController.x().onTrue(SHOOTER.aimOff());
+    m_driverController.b().onTrue(SHOOTER.aimOff());
 
-    m_driverController.povUp().onTrue(INTAKE.nudgeUp());
-    m_driverController.povDown().onTrue(INTAKE.nudgeDown());
+    m_driverController.rightBumper().onTrue(DRIVE_TRAIN.resetSteer());
+
+    // m_driverController.povUp().onTrue(INTAKE.nudgeUp());
+    // m_driverController.povDown().onTrue(INTAKE.nudgeDown());
+
+    m_driverController.povDownLeft().onTrue(SWERVE.driveWheelSpins(3));
   }
 
 

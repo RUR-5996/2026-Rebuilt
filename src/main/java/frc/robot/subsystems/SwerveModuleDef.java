@@ -104,7 +104,7 @@ public class SwerveModuleDef {
     }
 
     public void setState(SwerveModuleState desiredState) {
-        // 1. Get current angle from the motor
+        // 1. Get current angle from the motor  
         Rotation2d currentAngle = Rotation2d.fromRotations(steerMotor.getPosition().getValueAsDouble());
 
         // 2. Optimize

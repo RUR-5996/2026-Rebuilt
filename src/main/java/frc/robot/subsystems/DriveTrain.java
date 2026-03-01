@@ -4,6 +4,8 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
@@ -96,6 +98,15 @@ public class DriveTrain extends SubsystemBase {
         m_frontRight.setSteerNeutralMode(NeutralModeValue.Brake);
         m_backLeft.setSteerNeutralMode(NeutralModeValue.Brake);
         m_backRight.setSteerNeutralMode(NeutralModeValue.Brake);
+    }
+    
+    public Command resetSteer() {
+        return Commands.runOnce(() -> {
+            m_frontLeft.resetSteerEncoder();
+            m_frontRight.resetSteerEncoder();
+            m_backLeft.resetSteerEncoder();
+            m_backRight.resetSteerEncoder();
+        });     
     }
     
     // Debugging

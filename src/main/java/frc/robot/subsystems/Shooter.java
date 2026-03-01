@@ -74,6 +74,7 @@ public class Shooter extends SubsystemBase{
     private double targetDist = 0.0;
 
     private AimBot aimBot = AimBot.OFF;
+    private SpeedCtrl speedCtrl = SpeedCtrl.OFF;
 
     public SwerveDrive SWERVE;
 
@@ -237,6 +238,10 @@ public class Shooter extends SubsystemBase{
     });
   }
 
+  public void calculShooterSpeed() {
+    currentShooterSpeed = 0.0206 * Math.pow(targetDist, 5) - 0.5112 * Math.pow(targetDist, 4) + 5.0321 * Math.pow(targetDist, 3) - 24.546 * Math.pow(targetDist, 2) + 59.318 * targetDist - 56.373;
+  }
+
 
   //autoaim functions
 
@@ -352,15 +357,38 @@ public class Shooter extends SubsystemBase{
     }
   }
 
+  public Command speedCtrlOn() {
+    return Commands.runOnce(() -> {
+      speedCtrl = SpeedCtrl.ON;
+    });
+  }
+
+  public Command speedCtrlOff () {
+    return Commands.runOnce(() -> {
+      speedCtrl = SpeedCtrl.OFF;
+    });
+  }
+
+  public boolean isSpeedCtrlOn() {
+    if (speedCtrl == SpeedCtrl.ON) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
   public void periodic() {
     calcTurretXY();
     calcTurretAbsRotation();
     calcTurretRelRotation();
     if (aimBot == AimBot.ON) {
       rotateTurret(Math.toDegrees(turretRotRel));
+      calculShooterSpeed();
     } else {
       rotateStop();
     }
+
+
     
   }
 
@@ -378,10 +406,15 @@ public class Shooter extends SubsystemBase{
     SmartDashboard.putBoolean("aimbot", aimBotOn());
   }
 
-      private enum AimBot {
-        ON,
-        OFF
-    }
+  private enum AimBot {
+    ON,
+    OFF
+  }
+
+  private enum SpeedCtrl {
+    ON, 
+    OFF
+  }
 
 }
 

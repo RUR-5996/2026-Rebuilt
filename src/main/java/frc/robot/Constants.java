@@ -8,6 +8,9 @@ import com.ctre.phoenix6.signals.InvertedValue;
 import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
  * constants. This class should not be used for any other purpose. All constants should be declared
@@ -23,7 +26,7 @@ public final class Constants {
   }
 
   public static class SwerveConstants {
-    public static final double driveKP = 0.5;
+    public static final double driveKP = 1;
     public static final double driveKI = 0;
     public static final double driveKD = 0;
 
@@ -74,6 +77,9 @@ public final class Constants {
     public static final PPHolonomicDriveController autoConfig = new PPHolonomicDriveController(
       new PIDConstants(7.5, 0, 0), //drive
       new PIDConstants(5, 0, 0)); //steer //TODO change constants so the robot moves accurately
+    
+    //public static final double DISTANCE_TO_HUB = 2.0; //TODO ODSTRANIT
+    //public static final Pose2d INITIAL_POSITION = new Pose2d(4.626 - DISTANCE_TO_HUB, 4.034, new Rotation2d(0.0));
   }
 
   public final class ShooterConstants {
