@@ -4,7 +4,18 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.robot.Constants.SwerveConstants;
 import frc.robot.Constants.OperatorConstants;
+import frc.robot.subsystems.SwerveDrive;
+import frc.robot.subsystems.LEDs;
+
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
+//import com.pathplanner.lib.commands.PathPlannerAuto;
+import com.pathplanner.lib.config.RobotConfig;
 import frc.robot.Util.Dashboard;
 import frc.robot.subsystems.*;
 
@@ -15,10 +26,17 @@ public class RobotContainer {
   public Dashboard DASHBOARD;
   public Intake INTAKE;
   public SwerveDrive SWERVE;
+  public DriveTrain DRIVE_TRAIN;
 
   // 2. Initialize the Controller
   private final CommandXboxController m_driverController =
       new CommandXboxController(OperatorConstants.kDriverControllerPort);
+
+
+  private final SendableChooser<Command> autoChooser;
+  //private static SendableChooser<Command> autoBranchChooser;
+  RobotConfig config;
+
 
   public RobotContainer() {
     SWERVE = SwerveDrive.getInstance();
@@ -26,6 +44,11 @@ public class RobotContainer {
     INDEXER = Indexer.getInstance();
     DASHBOARD = new Dashboard();
     INTAKE = Intake.getInstance();
+    DRIVE_TRAIN = DriveTrain.getInstance();
+
+    // register named commands
+    NamedCommands.registerCommand("aimOn", SHOOTER.aimOn());
+    NamedCommands.registerCommand("aimOff", SHOOTER.aimOff());
 
     // 3. Set Default Command for Driving
     // We pass the joystick inputs to the subsystem's drive method.
@@ -39,17 +62,25 @@ public class RobotContainer {
   );
 
     configureBindings();
+
+
+    loadPaths();
+    autoChooser = AutoBuilder.buildAutoChooser();
+    //autoBranchChooser = AutoBuilder.buildAutoChooser();b
+
+    SmartDashboard.putData("Autonomous", autoChooser);
   }
+
 
   private void configureBindings() {
     // 4. Reset Gyro Binding (Start Button)
-    m_driverController.start().onTrue(SWERVE.resetGyro());
+      m_driverController.start().onTrue(SWERVE.resetGyro());
 
     // 5. Slow Mode Binding (Left Bumper)
     // While held, slow mode is active; when released, it returns to normal.
-    m_driverController.leftBumper()
-        .onTrue(Commands.runOnce(() -> SWERVE.setSlowmode(true)))
-        .onFalse(Commands.runOnce(() -> SWERVE.setSlowmode(false)));
+      m_driverController.leftBumper()
+          .onTrue(Commands.runOnce(() -> SWERVE.setSlowmode(true)))
+          .onFalse(Commands.runOnce(() -> SWERVE.setSlowmode(false)));
     
     m_driverController.rightTrigger().onTrue(SHOOTER.shooterOn());
     m_driverController.rightTrigger().onFalse(SHOOTER.shooterOff());
@@ -58,19 +89,61 @@ public class RobotContainer {
     m_driverController.leftTrigger().onFalse(new ParallelCommandGroup(SHOOTER.feederOff(), INDEXER.indexerOff()));
 
     m_driverController.pov(90).onTrue(SHOOTER.rotateRight());
-    m_driverController.pov(90).onFalse(SHOOTER.rotateStop());
+    m_driverController.pov(90).onFalse(SHOOTER.rotateStopCommand());
     m_driverController.pov(270).onTrue(SHOOTER.rotateLeft());
-    m_driverController.pov(270).onFalse(SHOOTER.rotateStop());
+    m_driverController.pov(270).onFalse(SHOOTER.rotateStopCommand());
     m_driverController.pov(0).toggleOnTrue(SHOOTER.adjustShooterSpeed(true));
     m_driverController.pov(180).toggleOnTrue(SHOOTER.adjustShooterSpeed(false));
 
     //m_driverController.a().onTrue(SWERVE.driveWheelSpins(3));
-    m_driverController.b().onTrue(SWERVE.spinSteerMotors(3));
+    //m_driverController.b().onTrue(SWERVE.spinSteerMotors(3));
     //m_driverController.x().onTrue(INTAKE.intakeFlipIn());
     //m_driverController.b().onTrue(INTAKE.intakeFlipOut());
-    m_driverController.y().onTrue(INTAKE.intakeOn());
-    m_driverController.a().onTrue(INTAKE.intakeOff());
 
+    m_driverController.x().onTrue(INTAKE.intakeOn());
+    m_driverController.y().onTrue(INTAKE.intakeOff());
+
+    m_driverController.a().onTrue(SHOOTER.aimOn());
+    m_driverController.b().onTrue(SHOOTER.aimOff());
+
+    m_driverController.rightBumper().onTrue(DRIVE_TRAIN.resetSteer());
+
+    // m_driverController.povUp().onTrue(INTAKE.nudgeUp());
+    // m_driverController.povDown().onTrue(INTAKE.nudgeDown());
+
+    m_driverController.povDownLeft().onTrue(SWERVE.driveWheelSpins(3));
+  }
+
+
+  private void loadPaths() {
+    try {
+        config = RobotConfig.fromGUISettings();
+    } catch (Exception e) {
+          // Handle exception as needed
+          e.printStackTrace();
+    }
+
+    AutoBuilder.configure(
+      SWERVE::getOdometryPose,
+      SWERVE::resetOdometry,
+      SWERVE::getActualSpeeds,
+      (speeds, feedforwards) -> SWERVE.setAutoChassisSpeeds(speeds),
+      SwerveConstants.autoConfig,
+      config,
+      () -> {
+            /*if(DriverStation.getAlliance().get() == DriverStation.Alliance.Blue) {
+              return true;
+            } else {
+              return false;
+            }*/
+        return false;
+      },  
+      SWERVE 
+    );
+
+  }
+  
+  public void report() {
 
     /*m_driverController.leftBumper().onTrue(SHOOTER.rotateTurret(90));
     m_driverController.rightBumper().onTrue(SHOOTER.rotateTurret(-90));*/
@@ -84,7 +157,6 @@ public class RobotContainer {
   }
   
   public Command getAutonomousCommand() {
-    // For now, return a command that does nothing (or your auto routine)
-    return Commands.print("No autonomous command configured");
+    return autoChooser.getSelected();
   }
 }

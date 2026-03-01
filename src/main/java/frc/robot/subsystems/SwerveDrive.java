@@ -12,6 +12,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -30,8 +31,14 @@ public class SwerveDrive extends SubsystemBase {
    private boolean holdAngleEnabled = false;
    private double holdAngle = 0;
 
+   private boolean fieldRelative = true; 
+
    private final SwerveDrivePoseEstimator m_odometry;
    private final AHRS gyro;
+
+   Pose2d robotPose = new Pose2d();
+   SwerveModulePosition[] modulePositions = new SwerveModulePosition[4];
+   ChassisSpeeds chassisSpeeds;
 
    private final PIDController rotationController;
 
@@ -39,33 +46,42 @@ public class SwerveDrive extends SubsystemBase {
       DRIVETRAIN = DriveTrain.getInstance();
 
       gyro = new AHRS(AHRS.NavXComType.kMXP_SPI);
-      gyro.reset();
+      //gyro.reset();
+      //gyro.setAngleAdjustment(180-112.4);
 
       // The 2025/2026 Pose Estimator constructor
       m_odometry = new SwerveDrivePoseEstimator(
          DRIVETRAIN.swerveKinematics,   // 1. Kinematics
-         getHeading(),           // 2. Gyro Angle
+         new Rotation2d(Math.toRadians(gyro.getAngle())),           // 2. Gyro Angle
          DRIVETRAIN.getModulePositions(), // 3. Module Positions
          new Pose2d()           // 4. Initial Pose
       );
+
+      setFieldOriented();
+
 
       rotationController = new PIDController(
          SwerveConstants.steerKP,
          SwerveConstants.steerKI, 
          SwerveConstants.steerKD
       );
+      
       rotationController.enableContinuousInput(-180, 180);
       rotationController.setTolerance(2);
+   
+      chassisSpeeds = ChassisSpeeds.fromRobotRelativeSpeeds(0, 0, 0, new Rotation2d(Math.toRadians(gyro.getAngle())));
+      // resetOdometry(new Pose2d(7.3, 4.2, gyro.getRotation2d()));
+   
    }
 
    @Override
    public void periodic() {
       // Update odometry with current gyro heading and module positions (from Phoenix 6)
-      m_odometry.update(getHeading(), DRIVETRAIN.getModulePositions());
+      m_odometry.update(new Rotation2d(Math.toRadians(gyro.getAngle())), DRIVETRAIN.getModulePositions());
 
       SmartDashboard.putNumber("Robot X", getPose().getX());
       SmartDashboard.putNumber("Robot Y", getPose().getY());
-      SmartDashboard.putNumber("Robot Gyro Angle", getHeading().getDegrees());
+      SmartDashboard.putNumber("Robot Gyro Angle", gyro.getAngle());
    }
 
    public static SwerveDrive getInstance() {
@@ -89,7 +105,7 @@ public class SwerveDrive extends SubsystemBase {
          double rot;
 
          if (holdAngleEnabled) {
-            rot = rotationController.calculate(getHeading().getDegrees(), holdAngle);
+            rot = rotationController.calculate(gyro.getAngle(), holdAngle);
          } else {
             rot = MathUtil.applyDeadband(rx.getAsDouble(), 0.1) * SwerveConstants.MAX_ANGULAR_SPEED;
          }
@@ -132,27 +148,94 @@ public class SwerveDrive extends SubsystemBase {
    }
 
    //DO NOT USE FOR ROBOT DRIVING!
-   public Rotation2d getHeading() { 
+   /*public Rotation2d getHeading() { 
       return gyro.getRotation2d();
    }
-
+*/
    public Pose2d getPose() {
       return m_odometry.getEstimatedPosition();
    }
 
-   public double getAngleDegrees() {
+   /*public double getAngleDegrees() {
       return getHeading().getDegrees();
-   }
+   }*/
 
    public void resetOdometry(Pose2d pose) {
-      m_odometry.resetPosition(getHeading(), DRIVETRAIN.getModulePositions(), pose);
+      m_odometry.resetPosition(new Rotation2d(Math.toRadians(gyro.getAngle())), DRIVETRAIN.getModulePositions(), pose);
    }
+
+       public double getOdometryDegrees() {
+        return getPose().getRotation().getDegrees();
+    }
+
+    /*public double getGyroDegrees() {
+        return getHeading().getDegrees();
+    }  */
+
+    public DoubleSupplier supplyOdometryDegrees() {
+        DoubleSupplier angle = () -> getOdometryDegrees();
+        return angle;
+    }
+
+    public double getyMeters() {
+        return m_odometry.getEstimatedPosition().getY();
+    }
+
+    public double getxMeters() {
+        return m_odometry.getEstimatedPosition().getX();
+    }
+
+    public double getHoldAngle() {
+        return holdAngle;
+    }
+
+    public ChassisSpeeds getChassisSpeeds() {
+        return chassisSpeeds;
+    }
+
+    public Pose2d getOdometryPose() {
+        return m_odometry.getEstimatedPosition();
+    }
+
+    public SwerveDriveKinematics getKinematics() {
+        return DRIVETRAIN.swerveKinematics;
+    }
+
+    public boolean getHoldAngleEnabled() {
+        return holdAngleEnabled;
+    }
+
+    public ChassisSpeeds getActualSpeeds() {
+        return DRIVETRAIN.getSpeeds();
+    }
+    
+    public void setFieldOriented() {
+        fieldRelative = true;
+        holdAngle = Math.toRadians(gyro.getAngle());
+    }
+
+    public void setHoldAngle(double angle) { //in DEGREES
+        holdAngle = angle;
+    }
+
+    public void setHoldAngleFlag(boolean flag) {
+        holdAngleEnabled = flag;
+    }
+
+    public void setAutoModuleStates(SwerveModuleState[] states) {
+        DRIVETRAIN.setModuleSpeeds(states);
+    }
+
+    public void setAutoChassisSpeeds(ChassisSpeeds speeds) {
+        chassisSpeeds = speeds;
+        setAutoModuleStates(getKinematics().toSwerveModuleStates(speeds));
+    }
 
    public Command resetGyro() {
       return Commands.runOnce(() -> {
          Rotation2d matchStartRotation = isRedAlliance() ? Rotation2d.fromDegrees(180) : Rotation2d.fromDegrees(0);
 
-         // gyro.reset();
+         gyro.reset();
          gyro.setAngleAdjustment(matchStartRotation.getDegrees());
 
          // Resetting gyro usually requires resetting odometry to keep them synced

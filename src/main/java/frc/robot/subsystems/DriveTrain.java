@@ -4,20 +4,26 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
+import com.ctre.phoenix6.signals.NeutralModeValue;
+
 import frc.robot.Constants.SwerveConstants;
+
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 
 public class DriveTrain extends SubsystemBase {
     private static DriveTrain instance;
 
     // Kinematics (Wheel locations relative to robot center)
     public final SwerveDriveKinematics swerveKinematics = new SwerveDriveKinematics(
-        new Translation2d(0.3, 0.3),   // FL
-        new Translation2d(0.3, -0.3),  // FR
-        new Translation2d(-0.3, 0.3),  // BL
-        new Translation2d(-0.3, -0.3)  // BR
+        new Translation2d(0.26, 0.26),   // FL
+        new Translation2d(0.26, -0.26),  // FR
+        new Translation2d(-0.26, 0.26),  // BL
+        new Translation2d(-0.26, -0.26)  // BR
     );
 
     public final SwerveModuleDef m_frontLeft;
@@ -47,6 +53,10 @@ public class DriveTrain extends SubsystemBase {
         };
     }
 
+    public ChassisSpeeds getSpeeds() {
+        return swerveKinematics.toChassisSpeeds(new SwerveModuleState[]{m_frontLeft.getModuleState(), m_frontRight.getModuleState(), m_backLeft.getModuleState(), m_backRight.getModuleState()});
+    }
+
     public SwerveModuleState[] getModuleStates() {
         return new SwerveModuleState[] {
             m_frontLeft.getModuleState(),
@@ -65,6 +75,40 @@ public class DriveTrain extends SubsystemBase {
         m_backRight.setState(states[3]);
     }
 
+    public void setToCoast() {
+        m_frontLeft.setDriveNeutralMode(NeutralModeValue.Coast);
+        m_frontRight.setDriveNeutralMode(NeutralModeValue.Coast);
+        m_backLeft.setDriveNeutralMode(NeutralModeValue.Coast);
+        m_backRight.setDriveNeutralMode(NeutralModeValue.Coast);
+
+        m_frontLeft.setSteerNeutralMode(NeutralModeValue.Coast);
+        m_frontRight.setSteerNeutralMode(NeutralModeValue.Coast);
+        m_backLeft.setSteerNeutralMode(NeutralModeValue.Coast);
+        m_backRight.setSteerNeutralMode(NeutralModeValue.Coast);
+    }
+
+    
+    public void setToBrake() {
+        m_frontLeft.setDriveNeutralMode(NeutralModeValue.Brake);
+        m_frontRight.setDriveNeutralMode(NeutralModeValue.Brake);
+        m_backLeft.setDriveNeutralMode(NeutralModeValue.Brake);
+        m_backRight.setDriveNeutralMode(NeutralModeValue.Brake); 
+        
+        m_frontLeft.setSteerNeutralMode(NeutralModeValue.Brake);
+        m_frontRight.setSteerNeutralMode(NeutralModeValue.Brake);
+        m_backLeft.setSteerNeutralMode(NeutralModeValue.Brake);
+        m_backRight.setSteerNeutralMode(NeutralModeValue.Brake);
+    }
+    
+    public Command resetSteer() {
+        return Commands.runOnce(() -> {
+            m_frontLeft.resetSteerEncoder();
+            m_frontRight.resetSteerEncoder();
+            m_backLeft.resetSteerEncoder();
+            m_backRight.resetSteerEncoder();
+        });     
+    }
+    
     // Debugging
     public void spinAllSteerMotors(double rotations) {
         m_frontLeft.forceSteerRotation(rotations);
