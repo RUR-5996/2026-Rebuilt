@@ -8,15 +8,12 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.SwerveConstants;
 import frc.robot.Constants.OperatorConstants;
-import frc.robot.subsystems.SwerveDrive;
-import frc.robot.subsystems.LEDs;
 
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
-//import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.config.RobotConfig;
 import frc.robot.Util.Dashboard;
 import frc.robot.subsystems.*;
@@ -29,6 +26,7 @@ public class RobotContainer {
   public Intake INTAKE;
   public SwerveDrive SWERVE;
   public DriveTrain DRIVE_TRAIN;
+  public Limelight LIMELIGHT;
 
   public Trigger shooterInRange;
 
@@ -52,6 +50,7 @@ public class RobotContainer {
     DASHBOARD = new Dashboard();
     INTAKE = Intake.getInstance();
     DRIVE_TRAIN = DriveTrain.getInstance();
+    LIMELIGHT = Limelight.getInstance("robot");
 
     //semi-auto triggers
     shooterInRange = new Trigger(SHOOTER.inRange());
@@ -119,6 +118,9 @@ public class RobotContainer {
 
     //m_driverController.povDownLeft().onTrue(SWERVE.driveWheelSpins(3));
 
+
+    //second controller commands
+    /*
     m_secondController.y().toggleOnTrue(SHOOTER.setTarget("HUB"));
     m_secondController.a().toggleOnTrue(SHOOTER.setTarget("DEPOT"));
     m_secondController.b().toggleOnTrue(SHOOTER.setTarget("OUTPOST"));
@@ -131,9 +133,22 @@ public class RobotContainer {
     m_secondController.pov(270).toggleOnTrue(SHOOTER.adjustShooterRotation(Math.toRadians(-2)));
 
     m_secondController.x().toggleOnTrue(SHOOTER.toggleAutoShooting());
+*/
+    //turret flywheel tests for feedforward tuning
+    m_secondController.leftTrigger().onTrue(SHOOTER.shooterOn());
+    m_secondController.leftTrigger().onFalse(SHOOTER.shooterOff());
+    m_secondController.y().toggleOnTrue(SHOOTER.testNewPIDValues());
+    m_secondController.a().toggleOnTrue(LIMELIGHT.updateRobotPosition());
 
+    //turret turning tests for feedforward tuning
+    //m_secondController.pov(90).toggleOnTrue(SHOOTER.testTurretAngle(90));
+    //m_secondController.pov(270).toggleOnTrue(SHOOTER.testTurretAngle(-90));
+
+    //semi autonomous shooting
+    /*
     shooterInRange.onTrue(SHOOTER.shootAndFeed());
-    shooterInRange.onFalse(new SequentialCommandGroup(SHOOTER.shooterOff(), SHOOTER.feederOff()));
+    shooterInRange.onFalse(new ParallelCommandGroup(SHOOTER.shooterOff(), SHOOTER.feederOff()));
+    */
   }
 
 

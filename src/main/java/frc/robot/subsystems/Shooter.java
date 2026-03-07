@@ -82,6 +82,8 @@ public class Shooter extends SubsystemBase{
     private Target currentTarget = Target.HUB;
     private AutoShoot autoShoot = AutoShoot.OFF;
 
+    private double testAngle = 0;
+
     public SwerveDrive SWERVE;
 
     public Shooter () {
@@ -99,7 +101,7 @@ public class Shooter extends SubsystemBase{
             .p(ShooterConstants.POWER_MOTOR_P)
             .i(ShooterConstants.POWER_MOTOR_I)
             .d(ShooterConstants.POWER_MOTOR_D)
-            .feedForward.kV(0.005);
+            .feedForward.kV(ShooterConstants.POWER_MOTOR_V);
         powerConfig.encoder
             .positionConversionFactor(ShooterConstants.POWER_MOTOR_GEAR_RATIO)
             .velocityConversionFactor(ShooterConstants.POWER_MOTOR_GEAR_RATIO);
@@ -142,6 +144,7 @@ public class Shooter extends SubsystemBase{
             .i(ShooterConstants.TURRET_MOTOR_I)
             .d(ShooterConstants.TURRET_MOTOR_D)
             .positionWrappingEnabled(false);
+            //.feedForward.kV(ShooterConstants.TURRET_MOTOR_V)
         turretConfig.softLimit
             .forwardSoftLimit(ShooterConstants.MAX_TURRET_ANGLE)
             .reverseSoftLimit(ShooterConstants.MIN_TURRET_ANGLE)
@@ -165,6 +168,12 @@ public class Shooter extends SubsystemBase{
 
         turretCANcoder.getConfigurator().apply(turretCANcoderConfig);
 */   
+
+      //PID tuning values, can delete after tuning
+      SmartDashboard.putNumber("testP", 0);
+      SmartDashboard.putNumber("testI", 0);
+      SmartDashboard.putNumber("testD", 0);
+      SmartDashboard.putNumber("testV", 0);
     }
 
     public static Shooter getInstance() {
@@ -232,6 +241,23 @@ public class Shooter extends SubsystemBase{
 
   public void rotateTurret(double targetAngle) {
     turretController.setSetpoint(targetAngle, ControlType.kPosition);
+  }
+
+  public Command testTurretAngle(double angle) {
+    return Commands.runOnce(() -> {
+      testAngle = angle;
+    });
+  }
+
+  public Command testNewPIDValues() {
+    return Commands.runOnce(() -> {
+      powerConfig.closedLoop.p(SmartDashboard.getNumber("testP", 0));
+      powerConfig.closedLoop.i(SmartDashboard.getNumber("testI", 0));
+      powerConfig.closedLoop.d(SmartDashboard.getNumber("testD", 0));
+      powerConfig.closedLoop.feedForward.kV(SmartDashboard.getNumber("testV", 0));
+      powerMotor1.configure(powerConfig, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters);
+      powerMotor2.configure(powerConfig, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters);
+    });
   }
 
   /*public Command adjustShooterSpeed(boolean faster) {
@@ -413,6 +439,7 @@ public class Shooter extends SubsystemBase{
     calcTurretRelRotation();
     if (aimBot == AimBot.ON) {
       rotateTurret(Math.toDegrees(turretRotRel));
+      //rotateTurret(testAngle);
       calcShooterSpeed();
     } else {
       rotateStop();
@@ -421,8 +448,8 @@ public class Shooter extends SubsystemBase{
 
   public void report() {
     SmartDashboard.putNumber("target_dist", targetDist);
-    SmartDashboard.putNumber("turret_rel_rotation", getTurretRelRot().getDegrees());
-    SmartDashboard.putNumber("turret_abs_rotation", getTurretAbsRot().getDegrees());
+    //SmartDashboard.putNumber("turret_rel_rotation", getTurretRelRot().getDegrees());
+    //SmartDashboard.putNumber("turret_abs_rotation", getTurretAbsRot().getDegrees());
     //SmartDashboard.putNumber("turret_abs_X", getTurrePosAbsRot().getX());
     //SmartDashboard.putNumber("turret_abs_Y", getTurrePosRelRot().getX());
     SmartDashboard.putNumber("current shooting speed", powerEncoder1.getVelocity());
@@ -430,6 +457,7 @@ public class Shooter extends SubsystemBase{
     SmartDashboard.putNumber("calculated relative turret heading", Math.toDegrees(turretRotRel));
     SmartDashboard.putNumber("current shooter speed", currentShooterSpeed);
     SmartDashboard.putNumber("current turret angle", turretEncoder.getPosition());
+    SmartDashboard.putNumber("requested turret angle", turretController.getSetpoint());
     SmartDashboard.putBoolean("aimbot", aimBot.val);
     SmartDashboard.putBoolean("can shoot?", targetDist > ShooterConstants.MINIMUM_SHOOTING_DISTANCE);
     SmartDashboard.putBoolean("autoShooting", autoShoot.val);

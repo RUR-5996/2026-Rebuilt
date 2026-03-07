@@ -8,6 +8,10 @@ import com.ctre.phoenix6.signals.InvertedValue;
 import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.geometry.Translation3d;
+
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
  * constants. This class should not be used for any other purpose. All constants should be declared
@@ -87,9 +91,10 @@ public final class Constants {
     public static final int POWER_MOTOR_1_ID = 14;
     public static final int POWER_MOTOR_2_ID = 15;
 
-    public static final double POWER_MOTOR_P = 0.75; //TODO test on batteries
+    public static final double POWER_MOTOR_P = 0.00; //TODO test on batteries
     public static final double POWER_MOTOR_I = 0.0;
     public static final double POWER_MOTOR_D = 0.0;
+    public static final double POWER_MOTOR_V = 0.05;
     public static final double POWER_MOTOR_GEAR_RATIO = 37.0/27.0;
     public static final double NEO_MAX_RPM = 5600.0;
 
@@ -109,6 +114,7 @@ public final class Constants {
     public static final double TURRET_MOTOR_P = 0.01;
     public static final double TURRET_MOTOR_I = 0.00000005;
     public static final double TURRET_MOTOR_D = 0.01;
+    public static final double TURRET_MOTOR_V = 0.1;
 
     public static final double MOTOR_TO_TURRET_RATIO = (14.0/45.0) * (23.0/123.0)*360.0; //(1/20)*(23/123)
     public static final double CANCODER_TO_TURRET_RATIO = (30.0/45.0) * (23.0/123.0); //(1/20)*(45/30)
@@ -140,6 +146,26 @@ public final class Constants {
     public static final double SPEED = 0.5;
     public static final double POS_OUT = 90;
     public static final double FLIPOUT_COEFFICIENT = 1/15.0*18.0/42.0*1/360.0;
+  }
+
+  public final class LimelightConstants {
+    public static final String ROBOT_LIMELIGHT_NAME = "robot";
+    public static final Transform3d ROBOT_LIMELIGHT_OFFSET = new Transform3d(
+      new Translation3d( // in metres
+          0.2728,   // X (+ is forward)
+          0.2489,   // Y (+ is left)
+          0.2189   // Z (+ is up)
+      ),
+      new Rotation3d( //in radians
+        0.0, // roll
+        Math.toRadians(60.0), // pitch (+ is up)
+        0.0 // yaw
+      ));
+
+
+    public static final String TURRET_LIMELIGHT_NAME = "turret";
+
+    public static final double MAX_VISION_SPIN = 720; // degrees per second TODO test if good
   }
 
   public static class ColorConstants {
