@@ -381,6 +381,7 @@ public class Shooter extends SubsystemBase{
     SmartDashboard.putNumber("current shooter speed", currentShooterSpeed);
     SmartDashboard.putNumber("current turret angle", turretEncoder.getPosition());
     SmartDashboard.putBoolean("aimbot", aimBotOn());
+    SmartDashboard.putBoolean("can shoot?", targetDist > ShooterConstants.MINIMUM_SHOOTING_DISTANCE);
   }
 
   private enum AimBot {
