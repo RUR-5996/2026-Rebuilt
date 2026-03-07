@@ -142,17 +142,17 @@ public final class Constants {
   }
 
   public static class ColorConstants {
-    public static double RAINBOW = -.99;
-    public static double VIOLET = .91;
-    public static double PINK = .57;
-    public static double FLASHBANG = .93;
-    public static double BLUEGREEN = .79;
-    public static double LIGHTBLUE = .83;
-    public static double DARKBLUE = .85;
-    public static double BLUEPINK = .89;
-    public static double STROBERED = -.11;
-    public static double STROBEBLUE = -.09;
-    public static double STROBEGOLD = -.07;
-    public static double STROBEWHITE = -.05;
+    public static final double RAINBOW = -.99;
+    public static final double VIOLET = .91;
+    public static final double PINK = .57;
+    public static final double FLASHBANG = .93;
+    public static final double BLUEGREEN = .79;
+    public static final double LIGHTBLUE = .83;
+    public static final double DARKBLUE = .85;
+    public static final double BLUEPINK = .89;
+    public static final double STROBERED = -.11;
+    public static final double STROBEBLUE = -.09;
+    public static final double STROBEGOLD = -.07;
+    public static final double STROBEWHITE = -.05;
   }
 }
