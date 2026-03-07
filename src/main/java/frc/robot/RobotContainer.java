@@ -3,7 +3,9 @@ package frc.robot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.SwerveConstants;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.subsystems.SwerveDrive;
@@ -28,9 +30,14 @@ public class RobotContainer {
   public SwerveDrive SWERVE;
   public DriveTrain DRIVE_TRAIN;
 
+  public Trigger shooterInRange;
+
   // 2. Initialize the Controller
   private final CommandXboxController m_driverController =
       new CommandXboxController(OperatorConstants.kDriverControllerPort);
+
+  private final CommandXboxController m_secondController = 
+    new CommandXboxController(OperatorConstants.kSecondControllerPort);
 
 
   private final SendableChooser<Command> autoChooser;
@@ -45,6 +52,9 @@ public class RobotContainer {
     DASHBOARD = new Dashboard();
     INTAKE = Intake.getInstance();
     DRIVE_TRAIN = DriveTrain.getInstance();
+
+    //semi-auto triggers
+    shooterInRange = new Trigger(SHOOTER.inRange());
 
     // register named commands
     NamedCommands.registerCommand("aimOn", SHOOTER.aimOn());
@@ -82,36 +92,48 @@ public class RobotContainer {
           .onTrue(Commands.runOnce(() -> SWERVE.setSlowmode(true)))
           .onFalse(Commands.runOnce(() -> SWERVE.setSlowmode(false)));
     
-    m_driverController.rightTrigger().onTrue(SHOOTER.shooterOn());
-    m_driverController.rightTrigger().onFalse(SHOOTER.shooterOff());
+    //m_driverController.rightTrigger().onTrue(SHOOTER.shooterOn());
+    //m_driverController.rightTrigger().onFalse(SHOOTER.shooterOff());
 
-    m_driverController.leftTrigger().onTrue(new ParallelCommandGroup(SHOOTER.feederOn(), INDEXER.indexerOn()));
-    m_driverController.leftTrigger().onFalse(new ParallelCommandGroup(SHOOTER.feederOff(), INDEXER.indexerOff()));
+    //m_driverController.leftTrigger().onTrue(new ParallelCommandGroup(SHOOTER.feederOn(), INDEXER.indexerOn()));
+    //m_driverController.leftTrigger().onFalse(new ParallelCommandGroup(SHOOTER.feederOff(), INDEXER.indexerOff()));
 
-    m_driverController.pov(90).onTrue(SHOOTER.rotateRight());
-    m_driverController.pov(90).onFalse(SHOOTER.rotateStopCommand());
-    m_driverController.pov(270).onTrue(SHOOTER.rotateLeft());
-    m_driverController.pov(270).onFalse(SHOOTER.rotateStopCommand());
-    m_driverController.pov(0).toggleOnTrue(SHOOTER.adjustShooterSpeed(true));
-    m_driverController.pov(180).toggleOnTrue(SHOOTER.adjustShooterSpeed(false));
+    //m_driverController.pov(90).onTrue(SHOOTER.rotateRight());
+    //m_driverController.pov(90).onFalse(SHOOTER.rotateStopCommand());
+    //m_driverController.pov(270).onTrue(SHOOTER.rotateLeft());
+    //m_driverController.pov(270).onFalse(SHOOTER.rotateStopCommand());
 
-    //m_driverController.a().onTrue(SWERVE.driveWheelSpins(3));
-    //m_driverController.b().onTrue(SWERVE.spinSteerMotors(3));
     //m_driverController.x().onTrue(INTAKE.intakeFlipIn());
     //m_driverController.b().onTrue(INTAKE.intakeFlipOut());
 
     m_driverController.x().onTrue(INTAKE.intakeOn());
     m_driverController.y().onTrue(INTAKE.intakeOff());
 
-    m_driverController.a().onTrue(SHOOTER.aimOn());
-    m_driverController.b().onTrue(SHOOTER.aimOff());
+    //m_driverController.a().onTrue(SHOOTER.aimOn());
+    //m_driverController.b().onTrue(SHOOTER.aimOff());
 
-    m_driverController.rightBumper().onTrue(DRIVE_TRAIN.resetSteer());
+    //m_driverController.rightBumper().onTrue(DRIVE_TRAIN.resetSteer());
 
     // m_driverController.povUp().onTrue(INTAKE.nudgeUp());
     // m_driverController.povDown().onTrue(INTAKE.nudgeDown());
 
-    m_driverController.povDownLeft().onTrue(SWERVE.driveWheelSpins(3));
+    //m_driverController.povDownLeft().onTrue(SWERVE.driveWheelSpins(3));
+
+    m_secondController.y().toggleOnTrue(SHOOTER.setTarget("HUB"));
+    m_secondController.a().toggleOnTrue(SHOOTER.setTarget("DEPOT"));
+    m_secondController.b().toggleOnTrue(SHOOTER.setTarget("OUTPOST"));
+    m_secondController.leftBumper().toggleOnTrue(SHOOTER.aimOn());
+    m_secondController.rightBumper().toggleOnTrue(SHOOTER.aimOff());
+
+    m_secondController.pov(0).toggleOnTrue(SHOOTER.adjustShooterSpeed(0.02));
+    m_secondController.pov(180).toggleOnTrue(SHOOTER.adjustShooterSpeed(-0.02));
+    m_secondController.pov(90).toggleOnTrue(SHOOTER.adjustShooterRotation(Math.toRadians(2)));
+    m_secondController.pov(270).toggleOnTrue(SHOOTER.adjustShooterRotation(Math.toRadians(-2)));
+
+    m_secondController.x().toggleOnTrue(SHOOTER.toggleAutoShooting());
+
+    shooterInRange.onTrue(SHOOTER.shootAndFeed());
+    shooterInRange.onFalse(new SequentialCommandGroup(SHOOTER.shooterOff(), SHOOTER.feederOff()));
   }
 
 

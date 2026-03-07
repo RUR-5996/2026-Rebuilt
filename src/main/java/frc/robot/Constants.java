@@ -20,6 +20,7 @@ public final class Constants {
 
   public static class OperatorConstants {
     public static final int kDriverControllerPort = 0;
+    public static final int kSecondControllerPort = 1;
   }
 
   public static class SwerveConstants {
@@ -86,7 +87,7 @@ public final class Constants {
     public static final int POWER_MOTOR_1_ID = 14;
     public static final int POWER_MOTOR_2_ID = 15;
 
-    public static final double POWER_MOTOR_P = 0.75;
+    public static final double POWER_MOTOR_P = 0.75; //TODO test on batteries
     public static final double POWER_MOTOR_I = 0.0;
     public static final double POWER_MOTOR_D = 0.0;
     public static final double POWER_MOTOR_GEAR_RATIO = 37.0/27.0;

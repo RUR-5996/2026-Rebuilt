@@ -28,6 +28,9 @@ import edu.wpi.first.wpilibj2.command.Command;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+
+import java.util.function.BooleanSupplier;
+
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.signals.InvertedValue;
@@ -36,7 +39,6 @@ import com.ctre.phoenix6.controls.VelocityVoltage;
 public class Shooter extends SubsystemBase{
 
     private static Shooter SHOOTER;
-
 
     SparkMax powerMotor1;
     SparkMax powerMotor2;
@@ -64,6 +66,9 @@ public class Shooter extends SubsystemBase{
 
     private double currentShooterSpeed = 0.5;
 
+    private double speedIncrement = 0;
+    private double rotationIncrement = 0;
+
     private double turretXabs = 0.0;
     private double turretYabs = 0.0;
     private double turretRotAbs = 0.0;
@@ -74,6 +79,8 @@ public class Shooter extends SubsystemBase{
     private double targetDist = 0.0;
 
     private AimBot aimBot = AimBot.OFF;
+    private Target currentTarget = Target.HUB;
+    private AutoShoot autoShoot = AutoShoot.OFF;
 
     public SwerveDrive SWERVE;
 
@@ -226,14 +233,40 @@ public class Shooter extends SubsystemBase{
     turretController.setSetpoint(targetAngle, ControlType.kPosition);
   }
 
-
-  public Command adjustShooterSpeed(boolean faster) {
+  /*public Command adjustShooterSpeed(boolean faster) {
     return Commands.runOnce(() -> {
         if (faster) {
           currentShooterSpeed += 0.02;
         } else {
           currentShooterSpeed -= 0.02;
         }
+    });
+  }*/
+
+  public Command adjustShooterSpeed(double increment) {
+    return Commands.runOnce(() -> {
+      speedIncrement += increment;
+    });
+  }
+
+  public Command adjustShooterRotation(double increment) {
+    return Commands.runOnce(() -> {
+      rotationIncrement += increment;
+    });
+  }
+
+  public Command setTarget(String name) {
+    return Commands.runOnce(() -> {
+      switch(name) {
+        case "HUB":
+          currentTarget = Target.HUB;
+        case "OUTPOST":
+          currentTarget = Target.OUTPOST;
+        case "DEPOT":
+          currentTarget = Target.DEPOT;
+        default:
+          currentTarget = Target.HUB;
+      }
     });
   }
 
@@ -242,7 +275,7 @@ public class Shooter extends SubsystemBase{
     if (speed <= 0.3) {
       speed = 0.3;
     }
-    currentShooterSpeed = speed;
+    currentShooterSpeed = speed + speedIncrement;
   }
 
 
@@ -254,8 +287,10 @@ public class Shooter extends SubsystemBase{
   }
 
   public void calcTurretAbsRotation() {
-    double deltaX = targetX - turretXabs;
-    double deltaY = targetY - turretYabs;
+    //double deltaX = targetX - turretXabs;
+    //double deltaY = targetY - turretYabs;
+    double deltaX = currentTarget.x - turretXabs;
+    double deltaY = currentTarget.y - turretYabs;
     targetDist = Math.sqrt(Math.pow(deltaX, 2) + Math.pow(deltaY, 2));
     if (deltaX >= 0 && deltaY >= 0) {
         turretRotAbs = Math.asin(deltaY/targetDist);
@@ -273,10 +308,10 @@ public class Shooter extends SubsystemBase{
 
   public void calcTurretRelRotation() { 
     Rotation2d robotRot = SWERVE.getPose().getRotation();
-    turretRotRel = clampRot(turretRotAbs - clampRot(robotRot.getRadians()));
+    turretRotRel = clampRot(turretRotAbs - clampRot(robotRot.getRadians())) + rotationIncrement;
   }
 
-  public double clampRot(double rot) {   //everything in radians currently unused
+  public double clampRot(double rot) {   //internal calculations are in radians
     rot = Math.toDegrees(rot);
     double newRot = rot % 360;
     if (newRot > 180) {
@@ -349,15 +384,21 @@ public class Shooter extends SubsystemBase{
     });
   }
 
-  public boolean aimBotOn() {
-    if (aimBot == AimBot.ON) {
-      return true;
-    } else {
-      return false;
-    }
+  public Command toggleAutoShooting() {
+    return Commands.runOnce(() -> {
+      if (autoShoot.val) {
+        autoShoot = AutoShoot.OFF;
+      } else {
+        autoShoot = AutoShoot.ON;
+      }
+    });
   }
 
-  public SequentialCommandGroup waitAndFeed() {
+  public BooleanSupplier inRange() {
+    return () -> (targetDist > ShooterConstants.MINIMUM_SHOOTING_DISTANCE);
+  }
+
+  public SequentialCommandGroup shootAndFeed() {
     return new SequentialCommandGroup(shooterOn(), 
       new WaitUntilCommand(() -> Math.min(powerEncoder1.getVelocity(), powerEncoder2.getVelocity()) 
         >= (ShooterConstants.NEO_MAX_RPM * ShooterConstants.POWER_MOTOR_GEAR_RATIO * currentShooterSpeed)),
@@ -381,20 +422,54 @@ public class Shooter extends SubsystemBase{
     SmartDashboard.putNumber("target_dist", targetDist);
     SmartDashboard.putNumber("turret_rel_rotation", getTurretRelRot().getDegrees());
     SmartDashboard.putNumber("turret_abs_rotation", getTurretAbsRot().getDegrees());
-    SmartDashboard.putNumber("turret_abs_X", getTurrePosAbsRot().getX());
-    SmartDashboard.putNumber("turret_abs_Y", getTurrePosRelRot().getX());
+    //SmartDashboard.putNumber("turret_abs_X", getTurrePosAbsRot().getX());
+    //SmartDashboard.putNumber("turret_abs_Y", getTurrePosRelRot().getX());
     SmartDashboard.putNumber("current shooting speed", powerEncoder1.getVelocity());
     SmartDashboard.putNumber("requested shooting speed", powerController1.getSetpoint());
     SmartDashboard.putNumber("calculated relative turret heading", Math.toDegrees(turretRotRel));
     SmartDashboard.putNumber("current shooter speed", currentShooterSpeed);
     SmartDashboard.putNumber("current turret angle", turretEncoder.getPosition());
-    SmartDashboard.putBoolean("aimbot", aimBotOn());
+    SmartDashboard.putBoolean("aimbot", aimBot.val);
     SmartDashboard.putBoolean("can shoot?", targetDist > ShooterConstants.MINIMUM_SHOOTING_DISTANCE);
+    SmartDashboard.putBoolean("autoShooting", autoShoot.val);
+    SmartDashboard.putNumber("shooter speed override", speedIncrement);
+    SmartDashboard.putNumber("turret angular override", Math.toDegrees(rotationIncrement));
   }
 
   private enum AimBot {
-    ON,
-    OFF
+    ON(true),
+    OFF(false);
+
+    public boolean val;
+
+    private AimBot(boolean val) {
+      this.val = val;
+    }
+  }
+
+  public enum AutoShoot {
+    ON(true),
+    OFF(false);
+
+    public boolean val;
+
+    private AutoShoot(boolean val) {
+      this.val = val;
+    }
+  }
+
+  public enum Target {
+    HUB(3, 3),
+    OUTPOST(0, 0),
+    DEPOT(0, 6);
+
+    public double x = 0;
+    public double y = 0;
+
+    private Target(double x, double y) {
+      this.x = x;
+      this.y = y;
+    }
   }
 
 }
