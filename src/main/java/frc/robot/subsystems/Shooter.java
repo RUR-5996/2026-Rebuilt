@@ -16,6 +16,7 @@ import com.revrobotics.spark.ClosedLoopSlot;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
+import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.Constants.ShooterConstants;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
@@ -356,6 +357,13 @@ public class Shooter extends SubsystemBase{
     }
   }
 
+  public SequentialCommandGroup waitAndFeed() {
+    return new SequentialCommandGroup(shooterOn(), 
+      new WaitUntilCommand(() -> Math.min(powerEncoder1.getVelocity(), powerEncoder2.getVelocity()) 
+        >= (ShooterConstants.NEO_MAX_RPM * ShooterConstants.POWER_MOTOR_GEAR_RATIO * currentShooterSpeed)),
+      feederOn()
+      );
+  }
 
   public void periodic() {
     calcTurretXY();
@@ -390,5 +398,3 @@ public class Shooter extends SubsystemBase{
   }
 
 }
-
-
