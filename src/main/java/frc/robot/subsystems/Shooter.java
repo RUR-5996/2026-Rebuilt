@@ -98,7 +98,8 @@ public class Shooter extends SubsystemBase{
         powerConfig.closedLoop
             .p(ShooterConstants.POWER_MOTOR_P)
             .i(ShooterConstants.POWER_MOTOR_I)
-            .d(ShooterConstants.POWER_MOTOR_D);
+            .d(ShooterConstants.POWER_MOTOR_D)
+            .feedForward.kV(0.005);
         powerConfig.encoder
             .positionConversionFactor(ShooterConstants.POWER_MOTOR_GEAR_RATIO)
             .velocityConversionFactor(ShooterConstants.POWER_MOTOR_GEAR_RATIO);
