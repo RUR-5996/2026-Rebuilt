@@ -488,9 +488,9 @@ public class Shooter extends SubsystemBase{
   }
 
   public enum Target {
-    HUB(3, 3),
-    OUTPOST(0, 0),
-    DEPOT(0, 6);
+    HUB(4.5, 4.0),
+    OUTPOST(2, 2),
+    DEPOT(2, 6);
 
     public double x = 0;
     public double y = 0;

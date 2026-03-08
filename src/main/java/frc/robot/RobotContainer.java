@@ -12,11 +12,14 @@ import frc.robot.Constants.OperatorConstants;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
+import java.net.IDN;
+
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.config.RobotConfig;
 import frc.robot.Util.Dashboard;
 import frc.robot.subsystems.*;
+import frc.robot.subsystems.Limelight;
 
 public class RobotContainer {
 
@@ -94,6 +97,13 @@ public class RobotContainer {
     //m_driverController.rightTrigger().onTrue(SHOOTER.shooterOn());
     //m_driverController.rightTrigger().onFalse(SHOOTER.shooterOff());
 
+    m_driverController.leftTrigger().onTrue(SHOOTER.shooterOn());
+    m_driverController.rightTrigger().onTrue(SHOOTER.feederOn());
+    m_driverController.rightTrigger().onTrue(INDEXER.indexerOn());
+    m_driverController.leftTrigger().onFalse(SHOOTER.shooterOff());
+    m_driverController.leftTrigger().onFalse(INDEXER.indexerOff());
+    m_driverController.leftTrigger().onFalse(SHOOTER.feederOff());
+
     //m_driverController.leftTrigger().onTrue(new ParallelCommandGroup(SHOOTER.feederOn(), INDEXER.indexerOn()));
     //m_driverController.leftTrigger().onFalse(new ParallelCommandGroup(SHOOTER.feederOff(), INDEXER.indexerOff()));
 
@@ -120,13 +130,14 @@ public class RobotContainer {
 
 
     //second controller commands
-    /*
+    
     m_secondController.y().toggleOnTrue(SHOOTER.setTarget("HUB"));
     m_secondController.a().toggleOnTrue(SHOOTER.setTarget("DEPOT"));
     m_secondController.b().toggleOnTrue(SHOOTER.setTarget("OUTPOST"));
     m_secondController.leftBumper().toggleOnTrue(SHOOTER.aimOn());
     m_secondController.rightBumper().toggleOnTrue(SHOOTER.aimOff());
 
+    /*
     m_secondController.pov(0).toggleOnTrue(SHOOTER.adjustShooterSpeed(0.02));
     m_secondController.pov(180).toggleOnTrue(SHOOTER.adjustShooterSpeed(-0.02));
     m_secondController.pov(90).toggleOnTrue(SHOOTER.adjustShooterRotation(Math.toRadians(2)));
@@ -135,10 +146,10 @@ public class RobotContainer {
     m_secondController.x().toggleOnTrue(SHOOTER.toggleAutoShooting());
 */
     //turret flywheel tests for feedforward tuning
-    m_secondController.leftTrigger().onTrue(SHOOTER.shooterOn());
-    m_secondController.leftTrigger().onFalse(SHOOTER.shooterOff());
-    m_secondController.y().toggleOnTrue(SHOOTER.testNewPIDValues());
-    m_secondController.a().toggleOnTrue(LIMELIGHT.updateRobotPosition());
+    //m_secondController.leftTrigger().onTrue(SHOOTER.shooterOn());
+    //m_secondController.leftTrigger().onFalse(SHOOTER.shooterOff());
+    //m_secondController.y().toggleOnTrue(SHOOTER.testNewPIDValues());
+    //m_secondController.a().toggleOnTrue(LIMELIGHT.updateRobotPosition());
 
     //turret turning tests for feedforward tuning
     //m_secondController.pov(90).toggleOnTrue(SHOOTER.testTurretAngle(90));

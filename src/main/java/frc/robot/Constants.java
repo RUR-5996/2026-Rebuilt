@@ -32,9 +32,9 @@ public final class Constants {
     public static final double driveKI = 0;
     public static final double driveKD = 0;
 
-    public static final double CURRENT_LIMIT = 30;
+    public static final double CURRENT_LIMIT = 40;
 
-    public static final double steerKP = 50;
+    public static final double steerKP = 60;
     public static final double steerKI = 0;
     public static final double steerKD = 0;
 
@@ -91,10 +91,10 @@ public final class Constants {
     public static final int POWER_MOTOR_1_ID = 14;
     public static final int POWER_MOTOR_2_ID = 15;
 
-    public static final double POWER_MOTOR_P = 0.00; //TODO test on batteries
+    public static final double POWER_MOTOR_P = 0.0;
     public static final double POWER_MOTOR_I = 0.0;
     public static final double POWER_MOTOR_D = 0.0;
-    public static final double POWER_MOTOR_V = 0.05;
+    public static final double POWER_MOTOR_V = 0.00175;
     public static final double POWER_MOTOR_GEAR_RATIO = 37.0/27.0;
     public static final double NEO_MAX_RPM = 5600.0;
 
