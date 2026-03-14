@@ -127,6 +127,8 @@ public final class Constants {
     public static final double VEC_TURRET_PHI = Math.acos(TURRET_X / TURRET_Y);
 
     public static final double MINIMUM_SHOOTING_DISTANCE = 3.0; //TODO replace with actual value
+
+    public static final double TIME_TO_SHOOT = 1.0; //TODO replace with actual value
   }
 
   public final class DriverConstants {
