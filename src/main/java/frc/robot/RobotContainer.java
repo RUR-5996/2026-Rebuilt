@@ -2,8 +2,6 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.SwerveConstants;
@@ -11,8 +9,6 @@ import frc.robot.Constants.OperatorConstants;
 
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-
-import java.net.IDN;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
@@ -30,6 +26,7 @@ public class RobotContainer {
   public SwerveDrive SWERVE;
   public DriveTrain DRIVE_TRAIN;
   public Limelight LIMELIGHT;
+  public Climber CLIMBER;
 
   public Trigger shooterInRange;
 
@@ -54,6 +51,7 @@ public class RobotContainer {
     INTAKE = Intake.getInstance();
     DRIVE_TRAIN = DriveTrain.getInstance();
     LIMELIGHT = Limelight.getInstance("robot");
+    CLIMBER = Climber.getInstance();
 
     //semi-auto triggers
     shooterInRange = new Trigger(SHOOTER.inRange());
@@ -138,6 +136,11 @@ public class RobotContainer {
     m_secondController.rightBumper().toggleOnTrue(SHOOTER.aimOff());
     m_secondController.leftTrigger().onTrue(SHOOTER.shootWhileMovingOn());
     m_secondController.rightTrigger().onTrue(SHOOTER.shootWhileMovingOff());
+
+    m_secondController.povDown().onTrue(CLIMBER.setState("IDLE"));
+    m_secondController.povLeft().onTrue(CLIMBER.setState("L1"));
+    m_secondController.povRight().onTrue(CLIMBER.setState("L2"));
+    m_secondController.povUp().onTrue(CLIMBER.setState("L3"));
 
     /*
     m_secondController.pov(0).toggleOnTrue(SHOOTER.adjustShooterSpeed(0.02));

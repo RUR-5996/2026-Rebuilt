@@ -48,8 +48,6 @@ public final class Constants {
     public static final double TRACK_WIDTH = 0.516;
 
     public static final double METERS_PER_ROBOT_REVOLUTION = 2 * Math.PI * Math.hypot(TRACK_WIDTH, WHEEL_BASE_WIDTH);
-    // public static final double MAX_SPEED_METERS_PER_SECOND = DRIVE_FACTOR;        
-    // public static final double MAX_ANGULAR_SPEED = (MAX_SPEED_METERS_PER_SECOND / METERS_PER_ROBOT_REVOLUTION) * (2 * Math.PI);
 
     public static final boolean FL_STEER_INVERT = true;
     public static final boolean FR_STEER_INVERT = true;
@@ -183,5 +181,21 @@ public final class Constants {
     public static final double STROBEBLUE = -.09;
     public static final double STROBEGOLD = -.07;
     public static final double STROBEWHITE = -.05;
+  }
+
+  public final class ClimberConstants {
+    public static final int CLIMBER_MOTOR_ID = 31; //TODO replace with actual value
+    public static final double CLIMBER_MOTOR_P = 1; //TODO replace with actual value
+    public static final double CLIMBER_MOTOR_I = 0; //TODO replace with actual value
+    public static final double CLIMBER_MOTOR_D = 0; //TODO replace with actual value
+    public static final double CLIMBER_MOTOR_V = 0.12; //TODO replace with actual value
+
+    public static final double L1_HEIGHT = 68.58; // all values are in cm
+    public static final double L2_HEIGHT = 114.30;
+    public static final double L3_HEIGHT = 160.00;
+    public static final double IDLE_HEIGHT = 0.0; // TODO replace with actual value
+
+    public static final double CLIMBER_WHEEL_RADIUS = 0.0; //in cm, TODO replace with actual value
+    public static final double CLIMBER_GEAR_RATIO = .01;
   }
 }
