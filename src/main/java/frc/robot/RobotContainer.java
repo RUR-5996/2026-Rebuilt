@@ -134,8 +134,6 @@ public class RobotContainer {
     m_secondController.b().toggleOnTrue(SHOOTER.setTarget("OUTPOST"));
     m_secondController.leftBumper().toggleOnTrue(SHOOTER.aimOn());
     m_secondController.rightBumper().toggleOnTrue(SHOOTER.aimOff());
-    m_secondController.leftTrigger().onTrue(SHOOTER.shootWhileMovingOn());
-    m_secondController.rightTrigger().onTrue(SHOOTER.shootWhileMovingOff());
 
     m_secondController.povDown().onTrue(CLIMBER.setState("IDLE"));
     m_secondController.povLeft().onTrue(CLIMBER.setState("L1"));

@@ -82,7 +82,6 @@ public class Shooter extends SubsystemBase{
     private AimBot aimBot = AimBot.OFF;
     private Target currentTarget = Target.HUB;
     private AutoShoot autoShoot = AutoShoot.OFF;
-    private ShootWhileMoving shootWhileMoving = ShootWhileMoving.OFF;
 
     private double testAngle = 0;
 
@@ -293,17 +292,11 @@ public class Shooter extends SubsystemBase{
 
 
   public void calcTurretXY() {   //position and rotation of robot
-    double[] movingOffset = new double[] {0.0, 0.0};
-    if (shootWhileMoving == ShootWhileMoving.ON) {
-      ChassisSpeeds chassisSpeeds = SWERVE.getChassisSpeeds();
-      double[] robotVel = {chassisSpeeds.vxMetersPerSecond, chassisSpeeds.vyMetersPerSecond};
-      movingOffset = calcPerpendicularDist(robotVel, turretRotAbs, ShooterConstants.TIME_TO_SHOOT);
-    }
 
     Pose2d pos = SWERVE.getPose();
     double phi = ShooterConstants.VEC_TURRET_PHI + clampRot(pos.getRotation().getRadians());
-    turretXabs = ShooterConstants.VEC_TURRET_LEN*Math.cos(phi)+pos.getX() + movingOffset[0];
-    turretYabs = ShooterConstants.VEC_TURRET_LEN*Math.sin(phi)+pos.getY() + movingOffset[1];
+    turretXabs = ShooterConstants.VEC_TURRET_LEN*Math.cos(phi)+pos.getX();
+    turretYabs = ShooterConstants.VEC_TURRET_LEN*Math.sin(phi)+pos.getY();
   }
 
   public void calcTurretAbsRotation() {
@@ -312,18 +305,25 @@ public class Shooter extends SubsystemBase{
     double deltaX = currentTarget.x - turretXabs;
     double deltaY = currentTarget.y - turretYabs;
     targetDist = Math.sqrt(Math.pow(deltaX, 2) + Math.pow(deltaY, 2));
-    if (deltaX >= 0 && deltaY >= 0) {
-        turretRotAbs = Math.asin(deltaY/targetDist);
-    }   
-    else if (deltaX >= 0 && deltaY <= 0) {
-        turretRotAbs = Math.asin(deltaY/targetDist);
-    }       
-    else if (deltaX <= 0 && deltaY >= 0) {
-        turretRotAbs = Math.PI/2 + Math.acos(deltaY/targetDist);
-    }
-    else if (deltaX <= 0 && deltaY <= 0) {
-        turretRotAbs = Math.PI/2 + Math.acos(deltaY/targetDist);
-    } 
+
+    ChassisSpeeds chassisSpeeds = SWERVE.getChassisSpeeds();
+
+    double shootX = deltaX / ShooterConstants.TIME_TO_SHOOT - chassisSpeeds.vxMetersPerSecond;
+    double shootY = deltaY / ShooterConstants.TIME_TO_SHOOT - chassisSpeeds.vyMetersPerSecond;
+    double turretRotAbs = Math.atan2(shootX, shootY); // TODO test
+
+    // if (deltaX >= 0 && deltaY >= 0) {
+    //     turretRotAbs = Math.asin(deltaY/targetDist);
+    // }   
+    // else if (deltaX >= 0 && deltaY <= 0) {
+    //     turretRotAbs = Math.asin(deltaY/targetDist);
+    // }       
+    // else if (deltaX <= 0 && deltaY >= 0) {
+    //     turretRotAbs = Math.PI/2 + Math.acos(deltaY/targetDist);
+    // }
+    // else if (deltaX <= 0 && deltaY <= 0) {
+    //     turretRotAbs = Math.PI/2 + Math.acos(deltaY/targetDist);
+    // } 
   }
 
   public void calcTurretRelRotation() { 
@@ -348,25 +348,6 @@ public class Shooter extends SubsystemBase{
     targetY = newTargetY;
   }
 
-
-  public double[] calcPerpendicularDist(double[] robotVelXY, double hubAngle, double time) {
-    double[] robotVelDA = XYtoVelocityAngle(robotVelXY);
-
-    robotVelDA[1]+= hubAngle; // convert angle from field relative to line-to-hub relative
-    robotVelDA[1] %= 360;
-
-    double[] robotVelHubXY = VelocityAngletoXY(robotVelDA);
-    
-    double[] perpendicularVel = new double[] {0.0, robotVelHubXY[1]};
-    perpendicularVel = XYtoVelocityAngle(perpendicularVel); //convert back to VA
-
-    perpendicularVel[1] -= hubAngle; //convert angle back to field relative
-    perpendicularVel[1] %= hubAngle;
-
-    perpendicularVel = VelocityAngletoXY(perpendicularVel);
-
-    return new double[] {perpendicularVel[0] * time, perpendicularVel[1] * time}; // convert to distance
-  }
 
   public double[] XYtoVelocityAngle(double[] XY) {
     double velocity = Math.sqrt(Math.pow(XY[0], 2) + Math.pow(XY[1], 2));
@@ -440,18 +421,6 @@ public class Shooter extends SubsystemBase{
     });
   }
 
-  public Command shootWhileMovingOn() {
-    return Commands.runOnce(() -> {
-      shootWhileMoving = ShootWhileMoving.ON;
-    });
-  }
-
-  public Command shootWhileMovingOff() {
-    return Commands.runOnce(() -> {
-      shootWhileMoving = ShootWhileMoving.OFF;
-    });
-  }
-
   public Command toggleAutoShooting() {
     return Commands.runOnce(() -> {
       if (autoShoot.val) {
@@ -503,7 +472,6 @@ public class Shooter extends SubsystemBase{
     SmartDashboard.putBoolean("aimbot", aimBot.val);
     SmartDashboard.putBoolean("can shoot?", targetDist > ShooterConstants.MINIMUM_SHOOTING_DISTANCE);
     SmartDashboard.putBoolean("autoShooting", autoShoot.val);
-    SmartDashboard.putBoolean("shootWhileMoving", shootWhileMoving.val);
     SmartDashboard.putNumber("shooter speed override", speedIncrement);
     SmartDashboard.putNumber("turret angular override", Math.toDegrees(rotationIncrement));
   }
@@ -541,17 +509,6 @@ public class Shooter extends SubsystemBase{
     private Target(double x, double y) {
       this.x = x;
       this.y = y;
-    }
-  }
-
-  private enum ShootWhileMoving {
-    ON(true),
-    OFF(false);
-
-    public boolean val;
-
-    private ShootWhileMoving(boolean val) {
-      this.val = val;
     }
   }
 
