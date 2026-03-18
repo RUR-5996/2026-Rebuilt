@@ -315,7 +315,7 @@ public class Shooter extends SubsystemBase{
 
     shootX = deltaX / ShooterConstants.TIME_TO_SHOOT - chassisSpeeds.vxMetersPerSecond;
     shootY = deltaY / ShooterConstants.TIME_TO_SHOOT - chassisSpeeds.vyMetersPerSecond;
-    double turretRotAbs = Math.atan2(shootX, shootY); // TODO test
+    turretRotAbs = Math.atan2(shootX, shootY); // TODO test
 
     // if (deltaX >= 0 && deltaY >= 0) {
     //     turretRotAbs = Math.asin(deltaY/targetDist);
