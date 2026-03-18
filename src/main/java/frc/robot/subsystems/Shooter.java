@@ -79,11 +79,15 @@ public class Shooter extends SubsystemBase{
     private double targetY = 4.0;
     private double targetDist = 0.0;
 
+    private double shootX = 0;
+    private double shootY = 0;
+
     private AimBot aimBot = AimBot.OFF;
     private Target currentTarget = Target.HUB;
     private AutoShoot autoShoot = AutoShoot.OFF;
 
     private double testAngle = 0;
+
 
     public SwerveDrive SWERVE;
 
@@ -283,7 +287,8 @@ public class Shooter extends SubsystemBase{
   }
 
   public void calcShooterSpeed() {
-    double speed = - 0.0362 * Math.pow(targetDist, 4) + 0.6903 * Math.pow(targetDist, 3) - 4.8608 * Math.pow(targetDist, 2) + 15.046 * targetDist - 16.858;
+    double targetDistMotion = Math.sqrt(Math.pow(shootX, 2) + Math.pow(shootY, 2)); // TODO test
+    double speed = - 0.0362 * Math.pow(targetDistMotion, 4) + 0.6903 * Math.pow(targetDistMotion, 3) - 4.8608 * Math.pow(targetDistMotion, 2) + 15.046 * targetDistMotion - 16.858;
     if (speed <= 0.3) {
       speed = 0.3;
     }
@@ -308,8 +313,8 @@ public class Shooter extends SubsystemBase{
 
     ChassisSpeeds chassisSpeeds = SWERVE.getChassisSpeeds();
 
-    double shootX = deltaX / ShooterConstants.TIME_TO_SHOOT - chassisSpeeds.vxMetersPerSecond;
-    double shootY = deltaY / ShooterConstants.TIME_TO_SHOOT - chassisSpeeds.vyMetersPerSecond;
+    shootX = deltaX / ShooterConstants.TIME_TO_SHOOT - chassisSpeeds.vxMetersPerSecond;
+    shootY = deltaY / ShooterConstants.TIME_TO_SHOOT - chassisSpeeds.vyMetersPerSecond;
     double turretRotAbs = Math.atan2(shootX, shootY); // TODO test
 
     // if (deltaX >= 0 && deltaY >= 0) {
