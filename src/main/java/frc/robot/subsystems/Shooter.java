@@ -287,7 +287,7 @@ public class Shooter extends SubsystemBase{
   }
 
   public void calcShooterSpeed() {
-    double targetDistMotion = Math.sqrt(Math.pow(shootX, 2) + Math.pow(shootY, 2)); // TODO test
+    double targetDistMotion = Math.sqrt(Math.pow(shootX, 2) + Math.pow(shootY, 2)) * ShooterConstants.TIME_TO_SHOOT; // TODO test
     double speed = - 0.0362 * Math.pow(targetDistMotion, 4) + 0.6903 * Math.pow(targetDistMotion, 3) - 4.8608 * Math.pow(targetDistMotion, 2) + 15.046 * targetDistMotion - 16.858;
     if (speed <= 0.3) {
       speed = 0.3;
