@@ -46,8 +46,6 @@ public class SwerveDrive extends SubsystemBase {
       DRIVETRAIN = DriveTrain.getInstance();
 
       gyro = new AHRS(AHRS.NavXComType.kMXP_SPI);
-      //gyro.reset();
-      //gyro.setAngleAdjustment(180-112.4);
 
       // The 2025/2026 Pose Estimator constructor
       m_odometry = new SwerveDrivePoseEstimator(
@@ -70,7 +68,6 @@ public class SwerveDrive extends SubsystemBase {
       rotationController.setTolerance(2);
    
       chassisSpeeds = ChassisSpeeds.fromRobotRelativeSpeeds(0, 0, 0, new Rotation2d(Math.toRadians(gyro.getAngle())));
-      // resetOdometry(new Pose2d(7.3, 4.2, gyro.getRotation2d()));
    
    }
 
@@ -156,10 +153,6 @@ public class SwerveDrive extends SubsystemBase {
       return m_odometry.getEstimatedPosition();
    }
 
-   /*public double getAngleDegrees() {
-      return getHeading().getDegrees();
-   }*/
-
    public void resetOdometry(Pose2d pose) {
       m_odometry.resetPosition(new Rotation2d(Math.toRadians(gyro.getAngle())), DRIVETRAIN.getModulePositions(), pose);
    }
@@ -167,10 +160,6 @@ public class SwerveDrive extends SubsystemBase {
        public double getOdometryDegrees() {
         return getPose().getRotation().getDegrees();
     }
-
-    /*public double getGyroDegrees() {
-        return getHeading().getDegrees();
-    }  */
 
     public DoubleSupplier supplyOdometryDegrees() {
         DoubleSupplier angle = () -> getOdometryDegrees();
