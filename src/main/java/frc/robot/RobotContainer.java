@@ -135,16 +135,19 @@ public class RobotContainer {
     m_secondController.leftBumper().toggleOnTrue(SHOOTER.aimOn());
     m_secondController.rightBumper().toggleOnTrue(SHOOTER.aimOff());
 
+    /*
     m_secondController.povDown().onTrue(CLIMBER.setState("IDLE"));
     m_secondController.povLeft().onTrue(CLIMBER.setState("L1"));
     m_secondController.povRight().onTrue(CLIMBER.setState("L2"));
     m_secondController.povUp().onTrue(CLIMBER.setState("L3"));
+    */
 
-    /*
-    m_secondController.pov(0).toggleOnTrue(SHOOTER.adjustShooterSpeed(0.02));
-    m_secondController.pov(180).toggleOnTrue(SHOOTER.adjustShooterSpeed(-0.02));
-    m_secondController.pov(90).toggleOnTrue(SHOOTER.adjustShooterRotation(Math.toRadians(2)));
-    m_secondController.pov(270).toggleOnTrue(SHOOTER.adjustShooterRotation(Math.toRadians(-2)));
+    
+    m_secondController.povUp().toggleOnTrue(SHOOTER.adjustShooterSpeed(0.02));
+    m_secondController.povDown().toggleOnTrue(SHOOTER.adjustShooterSpeed(-0.02));
+    /* 
+    m_secondController.povLeft().toggleOnTrue(SHOOTER.adjustShooterRotation(Math.toRadians(2)));
+    m_secondController.povRight().toggleOnTrue(SHOOTER.adjustShooterRotation(Math.toRadians(-2)));
 
     m_secondController.x().toggleOnTrue(SHOOTER.toggleAutoShooting());
 */
@@ -155,10 +158,10 @@ public class RobotContainer {
     //m_secondController.a().toggleOnTrue(LIMELIGHT.updateRobotPosition());
 
     //turret turning tests for feedforward tuning
-    //m_secondController.pov(90).toggleOnTrue(SHOOTER.testTurretAngle(90));
-    //m_secondController.pov(270).toggleOnTrue(SHOOTER.testTurretAngle(-90));
+    //m_secondController.povLeft().toggleOnTrue(SHOOTER.testTurretAngle(90));
+    //m_secondController.povRight().toggleOnTrue(SHOOTER.testTurretAngle(-90));
 
-    //semi autonomous shooting
+    //semi-autonomous shooting
     /*
     shooterInRange.onTrue(SHOOTER.shootAndFeed());
     shooterInRange.onFalse(new ParallelCommandGroup(SHOOTER.shooterOff(), SHOOTER.feederOff()));
