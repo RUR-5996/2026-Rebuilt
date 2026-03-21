@@ -164,6 +164,17 @@ public final class Constants {
 
 
     public static final String TURRET_LIMELIGHT_NAME = "turret";
+    public static final Transform3d TURRET_LIMELIGHT_OFFSET = new Transform3d(
+      new Translation3d( // in metres TODO replace with actual value
+          0.0,   // X (+ is forward) 
+          0.0,   // Y (+ is left)
+          0.0   // Z (+ is up)
+      ),
+      new Rotation3d( //in radians
+        0.0, // roll
+        0.0, // pitch (+ is up)
+        0.0 // yaw
+      ));
 
     public static final double MAX_VISION_SPIN = 720; // degrees per second TODO test if good
   }

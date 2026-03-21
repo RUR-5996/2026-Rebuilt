@@ -17,6 +17,7 @@ import com.revrobotics.spark.ClosedLoopSlot;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
+import frc.robot.Constants.LimelightConstants;
 import frc.robot.Constants.ShooterConstants;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
@@ -89,11 +90,13 @@ public class Shooter extends SubsystemBase{
     private double testAngle = 0;
 
 
-    public SwerveDrive SWERVE;
+    SwerveDrive SWERVE;
+    Limelight TURRET_LIMELIGHT;
 
     public Shooter () {
 
         SWERVE = SwerveDrive.getInstance();
+        TURRET_LIMELIGHT = Limelight.getInstance(LimelightConstants.TURRET_LIMELIGHT_NAME);
 
         powerMotor1 = new SparkMax(ShooterConstants.POWER_MOTOR_1_ID, MotorType.kBrushless);
         powerMotor2 = new SparkMax(ShooterConstants.POWER_MOTOR_2_ID, MotorType.kBrushless);
@@ -236,6 +239,10 @@ public class Shooter extends SubsystemBase{
     public double getCANcoderAngle () { //everything is in degrees
         double rotationDegrees = turretCANcoder.getAbsolutePosition().getValueAsDouble() * 360;
         return rotationDegrees * ShooterConstants.CANCODER_TO_TURRET_RATIO;
+    }
+
+    public double getLimelightAngle() {
+      return TURRET_LIMELIGHT.getTurretAngle();
     }
 
   public void rotateTurret(double targetAngle) {

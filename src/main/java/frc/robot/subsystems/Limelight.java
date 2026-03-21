@@ -2,13 +2,14 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.LimelightConstants;
 import frc.robot.Util.LimelightHelpers;
-import frc.robot.Util.LimelightHelpers.PoseEstimate;
 
 public class Limelight extends SubsystemBase{
 
@@ -36,8 +37,18 @@ public class Limelight extends SubsystemBase{
                 Math.toDegrees(LimelightConstants.ROBOT_LIMELIGHT_OFFSET.getRotation().getY()), // pitch
                 Math.toDegrees(LimelightConstants.ROBOT_LIMELIGHT_OFFSET.getRotation().getZ())  // yaw
             );
-        }
+        } else if (limelightName == LimelightConstants.TURRET_LIMELIGHT_NAME) {
+            LimelightHelpers.setCameraPose_RobotSpace(
+                LimelightConstants.TURRET_LIMELIGHT_NAME,
+                LimelightConstants.TURRET_LIMELIGHT_OFFSET.getX(),
+                LimelightConstants.TURRET_LIMELIGHT_OFFSET.getY(),
+                LimelightConstants.TURRET_LIMELIGHT_OFFSET.getZ(),
+                Math.toDegrees(LimelightConstants.TURRET_LIMELIGHT_OFFSET.getRotation().getX()), // roll
+                Math.toDegrees(LimelightConstants.TURRET_LIMELIGHT_OFFSET.getRotation().getY()), // pitch
+                Math.toDegrees(LimelightConstants.TURRET_LIMELIGHT_OFFSET.getRotation().getZ())  // yaw
+            );
     }
+}
 
     public void report() {
         Pose2d estimated_position = apriltagBasedPosition();
@@ -77,6 +88,15 @@ public class Limelight extends SubsystemBase{
         } else {
             return new Pose2d(-1.0, -1.0, new Rotation2d(-1.0));
         }
+    }
+
+    public Double getTurretAngle() {
+        NetworkTable table = NetworkTableInstance.getDefault().getTable(LimelightConstants.TURRET_LIMELIGHT_NAME);
+            double tv = table.getEntry("tv").getDouble(0.0); // 0 = no target, 1 = target
+            if (tv < 1.0) {
+                return null;
+            }
+        return table.getEntry("tx").getDouble(0.0); // horizontal offset in degrees
     }
 
     public Command updateRobotPosition() {
