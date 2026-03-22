@@ -76,7 +76,7 @@ public final class Constants {
 
     public static final PPHolonomicDriveController autoConfig = new PPHolonomicDriveController(
       new PIDConstants(7.5, 0, 0), //drive
-      new PIDConstants(5, 0, 0)); //steer //TODO change constants so the robot moves accurately
+      new PIDConstants(5, 0, 0)); //steer 
   }
 
   public final class ShooterConstants {
@@ -195,18 +195,17 @@ public final class Constants {
   }
 
   public final class ClimberConstants {
-    public static final int CLIMBER_MOTOR_ID = 31; //TODO replace with actual value
-    public static final double CLIMBER_MOTOR_P = 1; //TODO replace with actual value
-    public static final double CLIMBER_MOTOR_I = 0; //TODO replace with actual value
-    public static final double CLIMBER_MOTOR_D = 0; //TODO replace with actual value
-    public static final double CLIMBER_MOTOR_V = 0.12; //TODO replace with actual value
+    public static final int CLIMBER_MOTOR_ID = 31; 
+    public static final double CLIMBER_MOTOR_P = 1;
+    public static final double CLIMBER_MOTOR_I = 0;
+    public static final double CLIMBER_MOTOR_D = 0;
+    public static final double CLIMBER_MOTOR_V = 0.12; 
 
-    public static final double L1_HEIGHT = 68.58; // all values are in cm
-    public static final double L2_HEIGHT = 114.30;
-    public static final double L3_HEIGHT = 160.00;
-    public static final double IDLE_HEIGHT = 0.0; // TODO replace with actual value
-
-    public static final double CLIMBER_WHEEL_RADIUS = 0.0; //in cm, TODO replace with actual value
+    public static final double CLIMBER_WHEEL_RADIUS = .03; // all in metres //TODO replace with actual value
     public static final double CLIMBER_GEAR_RATIO = .01;
+    public static final double CLIMBER_EXTENDED_POS = .686; //TODO replace with actual value
+    public static final double CLIMBER_RETRACTED_POS = 0; //TODO replace with actual value
+    public static final double CLIMBER_EXTENDED_ROTATIONS = (CLIMBER_EXTENDED_POS / (2 * Math.PI * CLIMBER_WHEEL_RADIUS)) * CLIMBER_GEAR_RATIO;
+    public static final double CLIMBER_RETRACTED_ROTATIONS = (CLIMBER_RETRACTED_POS / (2 * Math.PI * CLIMBER_WHEEL_RADIUS)) * CLIMBER_GEAR_RATIO;
   }
 }

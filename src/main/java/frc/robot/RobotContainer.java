@@ -116,6 +116,9 @@ public class RobotContainer {
     m_driverController.x().onTrue(INTAKE.intakeOn());
     m_driverController.y().onTrue(INTAKE.intakeOff());
 
+    m_driverController.a().onTrue(CLIMBER.climb());
+    m_driverController.b().onTrue(CLIMBER.unclimb());
+
     //m_driverController.a().onTrue(SHOOTER.aimOn());
     //m_driverController.b().onTrue(SHOOTER.aimOff());
 

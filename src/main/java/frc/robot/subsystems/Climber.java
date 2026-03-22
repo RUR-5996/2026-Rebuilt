@@ -1,6 +1,7 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.PositionDutyCycle;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
@@ -17,7 +18,7 @@ public class Climber extends SubsystemBase {
     TalonFX climberMotor;
     TalonFXConfiguration climberConfig;
 
-    ClimberState climberState = ClimberState.IDLE;
+    ClimberState climberState = ClimberState.EXTENDED;
 
     public static Climber getInstance() {
         if (CLIMBER == null) {
@@ -42,51 +43,24 @@ public class Climber extends SubsystemBase {
     }
 
 
-    @Override
-    public void periodic() {
-        autoExtension();
-    }
-
-    private double levelToCm(ClimberState level) {
-        switch (level) {
-            case L1:
-                return ClimberConstants.L1_HEIGHT;
-            case L2:
-                return ClimberConstants.L2_HEIGHT;
-            case L3:
-                return ClimberConstants.L3_HEIGHT;
-            case IDLE:
-                return ClimberConstants.IDLE_HEIGHT;
-            default:
-                return 0;
-        }
-    }
-
-    private double levelToPosition(ClimberState level) {
-        double levelCm = levelToCm(level);
-        double wheelCircumference = 2 * ClimberConstants.CLIMBER_WHEEL_RADIUS * Math.PI;
-        
-        return levelCm / wheelCircumference * ClimberConstants.CLIMBER_GEAR_RATIO;
-        
-    }
-
-    public Command setState(String stateName) {
+    public Command climb() {
         return Commands.runOnce(() -> {
-            switch (stateName) {
-                case "IDLE":
-                    climberState = ClimberState.IDLE;
-                case "L1":
-                    climberState = ClimberState.L1;
-                case "L2":
-                    climberState = ClimberState.L2;
-                case "L3":
-                    climberState = ClimberState.L3;
+            if (climberState == ClimberState.EXTENDED) {
+                climberState = ClimberState.CLIMBING;
+                climberMotor.setControl(new PositionDutyCycle(ClimberConstants.CLIMBER_RETRACTED_POS));
+                climberState = ClimberState.RETRACTED;
             }
         });
     }
 
-    public void autoExtension() {
-        climberMotor.setPosition(levelToPosition(climberState));
+    public Command unclimb() {
+        return Commands.runOnce(() -> {
+            if (climberState == ClimberState.RETRACTED) {
+                climberState = ClimberState.CLIMBING;
+                climberMotor.setControl(new PositionDutyCycle(ClimberConstants.CLIMBER_EXTENDED_POS));
+                climberState = ClimberState.EXTENDED;
+            }
+        });
     }
 
     public String getClimberState() {
@@ -94,9 +68,8 @@ public class Climber extends SubsystemBase {
     }
 
     public enum ClimberState {
-        IDLE, 
-        L1,
-        L2,
-        L3
+        EXTENDED, 
+        CLIMBING,
+        RETRACTED
     }
 }
