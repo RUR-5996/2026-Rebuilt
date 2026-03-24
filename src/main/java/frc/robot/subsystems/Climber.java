@@ -63,6 +63,24 @@ public class Climber extends SubsystemBase {
         });
     }
 
+    public Command testClimb() {
+        return Commands.runOnce(() -> {
+            climberMotor.set(-0.8);
+        });
+    }
+
+    public Command testUnClimb() {
+        return Commands.runOnce(() -> {
+            climberMotor.set(0.8);
+        });
+    }
+
+    public Command stopClimb() {
+        return Commands.runOnce(() -> {
+            climberMotor.set(0);
+        });
+    }
+
     public String getClimberState() {
         return climberState.toString();
     }

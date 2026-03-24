@@ -85,6 +85,9 @@ public class Intake extends SubsystemBase{
         intakePowerConfig = new TalonFXConfiguration();
         intakePowerConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
         intakePowerConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+        intakePowerConfig.ClosedLoopRamps.DutyCycleClosedLoopRampPeriod = 0.2;
+        intakePowerConfig.ClosedLoopRamps.VoltageClosedLoopRampPeriod = 0.2;
+
         intakePowerMotor.getConfigurator().apply(intakePowerConfig);
 
         /*SparkMaxConfig intakePowerConfig = new SparkMaxConfig();
@@ -100,6 +103,20 @@ public class Intake extends SubsystemBase{
             INTAKE = new Intake();
         }
         return INTAKE;
+    }
+
+    public void brakeIntake() {
+        SparkMaxConfig intakeFlipOutConfig = new SparkMaxConfig();
+        intakeFlipOutConfig.idleMode(IdleMode.kBrake);
+        intakeFlipOutMotorL.configure(intakeFlipOutConfig, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters);
+        intakeFlipOutMotorR.configure(intakeFlipOutConfig, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters);
+    }
+
+    public void coastIntake() {
+        SparkMaxConfig intakeFlipOutConfig = new SparkMaxConfig();
+        intakeFlipOutConfig.idleMode(IdleMode.kCoast);
+        intakeFlipOutMotorL.configure(intakeFlipOutConfig, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters);
+        intakeFlipOutMotorR.configure(intakeFlipOutConfig, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters);
     }
 
     public void report() {

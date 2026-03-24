@@ -75,6 +75,8 @@ public class SwerveModuleDef {
         steerMotor.getConfigurator().apply(steerConfigs);
 
         m_velocitySetter.EnableFOC = true;
+
+        //resetSteerEncoder();
     }
 
     public void resetSteerEncoder() {

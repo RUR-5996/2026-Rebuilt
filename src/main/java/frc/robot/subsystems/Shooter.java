@@ -60,8 +60,8 @@ public class Shooter extends SubsystemBase{
     SoftLimitConfig turretLimitConfig;
     RelativeEncoder turretEncoder;
 
-    CANcoder turretCANcoder;
-    CANcoderConfiguration turretCANcoderConfig;
+//    CANcoder turretCANcoder;
+//    CANcoderConfiguration turretCANcoderConfig;
 
     private final VelocityVoltage feederVelocityVoltage = new VelocityVoltage(0);
 
@@ -108,6 +108,7 @@ public class Shooter extends SubsystemBase{
             .p(ShooterConstants.POWER_MOTOR_P)
             .i(ShooterConstants.POWER_MOTOR_I)
             .d(ShooterConstants.POWER_MOTOR_D)
+            .maxOutput(1.0, ClosedLoopSlot.kSlot0)
             .feedForward.kV(ShooterConstants.POWER_MOTOR_V);
         powerConfig.encoder
             .positionConversionFactor(ShooterConstants.POWER_MOTOR_GEAR_RATIO)
@@ -150,6 +151,7 @@ public class Shooter extends SubsystemBase{
             .i(ShooterConstants.TURRET_MOTOR_I)
             .d(ShooterConstants.TURRET_MOTOR_D)
             .positionWrappingEnabled(false);
+            //.feedForward.kV(ShooterConstants.TURRET_MOTOR_V);
         turretConfig.softLimit
             .forwardSoftLimit(ShooterConstants.MAX_TURRET_ANGLE)
             .reverseSoftLimit(ShooterConstants.MIN_TURRET_ANGLE)
@@ -215,10 +217,10 @@ public class Shooter extends SubsystemBase{
         });
     }
 
-    public double getCANcoderAngle () { //everything is in degrees
+/*    public double getCANcoderAngle () { //everything is in degrees
         double rotationDegrees = turretCANcoder.getAbsolutePosition().getValueAsDouble() * 360;
         return rotationDegrees * ShooterConstants.CANCODER_TO_TURRET_RATIO;
-    }
+    }*/
 
     public double getLimelightAngle() {
       return TURRET_LIMELIGHT.getTurretAngle();
@@ -231,6 +233,14 @@ public class Shooter extends SubsystemBase{
   public Command testTurretAngle(double angle) {
     return Commands.runOnce(() -> {
       testAngle = angle;
+      turretController.setSetpoint(testAngle, ControlType.kPosition);
+    });
+  }
+
+  public Command testShooter(double speed) {
+    return Commands.runOnce(() -> {
+      powerMotor1.set(speed);
+      powerMotor2.set(speed);
     });
   }
 
@@ -273,8 +283,8 @@ public class Shooter extends SubsystemBase{
   }
 
   public void calcShooterSpeed() {
-    double targetDistMotion = Math.sqrt(Math.pow(shootX, 2) + Math.pow(shootY, 2)) * ShooterConstants.TIME_TO_SHOOT; // TODO test
-    double speed = - 0.0362 * Math.pow(targetDistMotion, 4) + 0.6903 * Math.pow(targetDistMotion, 3) - 4.8608 * Math.pow(targetDistMotion, 2) + 15.046 * targetDistMotion - 16.858;
+    // double targetDistMotion = Math.sqrt(Math.pow(shootX, 2) + Math.pow(shootY, 2)) * ShooterConstants.TIME_TO_SHOOT; // TODO test
+    double speed = 0.0134 * Math.pow(targetDist, 3) - 0.2288 * Math.pow(targetDist, 2) + 1.3827 * targetDist - 2.3059;
     if (speed <= 0.3) {
       speed = 0.3;
     }
@@ -291,15 +301,31 @@ public class Shooter extends SubsystemBase{
   }
 
   public void calcTurretAbsRotation() {
+    
+    //double deltaX = targetX - turretXabs;
+    //double deltaY = targetY - turretYabs;
     double deltaX = currentTarget.x - turretXabs;
     double deltaY = currentTarget.y - turretYabs;
     targetDist = Math.sqrt(Math.pow(deltaX, 2) + Math.pow(deltaY, 2));
-
+    if (deltaX >= 0 && deltaY >= 0) {
+        turretRotAbs = Math.asin(deltaY/targetDist);
+    }   
+    else if (deltaX >= 0 && deltaY <= 0) {
+        turretRotAbs = Math.asin(deltaY/targetDist);
+    }       
+    else if (deltaX <= 0 && deltaY >= 0) {
+        turretRotAbs = Math.PI/2 + Math.acos(deltaY/targetDist);
+    }
+    else if (deltaX <= 0 && deltaY <= 0) {
+        turretRotAbs = Math.PI/2 + Math.acos(deltaY/targetDist);
+    }
+     /*
     ChassisSpeeds chassisSpeeds = SWERVE.getChassisSpeeds();
 
     shootX = deltaX / ShooterConstants.TIME_TO_SHOOT - chassisSpeeds.vxMetersPerSecond;
     shootY = deltaY / ShooterConstants.TIME_TO_SHOOT - chassisSpeeds.vyMetersPerSecond;
     turretRotAbs = Math.atan2(shootX, shootY); // TODO test
+    */
   }
 
   public void calcTurretRelRotation() { 
@@ -339,20 +365,6 @@ public class Shooter extends SubsystemBase{
 
   public Pose2d getTurrePosAbsRot() {
     return new Pose2d(turretXabs, turretYabs, Rotation2d.fromRadians(turretRotAbs));
-  }
-
-  //test functions
-
-  public Command rotateLeft() {
-    return Commands.runOnce(() -> {
-        turretMotor.set(0.3);
-    });
-  }
-
-  public Command rotateRight() {
-    return Commands.runOnce(() -> {
-        turretMotor.set(-0.3);
-    });
   }
 
   public void rotateStop() {
@@ -411,7 +423,7 @@ public class Shooter extends SubsystemBase{
       rotateTurret(Math.toDegrees(turretRotRel));
       calcShooterSpeed();
     } else {
-      rotateStop();
+      //rotateStop();
     }
 
   }
@@ -419,7 +431,7 @@ public class Shooter extends SubsystemBase{
   public void report() {
     SmartDashboard.putNumber("target_dist", targetDist);
     SmartDashboard.putNumber("current shooting speed", powerEncoder1.getVelocity());
-    SmartDashboard.putNumber("requested shooting speed", powerController1.getSetpoint());
+    SmartDashboard.putNumber("requested shooting speed", currentShooterSpeed);
     SmartDashboard.putNumber("calculated relative turret heading", Math.toDegrees(turretRotRel));
     SmartDashboard.putNumber("current shooter speed", currentShooterSpeed);
     SmartDashboard.putNumber("current turret angle", turretEncoder.getPosition());
@@ -429,6 +441,8 @@ public class Shooter extends SubsystemBase{
     SmartDashboard.putBoolean("autoShooting", autoShoot.val);
     SmartDashboard.putNumber("shooter speed override", speedIncrement);
     SmartDashboard.putNumber("turret angular override", Math.toDegrees(rotationIncrement));
+    SmartDashboard.putNumber("turres absAngle", turretRotAbs);
+    SmartDashboard.putNumber("turretSpeed", turretMotor.getBusVoltage());
   }
 
   private enum AimBot {

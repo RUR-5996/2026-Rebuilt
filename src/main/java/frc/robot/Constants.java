@@ -109,15 +109,15 @@ public final class Constants {
     public static final int TURRET_CANCODER_ID = 11; 
     public static final int TURRET_MOTOR_ID = 20; 
     
-    public static final double TURRET_MOTOR_P = 0.01;
-    public static final double TURRET_MOTOR_I = 0.00000005;
-    public static final double TURRET_MOTOR_D = 0.01;
-    public static final double TURRET_MOTOR_V = 0.1;
+    public static final double TURRET_MOTOR_P = 0.045;//0.12
+    public static final double TURRET_MOTOR_I = 0.00;
+    public static final double TURRET_MOTOR_D = 0.00;
+    public static final double TURRET_MOTOR_V = 0.4;//0.2
 
     public static final double MOTOR_TO_TURRET_RATIO = (14.0/45.0) * (23.0/123.0)*360.0; //(1/20)*(23/123)
     public static final double CANCODER_TO_TURRET_RATIO = (30.0/45.0) * (23.0/123.0); //(1/20)*(45/30)
-    public static final double MAX_TURRET_ANGLE = 180.0; //feederV2 +360 TODO replace with actual value
-    public static final double MIN_TURRET_ANGLE = -180.0; //feederV2 -270 TODO replace with actual value
+    public static final double MAX_TURRET_ANGLE = 200.0; //feederV2 +360 TODO replace with actual value
+    public static final double MIN_TURRET_ANGLE = -200.0; //feederV2 -270 TODO replace with actual value
 
     public static final double TURRET_X = -0.1373;
     public static final double TURRET_Y = 0.1438;
@@ -142,10 +142,10 @@ public final class Constants {
     public static final int powerMotorId = 43;
 
     public static final double POS_IN = 0;
+    public static final double POS_OUT = 115;
 
     public static final double SPEED = 0.5;
-    public static final double POS_OUT = 90;
-    public static final double FLIPOUT_COEFFICIENT = 1/15.0*18.0/42.0*1/360.0;
+    public static final double FLIPOUT_COEFFICIENT = 1/25.0*18.0/40.0*360.0;
   }
 
   public final class LimelightConstants {
@@ -202,7 +202,7 @@ public final class Constants {
     public static final double CLIMBER_MOTOR_V = 0.12; 
 
     public static final double CLIMBER_WHEEL_RADIUS = .03; // all in metres //TODO replace with actual value
-    public static final double CLIMBER_GEAR_RATIO = .01;
+    public static final double CLIMBER_GEAR_RATIO = 100;
     public static final double CLIMBER_EXTENDED_POS = .686; //TODO replace with actual value
     public static final double CLIMBER_RETRACTED_POS = 0; //TODO replace with actual value
     public static final double CLIMBER_EXTENDED_ROTATIONS = (CLIMBER_EXTENDED_POS / (2 * Math.PI * CLIMBER_WHEEL_RADIUS)) * CLIMBER_GEAR_RATIO;

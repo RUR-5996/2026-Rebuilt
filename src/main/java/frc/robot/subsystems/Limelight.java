@@ -23,7 +23,6 @@ public class Limelight extends SubsystemBase{
 
     public Limelight(String name) {
         SWERVE = SwerveDrive.getInstance();
-        SHOOTER = Shooter.getInstance();
 
         limelightName = name;
 

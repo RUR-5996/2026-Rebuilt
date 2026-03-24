@@ -6,7 +6,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.SwerveConstants;
 import frc.robot.Constants.OperatorConstants;
-
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -59,7 +59,15 @@ public class RobotContainer {
     // register named commands
     NamedCommands.registerCommand("aimOn", SHOOTER.aimOn());
     NamedCommands.registerCommand("aimOff", SHOOTER.aimOff());
-
+    NamedCommands.registerCommand("intakeOn", INTAKE.intakeOn());
+    NamedCommands.registerCommand("intakeOff", INTAKE.intakeOff());
+    NamedCommands.registerCommand("shooterTest", SHOOTER.testShooter(0.25));
+    NamedCommands.registerCommand("turretTest", SHOOTER.testTurretAngle(-180));
+    NamedCommands.registerCommand("shooterOff", SHOOTER.shooterOff());
+    NamedCommands.registerCommand("feederOn", SHOOTER.feederOn());
+    NamedCommands.registerCommand("feederOff", SHOOTER.feederOff());
+    NamedCommands.registerCommand("indexerOn", INDEXER.indexerOn());
+    NamedCommands.registerCommand("indexerOff", INDEXER.indexerOff());
     // 3. Set Default Command for Driving
     // We pass the joystick inputs to the subsystem's drive method.
     // Note: Xbox Left Y is usually Forward (X), Left X is Strafe (Y), Right X is Rotation.
@@ -110,14 +118,14 @@ public class RobotContainer {
     //m_driverController.pov(270).onTrue(SHOOTER.rotateLeft());
     //m_driverController.pov(270).onFalse(SHOOTER.rotateStopCommand());
 
-    //m_driverController.x().onTrue(INTAKE.intakeFlipIn());
-    //m_driverController.b().onTrue(INTAKE.intakeFlipOut());
+    //m_secondController.x().onTrue(INTAKE.intakeFlipIn());
+    m_secondController.b().onTrue(INTAKE.intakeFlipOut());
 
     m_driverController.x().onTrue(INTAKE.intakeOn());
     m_driverController.y().onTrue(INTAKE.intakeOff());
 
-    m_driverController.a().onTrue(CLIMBER.climb());
-    m_driverController.b().onTrue(CLIMBER.unclimb());
+    //m_driverController.a().onTrue(CLIMBER.climb());
+    //m_driverController.b().onTrue(CLIMBER.unclimb());
 
     //m_driverController.a().onTrue(SHOOTER.aimOn());
     //m_driverController.b().onTrue(SHOOTER.aimOff());
@@ -132,9 +140,9 @@ public class RobotContainer {
 
     //second controller commands
     
-    m_secondController.y().toggleOnTrue(SHOOTER.setTarget("HUB"));
-    m_secondController.a().toggleOnTrue(SHOOTER.setTarget("DEPOT"));
-    m_secondController.b().toggleOnTrue(SHOOTER.setTarget("OUTPOST"));
+    //m_secondController.y().toggleOnTrue(SHOOTER.setTarget("HUB"));
+    //m_secondController.a().toggleOnTrue(SHOOTER.setTarget("DEPOT"));
+    //m_secondController.b().toggleOnTrue(SHOOTER.setTarget("OUTPOST"));
     m_secondController.leftBumper().toggleOnTrue(SHOOTER.aimOn());
     m_secondController.rightBumper().toggleOnTrue(SHOOTER.aimOff());
 
@@ -146,6 +154,12 @@ public class RobotContainer {
     */
 
     
+    m_secondController.leftTrigger().toggleOnTrue(CLIMBER.testClimb());
+    m_secondController.rightTrigger().toggleOnTrue(CLIMBER.testUnClimb());
+    m_secondController.leftTrigger().toggleOnFalse(CLIMBER.stopClimb());
+    m_secondController.rightTrigger().toggleOnFalse(CLIMBER.stopClimb());
+
+
     m_secondController.povUp().toggleOnTrue(SHOOTER.adjustShooterSpeed(0.02));
     m_secondController.povDown().toggleOnTrue(SHOOTER.adjustShooterSpeed(-0.02));
     /* 
@@ -188,12 +202,12 @@ public class RobotContainer {
       SwerveConstants.autoConfig,
       config,
       () -> {
-            /*if(DriverStation.getAlliance().get() == DriverStation.Alliance.Blue) {
+            if(DriverStation.getAlliance().get() == DriverStation.Alliance.Red) {
               return true;
             } else {
               return false;
-            }*/
-        return false;
+            }
+        //return false;
       },  
       SWERVE 
     );
