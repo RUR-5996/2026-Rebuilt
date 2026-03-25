@@ -68,7 +68,6 @@ public class SwerveDrive extends SubsystemBase {
       rotationController.setTolerance(2);
    
       chassisSpeeds = ChassisSpeeds.fromRobotRelativeSpeeds(0, 0, 0, new Rotation2d(Math.toRadians(gyro.getAngle())));
-   
    }
 
    @Override
@@ -219,6 +218,16 @@ public class SwerveDrive extends SubsystemBase {
         chassisSpeeds = speeds;
         setAutoModuleStates(getKinematics().toSwerveModuleStates(speeds));
     }
+
+   public void startMatchPos() {
+      Rotation2d matchStartRotation = isRedAlliance() ? Rotation2d.fromDegrees(180) : Rotation2d.fromDegrees(0);
+
+      gyro.reset();
+      gyro.setAngleAdjustment(matchStartRotation.getDegrees());
+
+      // Resetting gyro usually requires resetting odometry to keep them synced
+      resetOdometry(new Pose2d(getPose().getTranslation(), matchStartRotation));
+   }
 
    public Command resetGyro() {
       return Commands.runOnce(() -> {

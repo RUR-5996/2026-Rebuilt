@@ -149,17 +149,17 @@ public final class Constants {
   }
 
   public final class LimelightConstants {
-    public static final String ROBOT_LIMELIGHT_NAME = "robot";
+    public static final String ROBOT_LIMELIGHT_NAME = "limelight-robot";
     public static final Transform3d ROBOT_LIMELIGHT_OFFSET = new Transform3d(
       new Translation3d( // in metres
-          0.2728,   // X (+ is forward)
+          -0.2728,   // X (+ is forward)
           0.2489,   // Y (+ is left)
           0.2189   // Z (+ is up)
       ),
       new Rotation3d( //in radians
         0.0, // roll
-        Math.toRadians(60.0), // pitch (+ is up)
-        0.0 // yaw
+        Math.toRadians(30.0), // pitch (+ is up)
+        Math.toRadians(180) // yaw
       ));
 
 

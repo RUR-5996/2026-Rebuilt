@@ -54,6 +54,7 @@ public class Limelight extends SubsystemBase{
         SmartDashboard.putNumber("x_estimation", estimated_position.getX());
         SmartDashboard.putNumber("y_estimation", estimated_position.getY());
         SmartDashboard.putNumber("rot_estimation",  estimated_position.getRotation().getDegrees());
+        SmartDashboard.putNumber("visible_apriltags", getTagCount());
     }
 
     public static Limelight getInstance(String name) {
@@ -71,8 +72,10 @@ public class Limelight extends SubsystemBase{
     }
 
     public Pose2d apriltagBasedPosition() {
-        LimelightHelpers.SetRobotOrientation(limelightName, Math.toRadians(SWERVE.gyro.getAngle()), 0, 0, 0, 0, 0);
+        LimelightHelpers.SetRobotOrientation(limelightName, SWERVE.gyro.getAngle(), 0, 0, 0, 0, 0);
         LimelightHelpers.PoseEstimate positionEstimate = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(limelightName);
+
+        //return positionEstimate.pose;
 
         boolean spinningTooFastToBeUseful = false;
         if (limelightName == LimelightConstants.ROBOT_LIMELIGHT_NAME) {
@@ -85,8 +88,16 @@ public class Limelight extends SubsystemBase{
         if (!spinningTooFastToBeUseful && tagsVisible) {
             return positionEstimate.pose;
         } else {
-            return new Pose2d(-1.0, -1.0, new Rotation2d(-1.0));
+            return new Pose2d(-1.0, -1.0, new Rotation2d(-1.0)); //TODO return Null and keep the original pose
         }
+    }
+
+    public int getTagCount() {
+        LimelightHelpers.SetRobotOrientation(limelightName, SWERVE.gyro.getAngle(), 0, 0, 0, 0, 0);
+        LimelightHelpers.PoseEstimate positionEstimate = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(limelightName);
+        
+        return positionEstimate.tagCount;
+
     }
 
     public Double getTurretAngle() {
@@ -100,7 +111,8 @@ public class Limelight extends SubsystemBase{
 
     public Command updateRobotPosition() {
         return Commands.runOnce(() -> {
-            SWERVE.resetOdometry(apriltagBasedPosition());
+            Pose2d pose = apriltagBasedPosition();
+            SWERVE.resetOdometry(new Pose2d(pose.getX(), pose.getY(), new Rotation2d(Math.toRadians(SWERVE.gyro.getAngle()))));
         });
     }
 }

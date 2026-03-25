@@ -50,7 +50,7 @@ public class RobotContainer {
     DASHBOARD = new Dashboard();
     INTAKE = Intake.getInstance();
     DRIVE_TRAIN = DriveTrain.getInstance();
-    LIMELIGHT = Limelight.getInstance("robot");
+    LIMELIGHT = Limelight.getInstance("limelight-robot");
     CLIMBER = Climber.getInstance();
 
     //semi-auto triggers
@@ -123,6 +123,7 @@ public class RobotContainer {
 
     m_driverController.x().onTrue(INTAKE.intakeOn());
     m_driverController.y().onTrue(INTAKE.intakeOff());
+    m_secondController.a().toggleOnTrue(LIMELIGHT.updateRobotPosition());
 
     //m_driverController.a().onTrue(CLIMBER.climb());
     //m_driverController.b().onTrue(CLIMBER.unclimb());
@@ -225,6 +226,7 @@ public class RobotContainer {
     SHOOTER.report();
     DASHBOARD.periodic();
     INTAKE.report();
+    LIMELIGHT.report();
   }
   
   public Command getAutonomousCommand() {

@@ -22,6 +22,8 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -83,7 +85,7 @@ public class Shooter extends SubsystemBase{
     private double shootY = 0;
 
     private AimBot aimBot = AimBot.OFF;
-    private Target currentTarget = Target.HUB;
+    private Target currentTarget = Target.BLUEHUB;
     private AutoShoot autoShoot = AutoShoot.OFF;
 
     private double testAngle = 0;
@@ -192,7 +194,8 @@ public class Shooter extends SubsystemBase{
 
     public Command shooterOn() {
         return Commands.runOnce(() -> {
-            double targetRPM = ShooterConstants.NEO_MAX_RPM * ShooterConstants.POWER_MOTOR_GEAR_RATIO * currentShooterSpeed;
+            //double targetRPM = ShooterConstants.NEO_MAX_RPM * ShooterConstants.POWER_MOTOR_GEAR_RATIO * currentShooterSpeed;
+            double targetRPM = ShooterConstants.NEO_MAX_RPM * ShooterConstants.POWER_MOTOR_GEAR_RATIO * 0.25;
             powerController1.setSetpoint(targetRPM, ControlType.kVelocity, ClosedLoopSlot.kSlot0);
             powerController2.setSetpoint(targetRPM, ControlType.kVelocity, ClosedLoopSlot.kSlot0);
             });
@@ -229,6 +232,11 @@ public class Shooter extends SubsystemBase{
   public void rotateTurret(double targetAngle) {
     turretController.setSetpoint(targetAngle, ControlType.kPosition);
   }
+
+  public boolean isRedAlliance() {
+      var alliance = DriverStation.getAlliance();
+      return alliance.isPresent() && alliance.get() == Alliance.Red;
+   }
 
   public Command testTurretAngle(double angle) {
     return Commands.runOnce(() -> {
@@ -271,13 +279,13 @@ public class Shooter extends SubsystemBase{
     return Commands.runOnce(() -> {
       switch(name) {
         case "HUB":
-          currentTarget = Target.HUB;
+          currentTarget = isRedAlliance() ? Target.REDHUB: Target.BLUEHUB;
         case "OUTPOST":
-          currentTarget = Target.OUTPOST;
+          currentTarget = isRedAlliance() ? Target.REDOUTPOST: Target.BLUEOUTPOST;
         case "DEPOT":
-          currentTarget = Target.DEPOT;
+          currentTarget = isRedAlliance() ? Target.REDDEPOT: Target.BLUEDEPOT;
         default:
-          currentTarget = Target.HUB;
+          currentTarget = isRedAlliance() ? Target.REDHUB: Target.BLUEHUB;
       }
     });
   }
@@ -423,7 +431,7 @@ public class Shooter extends SubsystemBase{
       rotateTurret(Math.toDegrees(turretRotRel));
       calcShooterSpeed();
     } else {
-      //rotateStop();
+      rotateStop();
     }
 
   }
@@ -442,7 +450,6 @@ public class Shooter extends SubsystemBase{
     SmartDashboard.putNumber("shooter speed override", speedIncrement);
     SmartDashboard.putNumber("turret angular override", Math.toDegrees(rotationIncrement));
     SmartDashboard.putNumber("turres absAngle", turretRotAbs);
-    SmartDashboard.putNumber("turretSpeed", turretMotor.getBusVoltage());
   }
 
   private enum AimBot {
@@ -468,9 +475,12 @@ public class Shooter extends SubsystemBase{
   }
 
   public enum Target {
-    HUB(4.5, 4.0),
-    OUTPOST(2, 2),
-    DEPOT(2, 6);
+    BLUEHUB(4.625, 4.035),
+    BLUEOUTPOST(2, 2),
+    BLUEDEPOT(2, 6),
+    REDHUB(11.915, 4.035),
+    REDOUTPOST(16.538, 2),
+    REDDEPOT(16.538, 6);
 
     public double x = 0;
     public double y = 0;
