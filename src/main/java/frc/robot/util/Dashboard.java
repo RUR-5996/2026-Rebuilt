@@ -1,12 +1,12 @@
-package frc.robot.Util;
+package frc.robot.util;
 
 public class Dashboard {
     private static final String TAB_NAME = "Main";
 
-    private final fieldReport fieldReport;
+    private final FieldReport fieldReport;
 
     public Dashboard() {
-        fieldReport = new fieldReport();
+        fieldReport = new FieldReport();
         fieldReport.reportSwerve();
         
     }

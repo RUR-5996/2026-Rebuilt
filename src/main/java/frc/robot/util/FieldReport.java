@@ -1,4 +1,4 @@
-package frc.robot.Util;
+package frc.robot.util;
 
 import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.util.sendable.SendableBuilder;
@@ -9,16 +9,16 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.subsystems.DriveTrain;
 import frc.robot.subsystems.SwerveDrive;
 
-public class fieldReport {
+public class FieldReport {
     
      Field2d field;
 
     static SwerveDrive SWERVE;
     PowerDistribution PDP;
     static DriveTrain DRIVETRAIN;
-    static fieldReport REPORT;
+    static FieldReport REPORT;
 
-    public fieldReport() {
+    public FieldReport() {
         SWERVE = SwerveDrive.getInstance();
         DRIVETRAIN = DriveTrain.getInstance();
         PDP = new PowerDistribution(0, ModuleType.kCTRE);
@@ -35,13 +35,11 @@ public class fieldReport {
 
     public void periodic() {
         field.setRobotPose(SWERVE.getPose());
-        //SmartDashboard.putNumber("Front Left Angle", DRIVETRAIN.m_frontLeft.getSteerAngle());
-        //SmartDashboard.putNumber("Front Left Velocity", DRIVETRAIN.m_frontLeft.getSpeed());
     }
 
-    public static fieldReport getInstance() {
+    public static FieldReport getInstance() {
         if(REPORT == null) {
-            REPORT = new fieldReport();
+            REPORT = new FieldReport();
         }
         return REPORT;
     }

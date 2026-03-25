@@ -12,8 +12,9 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.config.RobotConfig;
-import frc.robot.Util.Dashboard;
+
 import frc.robot.subsystems.*;
+import frc.robot.util.Dashboard;
 
 public class RobotContainer {
 
