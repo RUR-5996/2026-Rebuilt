@@ -360,16 +360,16 @@ public class Shooter extends SubsystemBase {
     });
   }
 
-  public Command aimOn() {
+  public Command toggleAutoAim() {
     return Commands.runOnce(() -> {
-      aimBot = AimBot.ON;
-    });
-  }
+      if (aimBot == AimBot.ON) {
+        aimBot = AimBot.OFF;
+      } else {
+        aimBot = AimBot.ON;
+      }
+    }
 
-  public Command aimOff() {
-    return Commands.runOnce(() -> {
-      aimBot = AimBot.OFF;
-    });
+    );
   }
 
   public static Shooter getInstance() {
@@ -396,16 +396,6 @@ public class Shooter extends SubsystemBase {
   }
 
   // --- MISCELLANOUS STUFF ---
-
-  public Command toggleAutoShooting() {
-    return Commands.runOnce(() -> {
-      if (autoShoot.val) {
-        autoShoot = AutoShoot.OFF;
-      } else {
-        autoShoot = AutoShoot.ON;
-      }
-    });
-  }
 
   public BooleanSupplier inRange() {
     return () -> (targetDist > ShooterConstants.MINIMUM_SHOOTING_DISTANCE);
