@@ -9,12 +9,15 @@ import frc.robot.Constants;
 public class LEDs extends SubsystemBase {
     Spark blinkin = new Spark(0);
     private double color = Constants.ColorConstants.PINK;
-    private double[] color_list = {Constants.ColorConstants.PINK, Constants.ColorConstants.VIOLET, Constants.ColorConstants.FLASHBANG, Constants.ColorConstants.RAINBOW, Constants.ColorConstants.BLUEGREEN, Constants.ColorConstants.DARKBLUE};
-    private double[] strobe_list = {Constants.ColorConstants.STROBEBLUE, Constants.ColorConstants.STROBEGOLD, Constants.ColorConstants.STROBERED, Constants.ColorConstants.STROBEWHITE};
+    private double[] color_list = { Constants.ColorConstants.PINK, Constants.ColorConstants.VIOLET,
+            Constants.ColorConstants.FLASHBANG, Constants.ColorConstants.RAINBOW, Constants.ColorConstants.BLUEGREEN,
+            Constants.ColorConstants.DARKBLUE };
+    private double[] strobe_list = { Constants.ColorConstants.STROBEBLUE, Constants.ColorConstants.STROBEGOLD,
+            Constants.ColorConstants.STROBERED, Constants.ColorConstants.STROBEWHITE };
     private int current_color = 0;
 
     private static LEDs LEDS;
-    
+
     public LEDs() {
 
     }
@@ -25,7 +28,7 @@ public class LEDs extends SubsystemBase {
     }
 
     public static LEDs getInstance() {
-        if(LEDS == null) {
+        if (LEDS == null) {
             LEDS = new LEDs();
         }
         return LEDS;
@@ -33,28 +36,27 @@ public class LEDs extends SubsystemBase {
 
     public Command setColor(double constant) {
         return Commands.runOnce(
-            () -> {
-                color = constant;
-            }
-        );
+                () -> {
+                    color = constant;
+                });
     }
+
     public Command changeColor() {
         return Commands.runOnce(
-            () -> {
-                current_color += 1;
-                if (current_color == color_list.length) {
-                    current_color = 0;
-                }
-                System.out.println(current_color);
-                color = color_list[current_color];
-            }
-        );
+                () -> {
+                    current_color += 1;
+                    if (current_color == color_list.length) {
+                        current_color = 0;
+                    }
+                    System.out.println(current_color);
+                    color = color_list[current_color];
+                });
     }
+
     public Command indicator(int index) {
         return Commands.sequence(
-        Commands.runOnce(() -> color = strobe_list[index]),
-        Commands.waitSeconds(0.5),
-        Commands.runOnce(() -> color = 0.99)
-    );
+                Commands.runOnce(() -> color = strobe_list[index]),
+                Commands.waitSeconds(0.5),
+                Commands.runOnce(() -> color = 0.99));
     }
 };
