@@ -31,21 +31,21 @@ public class SwerveModuleDef {
     public SwerveModuleDef(TalonFX steerMotor, TalonFX driveMotor, boolean steerInverted, InvertedValue driveInverted) {
         this.steerMotor = steerMotor;
         this.driveMotor = driveMotor;
-        
+
         moduleInit(steerInverted, driveInverted);
     }
 
     public void moduleInit(boolean steerInverted, InvertedValue driveInverted) {
         // --- Drive Motor Configuration ---
         var driveConfigs = new TalonFXConfiguration();
-        
+
         driveConfigs.Slot0.kP = SwerveConstants.driveKP;
         driveConfigs.Slot0.kI = SwerveConstants.driveKI;
         driveConfigs.Slot0.kD = SwerveConstants.driveKD;
 
         driveConfigs.CurrentLimits.StatorCurrentLimit = SwerveConstants.CURRENT_LIMIT;
         driveConfigs.CurrentLimits.StatorCurrentLimitEnable = true;
-        
+
         driveConfigs.Feedback.SensorToMechanismRatio = SwerveConstants.DRIVE_MOTOR_GEARING;
         driveConfigs.MotorOutput.Inverted = driveInverted;
         driveConfigs.MotorOutput.NeutralMode = NeutralModeValue.Brake;
@@ -68,55 +68,45 @@ public class SwerveModuleDef {
 
         // use SensorToMechanismRatio for gearing
         steerConfigs.Feedback.SensorToMechanismRatio = SwerveConstants.STEER_MOTOR_GEARING;
-        steerConfigs.MotorOutput.Inverted = steerInverted ? InvertedValue.Clockwise_Positive : InvertedValue.CounterClockwise_Positive;
+        steerConfigs.MotorOutput.Inverted = steerInverted ? InvertedValue.Clockwise_Positive
+                : InvertedValue.CounterClockwise_Positive;
         steerConfigs.MotorOutput.NeutralMode = NeutralModeValue.Brake;
         steerConfigs.ClosedLoopGeneral.ContinuousWrap = true;
 
         steerMotor.getConfigurator().apply(steerConfigs);
 
         m_velocitySetter.EnableFOC = true;
-
-        //resetSteerEncoder();
     }
 
     public void resetSteerEncoder() {
-        // Reset position
         steerMotor.setPosition(0);
     }
 
     public SwerveModulePosition getModulePosition() {
-        // Returns position in Meters and Rotation2d
         return new SwerveModulePosition(
-            driveMotor.getPosition().getValueAsDouble() * METERS_PER_WHEEL_ROTATION, 
-            Rotation2d.fromRotations(steerMotor.getPosition().getValueAsDouble())
-        );
+                driveMotor.getPosition().getValueAsDouble() * METERS_PER_WHEEL_ROTATION,
+                Rotation2d.fromRotations(steerMotor.getPosition().getValueAsDouble()));
     }
 
     public SwerveModuleState getModuleState() {
         return new SwerveModuleState(
-            driveMotor.getVelocity().getValueAsDouble() * METERS_PER_WHEEL_ROTATION, 
-            Rotation2d.fromRotations(steerMotor.getPosition().getValueAsDouble())
-        );
+                driveMotor.getVelocity().getValueAsDouble() * METERS_PER_WHEEL_ROTATION,
+                Rotation2d.fromRotations(steerMotor.getPosition().getValueAsDouble()));
     }
 
     public void setState(SwerveModuleState desiredState) {
-        // 1. Get current angle from the motor  
         Rotation2d currentAngle = Rotation2d.fromRotations(steerMotor.getPosition().getValueAsDouble());
 
-        // 2. Optimize
         desiredState.optimize(currentAngle);
 
-        // 3. (Optional) Use the new 2026 cosineScale for smoother driving
-        // This scales speed by the cosine of the error to reduce "jitter"
+        // (Optional) new 2026 cosineScale for smoother driving
         desiredState.cosineScale(currentAngle);
 
-        // 4. Apply the optimized values to the motors
         steerMotor.setControl(m_positionSetter.withPosition(desiredState.angle.getRotations()));
 
         double velocityRotationsPerSecond = desiredState.speedMetersPerSecond * M_DRIVE_ROTATIONS_PER_METER;
         driveMotor.setControl(m_velocitySetter.withVelocity(velocityRotationsPerSecond));
 
-        // Debugging
         SmartDashboard.putNumber("Module Angle Error", desiredState.angle.getDegrees() - currentAngle.getDegrees());
     }
 
@@ -125,36 +115,20 @@ public class SwerveModuleDef {
     }
 
     public double getSpeed() {
-        return driveMotor.getVelocity().getValueAsDouble()/M_DRIVE_ROTATIONS_PER_METER;
+        return driveMotor.getVelocity().getValueAsDouble() / M_DRIVE_ROTATIONS_PER_METER;
     }
 
     public void setDriveNeutralMode(NeutralModeValue mode) {
         TalonFXConfiguration config = new TalonFXConfiguration();
-        // We "refresh" so we don't overwrite other existing settings
         driveMotor.getConfigurator().refresh(config);
         config.MotorOutput.NeutralMode = mode;
         driveMotor.getConfigurator().apply(config);
     }
-    
+
     public void setSteerNeutralMode(NeutralModeValue mode) {
         TalonFXConfiguration config = new TalonFXConfiguration();
         steerMotor.getConfigurator().refresh(config);
         config.MotorOutput.NeutralMode = mode;
         steerMotor.getConfigurator().apply(config);
-    }
-
-    // Debugging
-    public void forceSteerRotation(double rotationsToSpin) {
-        // 1. Get current position in rotations
-        double currentRotations = steerMotor.getPosition().getValueAsDouble();
-        
-        // 2. Calculate target (Current + Desired)
-        double targetRotations = currentRotations + rotationsToSpin;
-
-        // 3. Set the steer motor directly (Bypassing optimization)
-        steerMotor.setControl(m_positionSetter.withPosition(targetRotations));
-        
-        // 4. Ensure drive motor is stopped so the robot doesn't move
-        driveMotor.setControl(m_velocitySetter.withVelocity(0));
     }
 }

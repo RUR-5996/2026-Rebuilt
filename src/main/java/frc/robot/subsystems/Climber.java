@@ -12,7 +12,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ClimberConstants;
 
 public class Climber extends SubsystemBase {
-    
+
     private static Climber CLIMBER;
 
     TalonFX climberMotor;
@@ -31,8 +31,8 @@ public class Climber extends SubsystemBase {
         climberMotor = new TalonFX(ClimberConstants.CLIMBER_MOTOR_ID);
         climberConfig = new TalonFXConfiguration();
 
-        climberConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive; //TODO check if correct
-        climberConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;        
+        climberConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive; // TODO check if correct
+        climberConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
 
         climberConfig.Slot0.kP = ClimberConstants.CLIMBER_MOTOR_P;
         climberConfig.Slot0.kI = ClimberConstants.CLIMBER_MOTOR_I;
@@ -41,7 +41,6 @@ public class Climber extends SubsystemBase {
 
         climberMotor.getConfigurator().apply(climberConfig);
     }
-
 
     public Command climb() {
         return Commands.runOnce(() -> {
@@ -86,7 +85,7 @@ public class Climber extends SubsystemBase {
     }
 
     public enum ClimberState {
-        EXTENDED, 
+        EXTENDED,
         CLIMBING,
         RETRACTED
     }
