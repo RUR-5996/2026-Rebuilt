@@ -338,7 +338,7 @@ public class Shooter extends SubsystemBase{
 
   public void calcTurretRelRotation() { 
     Rotation2d robotRot = SWERVE.getPose().getRotation();
-    turretRotRel = clampRot(turretRotAbs - clampRot(robotRot.getRadians())) + rotationIncrement;
+    turretRotRel = clampRot(turretRotAbs - clampRot(robotRot.getRadians()) + Math.toRadians(-90)) + rotationIncrement;
   }
 
   public double clampRot(double rot) {   //internal calculations are in radians

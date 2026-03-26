@@ -45,13 +45,19 @@ public class Indexer extends SubsystemBase{
 
     public Command indexerOn() {
         return Commands.runOnce(() -> {
-            indexerMotor.setControl(indexerVelocityVoltage.withVelocity(30));    
+            indexerMotor.setControl(indexerVelocityVoltage.withVelocity(60));    
         });
     }
 
     public Command indexerOff() {
         return Commands.runOnce(() -> {
             indexerMotor.stopMotor();
+        });
+    }
+
+    public Command indexerReverse() {
+        return Commands.runOnce(() -> {
+            indexerMotor.setControl(indexerVelocityVoltage.withVelocity(-40));
         });
     }
 }
