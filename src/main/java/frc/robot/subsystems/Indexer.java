@@ -45,10 +45,11 @@ public class Indexer extends SubsystemBase{
     }
 
     public Command indexerOn() {
-        return new SequentialCommandGroup(
-    Commands.waitSeconds(0.4), Commands.runOnce(() -> {
+        return //new SequentialCommandGroup(
+    //Commands.waitSeconds(0.4), 
+    Commands.runOnce(() -> {
             indexerMotor.setControl(indexerVelocityVoltage.withVelocity(60));    
-        }));
+        });
     }
 
     public Command indexerOff() {

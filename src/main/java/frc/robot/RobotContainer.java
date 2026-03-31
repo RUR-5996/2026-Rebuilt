@@ -102,10 +102,20 @@ public class RobotContainer {
 
     m_secondController.a().toggleOnTrue(SHOOTER.aimOn());
 
-    m_secondController.povUp().toggleOnTrue(SHOOTER.adjustShooterSpeed(0.02));
-    m_secondController.povDown().toggleOnTrue(SHOOTER.adjustShooterSpeed(-0.02));
+    //m_secondController.povUp().toggleOnTrue(SHOOTER.adjustShooterSpeed(0.02));
+    //m_secondController.povDown().toggleOnTrue(SHOOTER.adjustShooterSpeed(-0.02));
 
-    m_secondController.povLeft().toggleOnTrue(INTAKE.intakeFlipOut());
+    m_secondController.povUp().toggleOnTrue(SHOOTER.setTarget("HUB"));
+    m_secondController.povLeft().toggleOnTrue(SHOOTER.setTarget("OUTPOST"));
+    m_secondController.povRight().toggleOnTrue(SHOOTER.setTarget("DEPOT"));
+
+    //m_secondController.povLeft().toggleOnTrue(INTAKE.intakeFlipOut());
+    m_secondController.b().toggleOnTrue(LIMELIGHT.updateRobotPosition());
+
+    m_secondController.leftBumper().toggleOnTrue(CLIMBER.testClimb());
+    m_secondController.leftBumper().toggleOnFalse(CLIMBER.stopClimb());
+    m_secondController.rightBumper().toggleOnTrue(CLIMBER.testUnClimb());
+    m_secondController.rightBumper().toggleOnFalse(CLIMBER.stopClimb());
   }
 
 

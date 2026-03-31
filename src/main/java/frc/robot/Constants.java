@@ -89,7 +89,7 @@ public final class Constants {
     public static final int POWER_MOTOR_1_ID = 14;
     public static final int POWER_MOTOR_2_ID = 15;
 
-    public static final double POWER_MOTOR_P = 0.08;
+    public static final double POWER_MOTOR_P = 0.0004;
     public static final double POWER_MOTOR_I = 0.0;
     public static final double POWER_MOTOR_D = 0.0;
     public static final double POWER_MOTOR_V = 0.00;

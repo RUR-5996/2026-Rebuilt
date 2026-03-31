@@ -36,7 +36,7 @@ public class SwerveDrive extends SubsystemBase {
 
    private boolean fieldRelative = true;
 
-   private final SwerveDrivePoseEstimator m_odometry;
+   public final SwerveDrivePoseEstimator m_odometry;
    public final AHRS gyro;
 
    Pose2d robotPose = new Pose2d();

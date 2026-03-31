@@ -106,16 +106,18 @@ public class Shooter extends SubsystemBase{
         powerConfig
             .inverted(false)
             .idleMode(IdleMode.kCoast)
-            .smartCurrentLimit(40);
+            .smartCurrentLimit(50);
         powerConfig.closedLoop
             .p(ShooterConstants.POWER_MOTOR_P)
             .i(ShooterConstants.POWER_MOTOR_I)
             .d(ShooterConstants.POWER_MOTOR_D)
-            .maxOutput(1.0, ClosedLoopSlot.kSlot0)
-            .feedForward.kV(ShooterConstants.POWER_MOTOR_V);
+            .maxOutput(2.0, ClosedLoopSlot.kSlot0);
+            //.feedForward.kV(ShooterConstants.POWER_MOTOR_V);
         powerConfig.encoder
             .positionConversionFactor(ShooterConstants.POWER_MOTOR_GEAR_RATIO)
             .velocityConversionFactor(ShooterConstants.POWER_MOTOR_GEAR_RATIO);
+
+        powerConfig.closedLoopRampRate(0.0);
 
         powerEncoder1 = powerMotor1.getEncoder();
         powerController1 = powerMotor1.getClosedLoopController();
@@ -123,11 +125,11 @@ public class Shooter extends SubsystemBase{
         powerMotor1.configure(powerConfig, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters);
 
         powerConfig.inverted(true);
-
         powerEncoder2 = powerMotor2.getEncoder();
         powerController2 = powerMotor2.getClosedLoopController();
         powerEncoder2.setPosition(0);
         powerMotor2.configure(powerConfig, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters);
+
 
         feederMotor = new TalonFX(ShooterConstants.FEEDER_MOTOR_ID);
         feederConfig = new TalonFXConfiguration();
@@ -210,10 +212,12 @@ public class Shooter extends SubsystemBase{
     }
 
     public Command feederOn() {
-        return new SequentialCommandGroup(
-    Commands.waitSeconds(0.4),Commands.runOnce(() -> {
+        return //new SequentialCommandGroup(
+          
+    //Commands.waitSeconds(0.4),
+    Commands.runOnce(() -> {
             feederMotor.setControl(feederVelocityVoltage.withVelocity(ShooterConstants.FEEDER_VELOCITY));    
-        }));
+        });
     }
 
     public Command feederOff() {
@@ -294,11 +298,14 @@ public class Shooter extends SubsystemBase{
 
   public void calcShooterSpeed() {
     // double targetDistMotion = Math.sqrt(Math.pow(shootX, 2) + Math.pow(shootY, 2)) * ShooterConstants.TIME_TO_SHOOT; // TODO test
-    double speed = 0.0134 * Math.pow(targetDist, 3) - 0.2288 * Math.pow(targetDist, 2) + 1.3827 * targetDist - 2.3059;
-    if (speed <= 0.3) {
-      speed = 0.3;
+    // double speed = 0.0134 * Math.pow(targetDist, 3) - 0.2288 * Math.pow(targetDist, 2) + 1.3827 * targetDist - 2.3059;
+    double speed = -0.013 * Math.pow(targetDist, 2) + 0.1399 * targetDist + 0.1656 - 0.02;
+    if (speed <= 0.4) {
+      speed = 0.4;
     }
     currentShooterSpeed = speed + speedIncrement;
+
+    currentShooterSpeed = 0.52 + speedIncrement;
   }
 
 
@@ -452,6 +459,8 @@ public class Shooter extends SubsystemBase{
     SmartDashboard.putNumber("shooter speed override", speedIncrement);
     SmartDashboard.putNumber("turret angular override", Math.toDegrees(rotationIncrement));
     SmartDashboard.putNumber("turres absAngle", turretRotAbs);
+    SmartDashboard.putNumber("shooter 1 current", powerMotor1.getOutputCurrent());
+    SmartDashboard.putNumber("shooter 2 current", powerMotor2.getOutputCurrent());
   }
 
   private enum AimBot {

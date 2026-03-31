@@ -88,13 +88,15 @@ public class Limelight extends SubsystemBase{
             tagsVisible = positionEstimate.tagCount > 0;
         } else{
             
-            return new Pose2d(-1.0, -1.0, new Rotation2d(-1.0));
+            //return new Pose2d(-1.0, -1.0, new Rotation2d(-1.0));
+            return SWERVE.getOdometryPose();
         }
         
         if (!spinningTooFastToBeUseful && tagsVisible) {
             return positionEstimate.pose;
         } else {
-            return new Pose2d(-1.0, -1.0, new Rotation2d(-1.0)); //TODO return Null and keep the original pose
+            //return new Pose2d(-1.0, -1.0, new Rotation2d(-1.0)); //TODO return Null and keep the original pose
+            return SWERVE.getOdometryPose();
         }
     }
 
