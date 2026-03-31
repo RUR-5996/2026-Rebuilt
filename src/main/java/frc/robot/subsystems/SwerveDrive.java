@@ -52,7 +52,7 @@ public class SwerveDrive extends SubsystemBase {
       // The 2025/2026 Pose Estimator constructor
       m_odometry = new SwerveDrivePoseEstimator(
             DRIVETRAIN.swerveKinematics, // 1. Kinematics
-            new Rotation2d(gyro.getRotation2d()), // 2. Gyro Angle
+            new Rotation2d(gyro.getRotation2d().getRadians()), // 2. Gyro Angle
             DRIVETRAIN.getModulePositions(), // 3. Module Positions
             new Pose2d() // 4. Initial Pose
       );
@@ -67,7 +67,7 @@ public class SwerveDrive extends SubsystemBase {
       rotationController.enableContinuousInput(-180, 180);
       rotationController.setTolerance(2);
 
-      chassisSpeeds = ChassisSpeeds.fromRobotRelativeSpeeds(0, 0, 0, new Rotation2d(Math.toRadians(gyro.getRotation2d())));
+      chassisSpeeds = ChassisSpeeds.fromRobotRelativeSpeeds(0, 0, 0, new Rotation2d(gyro.getRotation2d().getRadians()));
    }
 
    @Override
@@ -79,7 +79,7 @@ public class SwerveDrive extends SubsystemBase {
 
       SmartDashboard.putNumber("Robot X", getPose().getX());
       SmartDashboard.putNumber("Robot Y", getPose().getY());
-      SmartDashboard.putNumber("Robot Gyro Angle", gyro.getRotation2d());
+      SmartDashboard.putNumber("Robot Gyro Angle", gyro.getRotation2d().getDegrees());
    }
 
    public static SwerveDrive getInstance() {
