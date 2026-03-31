@@ -21,6 +21,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.DriverConstants;
+import frc.robot.Constants.LimelightConstants;
 import frc.robot.Constants.SwerveConstants;
 import frc.robot.Util.LimelightHelpers;
 
@@ -74,8 +75,8 @@ public class SwerveDrive extends SubsystemBase {
    public void periodic() {
       // Update odometry with current gyro heading and module positions (from Phoenix
       // 6)
-      // m_odometry.update(new Rotation2d(Math.toRadians(gyro.getAngle())), DRIVETRAIN.getModulePositions());
-      updateOdometry();
+      m_odometry.update(new Rotation2d(Math.toRadians(gyro.getAngle())), DRIVETRAIN.getModulePositions());
+      // updateOdometry();
 
       SmartDashboard.putNumber("Robot X", getPose().getX());
       SmartDashboard.putNumber("Robot Y", getPose().getY());
@@ -264,8 +265,8 @@ public class SwerveDrive extends SubsystemBase {
 
       boolean useMegaTag2 = true; // set to false to use MegaTag1
       boolean doRejectUpdate = false;
-      if (useMegaTag2 == false) {
-         LimelightHelpers.PoseEstimate mt1 = LimelightHelpers.getBotPoseEstimate_wpiBlue("limelight");
+      if (!useMegaTag2) {
+         LimelightHelpers.PoseEstimate mt1 = LimelightHelpers.getBotPoseEstimate_wpiBlue("limelight-robot");
 
          if (mt1.tagCount == 1 && mt1.rawFiducials.length == 1) {
             if (mt1.rawFiducials[0].ambiguity > .7) {
@@ -285,10 +286,10 @@ public class SwerveDrive extends SubsystemBase {
                   mt1.pose,
                   mt1.timestampSeconds);
          }
-      } else if (useMegaTag2 == true) {
-         LimelightHelpers.SetRobotOrientation("limelight",
+      } else if (useMegaTag2) {
+         LimelightHelpers.SetRobotOrientation(LimelightConstants.ROBOT_LIMELIGHT_NAME,
                m_odometry.getEstimatedPosition().getRotation().getDegrees(), 0, 0, 0, 0, 0);
-         LimelightHelpers.PoseEstimate mt2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight");
+         LimelightHelpers.PoseEstimate mt2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(LimelightConstants.ROBOT_LIMELIGHT_NAME);
          if (Math.abs(gyro.getRate()) > 720) // if our angular velocity is greater than 720 degrees per second, ignore
                                                // vision updates
          {

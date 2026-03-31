@@ -14,6 +14,8 @@ import com.revrobotics.PersistMode;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.hal.FRCNetComm.tResourceType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 
@@ -124,15 +126,22 @@ public class Intake extends SubsystemBase{
         SmartDashboard.putNumber("R_pos", intakeFlipOutEncoderR.getPosition());
         SmartDashboard.putNumber("setPoint", setPoint);
         SmartDashboard.putString("intakeState", getIntakeState());
+        SmartDashboard.putBoolean("Is intake out?", intakeState.val);
     }
 
     public Command intakeFlipOut() {
-        return Commands.runOnce(() -> {
+        return new SequentialCommandGroup(Commands.runOnce(() -> {
             intakeFlipOutControllerL.setSetpoint(Constants.IntakeConstants.POS_OUT, SparkMax.ControlType.kPosition);
             intakeFlipOutControllerR.setSetpoint(Constants.IntakeConstants.POS_OUT, SparkMax.ControlType.kPosition);
             if (intakeFlipOutEncoderL.getPosition() == Constants.IntakeConstants.POS_OUT) {
                 intakeState = IntakeState.OUT;
-            }});
+            }}),
+            Commands.waitSeconds(1.5),
+            Commands.runOnce(() -> {
+                coastIntake();
+                intakeFlipOutMotorL.stopMotor();
+                intakeFlipOutMotorR.stopMotor();
+            }));
         /*return Commands.runOnce(() -> {
         if (intakeState == IntakeState.IN){
             intakeState = IntakeState.OUT;
@@ -144,6 +153,7 @@ public class Intake extends SubsystemBase{
 
     public Command intakeFlipIn() {
         return Commands.runOnce(() -> {
+            brakeIntake();
             intakeFlipOutControllerL.setSetpoint(Constants.IntakeConstants.POS_IN, SparkMax.ControlType.kPosition);
             intakeFlipOutControllerR.setSetpoint(Constants.IntakeConstants.POS_IN, SparkMax.ControlType.kPosition);
             if (intakeFlipOutEncoderL.getPosition() == Constants.IntakeConstants.POS_IN) {
@@ -193,9 +203,15 @@ public class Intake extends SubsystemBase{
     }
 
     private enum IntakeState {
-        IN,
-        OUT,
-        ERROR,
+        IN(false),
+        OUT(true),
+        ERROR(false);
+
+        public boolean val;
+
+        private IntakeState(boolean val) {
+            this.val = val;
+        }
     }
 
     private enum IntakeSpin {

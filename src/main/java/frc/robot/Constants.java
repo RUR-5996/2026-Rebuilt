@@ -70,7 +70,7 @@ public final class Constants {
     public static final double RR_STEER_OFFSET = 0;
 
     // --- Speed Constants ---
-    public static final double MAX_SPEED_METERS_PER_SECOND = 3; // 4.5
+    public static final double MAX_SPEED_METERS_PER_SECOND = 4.5; // 4.5
     public static final double MAX_ANGULAR_SPEED = (450.0 /360.0) * (2 * Math.PI);
 
 
@@ -89,10 +89,10 @@ public final class Constants {
     public static final int POWER_MOTOR_1_ID = 14;
     public static final int POWER_MOTOR_2_ID = 15;
 
-    public static final double POWER_MOTOR_P = 0.0;
+    public static final double POWER_MOTOR_P = 0.08;
     public static final double POWER_MOTOR_I = 0.0;
     public static final double POWER_MOTOR_D = 0.0;
-    public static final double POWER_MOTOR_V = 0.00175;
+    public static final double POWER_MOTOR_V = 0.00;
     public static final double POWER_MOTOR_GEAR_RATIO = 37.0/27.0;
     public static final double NEO_MAX_RPM = 5600.0;
 
@@ -142,9 +142,9 @@ public final class Constants {
     public static final int powerMotorId = 43;
 
     public static final double POS_IN = 0;
-    public static final double POS_OUT = 115;
+    public static final double POS_OUT = 120;
 
-    public static final double SPEED = 0.5;
+    public static final double SPEED = 0.7;
     public static final double FLIPOUT_COEFFICIENT = 1/25.0*18.0/40.0*360.0;
   }
 
