@@ -54,7 +54,7 @@ public class Limelight extends SubsystemBase{
         SmartDashboard.putNumber("x_estimation", estimated_position.getX());
         SmartDashboard.putNumber("y_estimation", estimated_position.getY());
         SmartDashboard.putNumber("rot_estimation",  estimated_position.getRotation().getDegrees());
-        SmartDashboard.putNumber("visible_apriltags", getTagCount());
+        //SmartDashboard.putNumber("visible_apriltags", getTagCount());
     }
 
     public static Limelight getInstance(String name) {
@@ -83,8 +83,14 @@ public class Limelight extends SubsystemBase{
         } /*else if (limelightName == LimelightConstants.TURRET_LIMELIGHT_NAME) {
             spinningTooFastToBeUseful = (Math.abs(SHOOTER.getTurretVelocity() + SWERVE.getSpinRate())) > LimelightConstants.MAX_VISION_SPIN;
         }*/
-
-        boolean tagsVisible = positionEstimate.tagCount > 0;
+        boolean tagsVisible = false;
+        if (positionEstimate != null) {
+            tagsVisible = positionEstimate.tagCount > 0;
+        } else{
+            
+            return new Pose2d(-1.0, -1.0, new Rotation2d(-1.0));
+        }
+        
         if (!spinningTooFastToBeUseful && tagsVisible) {
             return positionEstimate.pose;
         } else {

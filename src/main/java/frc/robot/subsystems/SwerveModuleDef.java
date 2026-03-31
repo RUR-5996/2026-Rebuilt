@@ -76,7 +76,7 @@ public class SwerveModuleDef {
 
         m_velocitySetter.EnableFOC = true;
 
-        //resetSteerEncoder();
+        resetSteerEncoder();
     }
 
     public void resetSteerEncoder() {

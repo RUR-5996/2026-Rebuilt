@@ -104,11 +104,12 @@ public class RobotContainer {
     //m_driverController.rightTrigger().onFalse(SHOOTER.shooterOff());
 
     m_driverController.leftTrigger().onTrue(SHOOTER.shooterOn());
-    m_driverController.rightTrigger().onTrue(SHOOTER.feederOn());
-    m_driverController.rightTrigger().onTrue(INDEXER.indexerOn());
     m_driverController.leftTrigger().onFalse(SHOOTER.shooterOff());
-    m_driverController.leftTrigger().onFalse(INDEXER.indexerOff());
-    m_driverController.leftTrigger().onFalse(SHOOTER.feederOff());
+    m_driverController.rightTrigger().toggleOnTrue(SHOOTER.feederOn());
+    m_driverController.rightTrigger().toggleOnTrue(INDEXER.indexerOn());
+    m_driverController.rightBumper().toggleOnTrue(INDEXER.indexerReverse());
+    m_driverController.rightTrigger().toggleOnFalse(INDEXER.indexerOff());
+    m_driverController.rightTrigger().toggleOnFalse(SHOOTER.feederOff());
 
     //m_driverController.leftTrigger().onTrue(new ParallelCommandGroup(SHOOTER.feederOn(), INDEXER.indexerOn()));
     //m_driverController.leftTrigger().onFalse(new ParallelCommandGroup(SHOOTER.feederOff(), INDEXER.indexerOff()));
@@ -163,6 +164,10 @@ public class RobotContainer {
 
     m_secondController.povUp().toggleOnTrue(SHOOTER.adjustShooterSpeed(0.02));
     m_secondController.povDown().toggleOnTrue(SHOOTER.adjustShooterSpeed(-0.02));
+
+    m_secondController.y().toggleOnTrue(SHOOTER.setTarget("HUB"));
+    m_secondController.x().toggleOnTrue(SHOOTER.setTarget("DEPOT"));
+    m_secondController.b().toggleOnTrue(SHOOTER.setTarget("OUTPOST"));
     /* 
     m_secondController.povLeft().toggleOnTrue(SHOOTER.adjustShooterRotation(Math.toRadians(2)));
     m_secondController.povRight().toggleOnTrue(SHOOTER.adjustShooterRotation(Math.toRadians(-2)));
