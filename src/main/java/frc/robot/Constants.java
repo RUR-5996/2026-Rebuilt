@@ -81,6 +81,10 @@ public final class Constants {
 
   public final class ShooterConstants {
 
+    public static final double GRAVITATIONAL_C = 9.8066;
+
+    public static final double SHOOTER_ANGLE_RAD = 0.785;
+
     public static final double DEFAULT_SHOOTER_SPEED = 0.65;
     public static final double FEEDER_VELOCITY = 50;
 
@@ -123,6 +127,7 @@ public final class Constants {
     public static final double TURRET_Y = 0.1438;
     public static final double VEC_TURRET_LEN = Math.sqrt(Math.pow(TURRET_X, 2) + Math.pow(TURRET_Y, 2));
     public static final double VEC_TURRET_PHI = Math.acos(TURRET_X / TURRET_Y);
+    public static final double DELTA_H = 1.35;
 
     public static final double MINIMUM_SHOOTING_DISTANCE = 3.0; //TODO replace with actual value
 

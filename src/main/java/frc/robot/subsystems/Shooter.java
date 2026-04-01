@@ -90,6 +90,8 @@ public class Shooter extends SubsystemBase{
 
     private double testAngle = 0;
 
+    private double shootTime = 0.0;
+
 
     SwerveDrive SWERVE;
     Limelight TURRET_LIMELIGHT;
@@ -317,12 +319,32 @@ public class Shooter extends SubsystemBase{
     turretYabs = ShooterConstants.VEC_TURRET_LEN*Math.sin(phi)+pos.getY();
   }
 
+  public double getShootTime(double deltaX, double deltaY) {
+    double delta = Math.sqrt(Math.tan(ShooterConstants.SHOOTER_ANGLE_RAD) * deltaX - deltaY);
+
+    shootTime = Math.sqrt((2 * (delta - ShooterConstants.DELTA_H) / ShooterConstants.GRAVITATIONAL_C));
+
+    return shootTime;
+    // return 0.85;
+  }
+
   public void calcTurretAbsRotation() {
+
+    ChassisSpeeds speeds = SWERVE.getChassisSpeeds();
+    double turretAbsVelX = speeds.vxMetersPerSecond; // todo calculate turret speeds
+    double turretAbsVelY = speeds.vyMetersPerSecond;
     
-    //double deltaX = targetX - turretXabs;
-    //double deltaY = targetY - turretYabs;
     double deltaX = currentTarget.x - turretXabs;
     double deltaY = currentTarget.y - turretYabs;
+    double getShootTime = getShootTime(deltaX, deltaY);
+    deltaX -= getShootTime * turretAbsVelX;
+    deltaX -= getShootTime * turretAbsVelY;
+
+
+    /*
+    turretRotAbs = Math.atan2(shootX, shootY); // TODO test
+    */
+
     targetDist = Math.sqrt(Math.pow(deltaX, 2) + Math.pow(deltaY, 2));
     if (deltaX >= 0 && deltaY >= 0) {
         turretRotAbs = Math.asin(deltaY/targetDist);
@@ -336,13 +358,6 @@ public class Shooter extends SubsystemBase{
     else if (deltaX <= 0 && deltaY <= 0) {
         turretRotAbs = Math.PI/2 + Math.acos(deltaY/targetDist);
     }
-     /*
-    ChassisSpeeds chassisSpeeds = SWERVE.getChassisSpeeds();
-
-    shootX = deltaX / ShooterConstants.TIME_TO_SHOOT - chassisSpeeds.vxMetersPerSecond;
-    shootY = deltaY / ShooterConstants.TIME_TO_SHOOT - chassisSpeeds.vyMetersPerSecond;
-    turretRotAbs = Math.atan2(shootX, shootY); // TODO test
-    */
   }
 
   public void calcTurretRelRotation() { 
