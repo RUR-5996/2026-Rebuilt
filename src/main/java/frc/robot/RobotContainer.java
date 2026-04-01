@@ -2,7 +2,9 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.SwerveConstants;
@@ -87,8 +89,22 @@ public class RobotContainer {
     m_driverController.x().onTrue(INTAKE.intakeOn());
     m_driverController.y().onTrue(INTAKE.intakeOff());
 
+    m_driverController.a().toggleOnTrue(new SequentialCommandGroup(
+                                  SHOOTER.shooterOn(), 
+                                  new WaitCommand(0.4), 
+                                  new ParallelCommandGroup(SHOOTER.feederOn(), INDEXER.indexerOn(), INTAKE.intakeOn())
+                                  ));
 
+    m_driverController.b().toggleOnTrue(new ParallelCommandGroup(
+      SHOOTER.shooterOff(),
+      SHOOTER.feederOff(),
+      INDEXER.indexerOff(),
+      INTAKE.intakeOff()
+    ));
+
+    m_driverController.leftBumper().toggleOnTrue(SWERVE.toggleSlowMode());
     // --- SECOND CONTROLLER ---
+
     m_secondController.rightTrigger().toggleOnTrue(SHOOTER.shooterOn());
     m_secondController.rightTrigger().toggleOnTrue(SHOOTER.feederOn());
     m_secondController.rightTrigger().toggleOnTrue(INDEXER.indexerOn());
@@ -110,7 +126,8 @@ public class RobotContainer {
     m_secondController.povRight().toggleOnTrue(SHOOTER.setTarget("DEPOT"));
 
     //m_secondController.povLeft().toggleOnTrue(INTAKE.intakeFlipOut());
-    m_secondController.b().toggleOnTrue(LIMELIGHT.updateRobotPosition());
+    //m_secondController.b().toggleOnTrue(LIMELIGHT.updateRobotPosition());
+    m_secondController.b().toggleOnTrue(SWERVE.updateOdometry());
 
     m_secondController.leftBumper().toggleOnTrue(CLIMBER.testClimb());
     m_secondController.leftBumper().toggleOnFalse(CLIMBER.stopClimb());
@@ -129,7 +146,8 @@ public class RobotContainer {
 
     AutoBuilder.configure(
       SWERVE::getOdometryPose,
-      SWERVE::resetOdometry,
+      //SWERVE::resetOdometry, //TODO test
+      SWERVE::autoResetOdometry,
       SWERVE::getActualSpeeds,
       (speeds, feedforwards) -> SWERVE.setAutoChassisSpeeds(speeds),
       SwerveConstants.autoConfig,

@@ -450,12 +450,12 @@ public class Shooter extends SubsystemBase{
     SmartDashboard.putNumber("current shooting speed", powerEncoder1.getVelocity());
     SmartDashboard.putNumber("requested shooting speed", currentShooterSpeed*ShooterConstants.NEO_MAX_RPM*ShooterConstants.POWER_MOTOR_GEAR_RATIO);
     SmartDashboard.putNumber("calculated relative turret heading", Math.toDegrees(turretRotRel));
-    SmartDashboard.putNumber("current shooter speed", currentShooterSpeed);
+    SmartDashboard.putNumber("requested shooter speed percent", currentShooterSpeed);
     SmartDashboard.putNumber("current turret angle", turretEncoder.getPosition());
     SmartDashboard.putNumber("requested turret angle", turretController.getSetpoint());
     SmartDashboard.putBoolean("aimbot", aimBot.val);
     SmartDashboard.putBoolean("can shoot?", targetDist > ShooterConstants.MINIMUM_SHOOTING_DISTANCE);
-    SmartDashboard.putBoolean("autoShooting", autoShoot.val);
+    //SmartDashboard.putBoolean("autoShooting", autoShoot.val);
     SmartDashboard.putNumber("shooter speed override", speedIncrement);
     SmartDashboard.putNumber("turret angular override", Math.toDegrees(rotationIncrement));
     SmartDashboard.putNumber("turres absAngle", turretRotAbs);
