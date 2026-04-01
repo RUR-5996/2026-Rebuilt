@@ -305,7 +305,7 @@ public class Shooter extends SubsystemBase{
     }
     currentShooterSpeed = speed + speedIncrement;
 
-    currentShooterSpeed = 0.52 + speedIncrement;
+    currentShooterSpeed = 0.52 + speedIncrement; //TODO test and keep or remove
   }
 
 
