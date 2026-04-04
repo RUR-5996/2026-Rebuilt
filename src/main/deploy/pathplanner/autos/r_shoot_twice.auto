@@ -1,0 +1,145 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "named",
+          "data": {
+            "name": "intakeOut"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "intakeOn"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "r_out"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "aimOn"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "targetHub"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "r_out1"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "r_out2"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "shooterOn"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.6
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "feederOn"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "indexerOn"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 7.0
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "indexerOff"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "feederOff"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "shooterOff"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "r_return_from_shoot_short"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "r_out1_short"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "r_out2_short"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "shooterOn"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.6
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "feederOn"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "indexerOn"
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": true,
+  "folder": null,
+  "choreoAuto": false
+}

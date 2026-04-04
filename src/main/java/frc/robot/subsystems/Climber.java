@@ -6,9 +6,12 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants.ClimberConstants;
 
 public class Climber extends SubsystemBase {
@@ -28,7 +31,7 @@ public class Climber extends SubsystemBase {
     }
 
     public Climber() {
-        climberMotor = new TalonFX(ClimberConstants.CLIMBER_MOTOR_ID);
+        //climberMotor = new TalonFX(ClimberConstants.CLIMBER_MOTOR_ID);
         climberConfig = new TalonFXConfiguration();
 
         climberConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive; //TODO check if correct
@@ -39,27 +42,30 @@ public class Climber extends SubsystemBase {
         climberConfig.Slot0.kD = ClimberConstants.CLIMBER_MOTOR_D;
         climberConfig.Slot0.kV = ClimberConstants.CLIMBER_MOTOR_V;
 
-        climberMotor.getConfigurator().apply(climberConfig);
+        //climberMotor.getConfigurator().apply(climberConfig);
+        //climberMotor.setPosition(0);
     }
 
 
     public Command climb() {
-        return Commands.runOnce(() -> {
-            if (climberState == ClimberState.EXTENDED) {
-                climberState = ClimberState.CLIMBING;
+        return Commands.run(() -> {
+            climberMotor.setControl(new PositionDutyCycle(ClimberConstants.CLIMBER_RETRACTED_POS));
+            /*if (climberState == ClimberState.EXTENDED) {
+                //climberState = ClimberState.CLIMBING;
                 climberMotor.setControl(new PositionDutyCycle(ClimberConstants.CLIMBER_RETRACTED_POS));
                 climberState = ClimberState.RETRACTED;
-            }
+            }*/
         });
     }
 
     public Command unclimb() {
-        return Commands.runOnce(() -> {
-            if (climberState == ClimberState.RETRACTED) {
+        return Commands.run(() -> {
+            climberMotor.setControl(new PositionDutyCycle(ClimberConstants.CLIMBER_EXTENDED_POS));
+            /*if (climberState == ClimberState.RETRACTED) {
                 climberState = ClimberState.CLIMBING;
                 climberMotor.setControl(new PositionDutyCycle(ClimberConstants.CLIMBER_EXTENDED_POS));
                 climberState = ClimberState.EXTENDED;
-            }
+            }*/
         });
     }
 
@@ -79,6 +85,26 @@ public class Climber extends SubsystemBase {
         return Commands.runOnce(() -> {
             climberMotor.set(0);
         });
+    }
+
+/*     public Command climberOut() {
+        return new SequentialCommandGroup(
+            testUnClimb(),
+            new WaitCommand(3),
+            stopClimb()
+        );
+    }
+
+    public Command climberIn() {
+        return new SequentialCommandGroup(
+            testClimb(),
+            new WaitCommand(3),
+            stopClimb()
+        );
+    }*/
+
+    public void report() {
+        SmartDashboard.putNumber("climberMotorPos", climberMotor.getPosition().getValueAsDouble());
     }
 
     public String getClimberState() {

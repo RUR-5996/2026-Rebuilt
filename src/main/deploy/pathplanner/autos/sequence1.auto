@@ -15,6 +15,18 @@
                 }
               },
               {
+                "type": "named",
+                "data": {
+                  "name": "intakeOut"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "intakeOn"
+                }
+              },
+              {
                 "type": "path",
                 "data": {
                   "pathName": "centerRight_centerRightEnd"
@@ -39,6 +51,6 @@
     }
   },
   "resetOdom": true,
-  "folder": null,
+  "folder": "testing",
   "choreoAuto": false
 }

@@ -8,8 +8,8 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 4.703095577708,
-        "y": 7.40000436332313
+        "x": 4.703095577746077,
+        "y": 7.4
       },
       "isLocked": false,
       "linkedName": "lTrench"
@@ -45,9 +45,9 @@
     "rotation": 0.0
   },
   "reversed": false,
-  "folder": null,
+  "folder": "testing",
   "idealStartingState": {
-    "velocity": 0,
+    "velocity": 0.0,
     "rotation": 0.0
   },
   "useDefaultConstraints": true

@@ -29,10 +29,13 @@ public class SwerveDrive extends SubsystemBase {
 
    public final DriveTrain DRIVETRAIN;
    private static SwerveDrive SWERVE;
+   Shooter SHOOTER;
 
    private boolean slowmode = false;
    private boolean holdAngleEnabled = false;
    private double holdAngle = 0;
+
+   private boolean vision_pos = false;
 
    private boolean fieldRelative = true;
 
@@ -47,13 +50,15 @@ public class SwerveDrive extends SubsystemBase {
 
    public SwerveDrive() {
       DRIVETRAIN = DriveTrain.getInstance();
+      //SHOOTER = Shooter.getInstance();
 
       gyro = new AHRS(AHRS.NavXComType.kMXP_SPI);
 
       // The 2025/2026 Pose Estimator constructor
       m_odometry = new SwerveDrivePoseEstimator(
             DRIVETRAIN.swerveKinematics, // 1. Kinematics
-            new Rotation2d(gyro.getRotation2d().getRadians()), // 2. Gyro Angle
+            new Rotation2d(Math.toRadians(gyro.getAngle())),
+            //new Rotation2d(gyro.getRotation2d().getRadians()), // 2. Gyro Angle
             DRIVETRAIN.getModulePositions(), // 3. Module Positions
             new Pose2d() // 4. Initial Pose
       );
@@ -75,8 +80,11 @@ public class SwerveDrive extends SubsystemBase {
    public void periodic() {
       // Update odometry with current gyro heading and module positions (from Phoenix
       // 6)
-      m_odometry.update(new Rotation2d(gyro.getRotation2d().getRadians()), DRIVETRAIN.getModulePositions());
-      // updateOdometry();
+      //m_odometry.update(new Rotation2d(gyro.getRotation2d().getRadians()), DRIVETRAIN.getModulePositions());
+      m_odometry.update(new Rotation2d(Math.toRadians(gyro.getAngle())), DRIVETRAIN.getModulePositions());
+      if (vision_pos) {
+         updateOdometryV();
+      }
       report();
    }
 
@@ -84,8 +92,9 @@ public class SwerveDrive extends SubsystemBase {
 
       SmartDashboard.putNumber("Robot X", getPose().getX());
       SmartDashboard.putNumber("Robot Y", getPose().getY());
-      SmartDashboard.putNumber("Robot Gyro Angle", gyro.getRotation2d().getDegrees());
+      SmartDashboard.putNumber("Robot Gyro Angle", gyro.getAngle());
       SmartDashboard.putBoolean("slow mode", slowmode);
+      SmartDashboard.putBoolean("vision On", vision_pos);
    }
 
    public static SwerveDrive getInstance() {
@@ -93,6 +102,32 @@ public class SwerveDrive extends SubsystemBase {
          SWERVE = new SwerveDrive();
       }
       return SWERVE;
+   }
+
+   public Command resetLeftTrench() {
+      return Commands.runOnce(() -> {
+         if(isRedAlliance()) {
+            resetOdometry(new Pose2d(13.78, 0.635, new Rotation2d(Math.toRadians(gyro.getAngle()))));
+         } else {
+            resetOdometry(new Pose2d(2.76, 7.434, new Rotation2d(Math.toRadians(gyro.getAngle()))));
+         }
+         //SHOOTER.rotationIncrement = 0;
+
+         
+      });
+   }
+
+   public Command resetRightTrench() {
+      return Commands.runOnce(() -> {
+         if (isRedAlliance()) {
+            resetOdometry(new Pose2d(13.78, 7.434, new Rotation2d(Math.toRadians(gyro.getAngle()))));
+         } else {
+            resetOdometry(new Pose2d(2.76, 0.635, new Rotation2d(Math.toRadians(gyro.getAngle()))));
+         }
+
+         //SHOOTER.rotationIncrement = 0;
+         
+      });
    }
 
    /**
@@ -125,8 +160,8 @@ public class SwerveDrive extends SubsystemBase {
          // Create ChassisSpeeds (Field Relative)
          ChassisSpeeds speeds = ChassisSpeeds.fromFieldRelativeSpeeds(
                // xSpeed, ySpeed, rot, getHeading()
-               //xSpeed, ySpeed, rot, new Rotation2d(Math.toRadians(gyro.getAngle())));
-               xSpeed, ySpeed, rot, new Rotation2d(gyro.getRotation2d().getRadians())); //TODO changed gyro heading getter
+               xSpeed, ySpeed, rot, new Rotation2d(Math.toRadians(gyro.getAngle())));
+               //xSpeed, ySpeed, rot, new Rotation2d(gyro.getRotation2d().getRadians())); //TODO changed gyro heading getter
 
          // Convert to module states and desaturate
          SwerveModuleState[] states = DRIVETRAIN.swerveKinematics.toSwerveModuleStates(speeds);
@@ -166,8 +201,8 @@ public class SwerveDrive extends SubsystemBase {
    }
 
    public void resetOdometry(Pose2d pose) { //TODO consider using this full code for gyro reseting after beaching the robot
-      //m_odometry.resetPosition(new Rotation2d(Math.toRadians(gyro.getAngle())), DRIVETRAIN.getModulePositions(), pose);
-      m_odometry.resetPosition(new Rotation2d(gyro.getRotation2d().getRadians()), DRIVETRAIN.getModulePositions(), pose); //TODO changed gyro angle getter
+      m_odometry.resetPosition(new Rotation2d(Math.toRadians(gyro.getAngle())), DRIVETRAIN.getModulePositions(), pose);
+      //m_odometry.resetPosition(new Rotation2d(gyro.getRotation2d().getRadians()), DRIVETRAIN.getModulePositions(), pose); //TODO changed gyro angle getter
    }
 
    public void autoResetOdometry(Pose2d pose) {
@@ -269,9 +304,65 @@ public class SwerveDrive extends SubsystemBase {
       });
    }
 
+   public Command toggleVision(){
+      return Commands.runOnce(() ->{
+         vision_pos = !vision_pos;
+      });
+   }
+
    public boolean isRedAlliance() {
       var alliance = DriverStation.getAlliance();
       return alliance.isPresent() && alliance.get() == Alliance.Red;
+   }
+   
+   public void updateOdometryV() { //TODO test on a button
+      m_odometry.update(
+            gyro.getRotation2d(),
+            DRIVETRAIN.getModulePositions()
+      );
+
+      boolean useMegaTag2 = true; // set to false to use MegaTag1
+      boolean doRejectUpdate = false;
+      if (!useMegaTag2) {
+         LimelightHelpers.PoseEstimate mt1 = LimelightHelpers.getBotPoseEstimate_wpiBlue("limelight-robot");
+
+         if (mt1.tagCount == 1 && mt1.rawFiducials.length == 1) {
+            if (mt1.rawFiducials[0].ambiguity > .7) {
+               doRejectUpdate = true;
+            }
+            if (mt1.rawFiducials[0].distToCamera > 3) {
+               doRejectUpdate = true;
+            }
+         }
+         if (mt1.tagCount == 0) {
+            doRejectUpdate = true;
+         }
+
+         if (!doRejectUpdate) {
+            m_odometry.setVisionMeasurementStdDevs(VecBuilder.fill(.5, .5, 9999999));
+            m_odometry.addVisionMeasurement(
+                  mt1.pose,
+                  mt1.timestampSeconds);
+         }
+      } else if (useMegaTag2) {
+         LimelightHelpers.SetRobotOrientation(LimelightConstants.ROBOT_LIMELIGHT_NAME,
+               m_odometry.getEstimatedPosition().getRotation().getDegrees(), 0, 0, 0, 0, 0);
+         LimelightHelpers.PoseEstimate mt2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(LimelightConstants.ROBOT_LIMELIGHT_NAME);
+         if (Math.abs(gyro.getRate()) > 720) // if our angular velocity is greater than 720 degrees per second, ignore
+                                               // vision updates
+         {
+            doRejectUpdate = true;
+         }
+         if (mt2.tagCount == 0) {
+            doRejectUpdate = true;
+         }
+         if (!doRejectUpdate) {
+            m_odometry.setVisionMeasurementStdDevs(VecBuilder.fill(.7, .7, 9999999));
+            m_odometry.addVisionMeasurement(
+                  mt2.pose,
+                  mt2.timestampSeconds);
+         }
+      }
    }
 
    public Command updateOdometry() { //TODO test on a button
@@ -325,6 +416,7 @@ public class SwerveDrive extends SubsystemBase {
       }
    });
    }
+
 
    // Debugging
    public Command driveWheelSpins(double spins) {

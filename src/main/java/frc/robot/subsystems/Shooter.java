@@ -27,11 +27,16 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
+import static edu.wpi.first.units.Units.RevolutionsPerSecond;
+
+import java.util.Optional;
 import java.util.function.BooleanSupplier;
 
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
@@ -67,10 +72,10 @@ public class Shooter extends SubsystemBase{
 
     private final VelocityVoltage feederVelocityVoltage = new VelocityVoltage(0);
 
-    private double currentShooterSpeed = 0.5;
+    private double currentShooterSpeed = 0.51;
 
-    private double speedIncrement = 0;
-    private double rotationIncrement = 0;
+    public double speedIncrement = 0;
+    public double rotationIncrement = 0;
 
     private double turretXabs = 0.0;
     private double turretYabs = 0.0;
@@ -186,6 +191,12 @@ public class Shooter extends SubsystemBase{
             double targetRPM = ShooterConstants.NEO_MAX_RPM * ShooterConstants.POWER_MOTOR_GEAR_RATIO * ShooterConstants.DEFAULT_SHOOTER_SPEED;
             powerController1.setSetpoint(targetRPM, ControlType.kVelocity, ClosedLoopSlot.kSlot0);
             powerController2.setSetpoint(targetRPM, ControlType.kVelocity, ClosedLoopSlot.kSlot0);
+            
+            if (isRedAlliance()) {
+                currentTarget = Target.REDHUB;
+            } else {
+                currentTarget = Target.BLUEHUB;
+              }
             });
         }
 
@@ -279,35 +290,34 @@ public class Shooter extends SubsystemBase{
 
   public Command adjustShooterRotation(double increment) {
     return Commands.runOnce(() -> {
-      rotationIncrement += increment;
+      rotationIncrement += Math.toRadians(increment);
     });
   }
 
   public Command setTarget(String name) {
     return Commands.runOnce(() -> {
-      switch(name) {
-        case "HUB":
+      if (name.equals("HUB")) {
           currentTarget = isRedAlliance() ? Target.REDHUB: Target.BLUEHUB;
-        case "OUTPOST":
+      } else if (name.equals("OUTPOST")) {
           currentTarget = isRedAlliance() ? Target.REDOUTPOST: Target.BLUEOUTPOST;
-        case "DEPOT":
+      } else if (name.equals("DEPOT")) {
           currentTarget = isRedAlliance() ? Target.REDDEPOT: Target.BLUEDEPOT;
-        default:
-          currentTarget = isRedAlliance() ? Target.REDHUB: Target.BLUEHUB;
-      }
+      } else {
+        currentTarget = isRedAlliance() ? Target.REDHUB: Target.BLUEHUB;
+      }          
     });
   }
 
   public void calcShooterSpeed() {
     // double targetDistMotion = Math.sqrt(Math.pow(shootX, 2) + Math.pow(shootY, 2)) * ShooterConstants.TIME_TO_SHOOT; // TODO test
     // double speed = 0.0134 * Math.pow(targetDist, 3) - 0.2288 * Math.pow(targetDist, 2) + 1.3827 * targetDist - 2.3059;
-    double speed = -0.013 * Math.pow(targetDist, 2) + 0.1399 * targetDist + 0.1656 - 0.02;
+    /*double speed = -0.013 * Math.pow(targetDist, 2) + 0.1399 * targetDist + 0.1656;
     if (speed <= 0.4) {
       speed = 0.4;
-    }
-    currentShooterSpeed = speed + speedIncrement;
+    }*/
+    currentShooterSpeed = ShooterConstants.DEFAULT_SHOOTER_SPEED + speedIncrement;
 
-    currentShooterSpeed = 0.52 + speedIncrement; //TODO test and keep or remove
+    // currentShooterSpeed = 0.52 + speedIncrement; //TODO test and keep or remove
   }
 
 
@@ -320,9 +330,9 @@ public class Shooter extends SubsystemBase{
   }
 
   public double getShootTime(double deltaX, double deltaY) {
-    double delta = Math.sqrt(Math.tan(ShooterConstants.SHOOTER_ANGLE_RAD) * deltaX - deltaY);
+    double delta = Math.sqrt(Math.pow(deltaX, 2) + Math.pow(deltaY, 2));
 
-    shootTime = Math.sqrt((2 * (delta - ShooterConstants.DELTA_H) / ShooterConstants.GRAVITATIONAL_C));
+    shootTime = Math.sqrt(Math.abs((2 * (delta - ShooterConstants.DELTA_H) / ShooterConstants.GRAVITATIONAL_C)));
 
     return shootTime;
     // return 0.85;
@@ -331,20 +341,23 @@ public class Shooter extends SubsystemBase{
   public void calcTurretAbsRotation() {
 
     ChassisSpeeds speeds = SWERVE.getChassisSpeeds();
-    double turretAbsVelX = speeds.vxMetersPerSecond; // todo calculate turret speeds
+    double turretAbsVelX = speeds.vxMetersPerSecond; 
     double turretAbsVelY = speeds.vyMetersPerSecond;
     
     double deltaX = currentTarget.x - turretXabs;
     double deltaY = currentTarget.y - turretYabs;
-    double getShootTime = getShootTime(deltaX, deltaY);
-    deltaX -= getShootTime * turretAbsVelX;
-    deltaX -= getShootTime * turretAbsVelY;
-
-
+    //double getShootTime = getShootTime(deltaX, deltaY);
+    //double deltaX_rot = deltaX - getShootTime * turretAbsVelX;
+    //double deltaY_rot = deltaY - getShootTime * turretAbsVelY;
+    
+    //SmartDashboard.putNumber("filip delta X", deltaX);
+    //SmartDashboard.putNumber("filip delta y", deltaY);
+    //SmartDashboard.putNumber("shootTime", shootTime);
+    
     /*
     turretRotAbs = Math.atan2(shootX, shootY); // TODO test
     */
-
+    
     targetDist = Math.sqrt(Math.pow(deltaX, 2) + Math.pow(deltaY, 2));
     if (deltaX >= 0 && deltaY >= 0) {
         turretRotAbs = Math.asin(deltaY/targetDist);
@@ -451,9 +464,10 @@ public class Shooter extends SubsystemBase{
     calcTurretXY();
     calcTurretAbsRotation();
     calcTurretRelRotation();
+    calcShooterSpeed();
     if (aimBot == AimBot.ON) {
       rotateTurret(Math.toDegrees(turretRotRel));
-      calcShooterSpeed();
+      
     } else {
       rotateStop();
     }
@@ -473,9 +487,10 @@ public class Shooter extends SubsystemBase{
     //SmartDashboard.putBoolean("autoShooting", autoShoot.val);
     SmartDashboard.putNumber("shooter speed override", speedIncrement);
     SmartDashboard.putNumber("turret angular override", Math.toDegrees(rotationIncrement));
-    SmartDashboard.putNumber("turres absAngle", turretRotAbs);
+    SmartDashboard.putNumber("turres absAngle", Math.toDegrees(turretRotAbs));
     SmartDashboard.putNumber("shooter 1 current", powerMotor1.getOutputCurrent());
     SmartDashboard.putNumber("shooter 2 current", powerMotor2.getOutputCurrent());
+    SmartDashboard.putString("shooter goal", currentTarget.toString());
   }
 
   private enum AimBot {
@@ -505,8 +520,8 @@ public class Shooter extends SubsystemBase{
     BLUEOUTPOST(2, 2),
     BLUEDEPOT(2, 6),
     REDHUB(11.915, 4.035),
-    REDOUTPOST(16.538, 2),
-    REDDEPOT(16.538, 6);
+    REDOUTPOST(16.538, 6),
+    REDDEPOT(16.538, 2);
 
     public double x = 0;
     public double y = 0;
