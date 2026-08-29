@@ -201,15 +201,15 @@ public final class Constants {
     public static final double STROBEWHITE = -.05;
   }
 
-  public final class ClimberConstants {
-    public static final int CLIMBER_MOTOR_ID = 31; 
-    public static final double CLIMBER_MOTOR_P = 1;
-    public static final double CLIMBER_MOTOR_I = 0;
-    public static final double CLIMBER_MOTOR_D = 0;
-    public static final double CLIMBER_MOTOR_V = 0.12; 
+  public final class ElevatorConstants {
+    public static final int ELEVATOR_MOTOR_ID = 31; 
+    public static final double ELEVATOR_MOTOR_P = 1;
+    public static final double ELEVATOR_MOTOR_I = 0;
+    public static final double ELEVATOR_MOTOR_D = 0;
+    public static final double ELEVATOR_MOTOR_V = 0.12; 
 
-    public static final double CLIMBER_RETRACTED_POS = 0; //TODO replace with actual value
-    public static final double CLIMBER_EXTENDED_POS = 150;
+    public static final double ELEVATOR_RETRACTED_POS = 0; //TODO replace with actual value
+    public static final double ELEVATOR_EXTENDED_POS = 150;
   }
 }
 

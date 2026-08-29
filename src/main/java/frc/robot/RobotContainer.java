@@ -17,24 +17,21 @@ import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.config.RobotConfig;
 
 import frc.robot.subsystems.*;
-import frc.robot.Util.Dashboard;
 
 public class RobotContainer {
 
   public Shooter SHOOTER;
   public Indexer INDEXER;
-  public Dashboard DASHBOARD;
   public Intake INTAKE;
   public SwerveDrive SWERVE;
   public DriveTrain DRIVE_TRAIN;
   public Limelight LIMELIGHT;
-  //public Climber CLIMBER;
+  public Elevator ELEVATOR;
 
   public Trigger shooterInRange;
 
   private final CommandXboxController m_driverController = new CommandXboxController(OperatorConstants.kDriverControllerPort);
   private final CommandXboxController m_secondController = new CommandXboxController(OperatorConstants.kSecondControllerPort);
-  //private final CommandXboxController m_testController = new CommandXboxController(OperatorConstants.kTestControllerPort);
 
   private final SendableChooser<Command> autoChooser;
   RobotConfig config;
@@ -44,11 +41,10 @@ public class RobotContainer {
     SWERVE = SwerveDrive.getInstance();
     SHOOTER = Shooter.getInstance();
     INDEXER = Indexer.getInstance();
-    DASHBOARD = new Dashboard();
     INTAKE = Intake.getInstance();
     DRIVE_TRAIN = DriveTrain.getInstance();
     LIMELIGHT = Limelight.getInstance("limelight-robot");
-    //CLIMBER = Climber.getInstance();
+    //ELEVATOR = Elevator.getInstance();
 
     //semi-auto triggersi
     shooterInRange = new Trigger(SHOOTER.inRange());
@@ -66,8 +62,6 @@ public class RobotContainer {
     NamedCommands.registerCommand("aimOn", SHOOTER.aimOn());
     NamedCommands.registerCommand("targetHub", SHOOTER.setTarget("HUB"));
     NamedCommands.registerCommand("intakeOut", INTAKE.intakeFlipOut());
-    //NamedCommands.registerCommand("climberOut", CLIMBER.unclimb());
-    //NamedCommands.registerCommand("climberIn", CLIMBER.climb());
     NamedCommands.registerCommand("autoShoot", SHOOTER.shooterOnDefault());
 
 
@@ -113,55 +107,16 @@ public class RobotContainer {
     m_driverController.leftBumper().toggleOnTrue(SWERVE.toggleSlowMode());
     m_driverController.povLeft().toggleOnTrue(SWERVE.resetLeftTrench());
     m_driverController.povRight().toggleOnTrue(SWERVE.resetRightTrench());
-    
-    // --- SECOND CONTROLLER ---
-
-    //m_secondController.rightTrigger().toggleOnTrue(SHOOTER.shooterOn());
-    //m_secondController.rightTrigger().toggleOnTrue(SHOOTER.feederOn());
-    //m_secondController.rightTrigger().toggleOnTrue(INDEXER.indexerOn());
-
-    //m_secondController.rightTrigger().toggleOnFalse(SHOOTER.shooterOff());
-    //m_secondController.rightTrigger().toggleOnFalse(SHOOTER.feederOff());
-    //m_secondController.rightTrigger().toggleOnFalse(INDEXER.indexerOff());
-
-    //m_secondController.y().toggleOnTrue(CLIMBER.climb());
-    //m_secondController.x().toggleOnTrue(CLIMBER.unclimb());
-
     m_secondController.a().toggleOnTrue(SHOOTER.aimOn());
     m_secondController.b().toggleOnTrue(SHOOTER.adjustShooterSpeed(0.01));
     m_secondController.b().toggleOnTrue(SHOOTER.adjustShooterSpeed(-0.01));
-    //m_secondController.b().toggleOnTrue(SWERVE.toggleVision());
     m_secondController.x().toggleOnTrue(INTAKE.intakeFlipOut());
-
-    //m_secondController.povUp().toggleOnTrue(SHOOTER.adjustShooterSpeed(0.02));
-    //m_secondController.povDown().toggleOnTrue(SHOOTER.adjustShooterSpeed(-0.02));
 
     m_secondController.povUp().toggleOnTrue(SHOOTER.setTarget("HUB"));
     m_secondController.povLeft().toggleOnTrue(SHOOTER.setTarget("DEPOT"));
     m_secondController.povRight().toggleOnTrue(SHOOTER.setTarget("OUTPOST"));
 
-    //m_secondController.povLeft().toggleOnTrue(INTAKE.intakeFlipOut());
-    //m_secondController.b().toggleOnTrue(LIMELIGHT.updateRobotPosition());
-
-    // m_secondController.leftBumper().toggleOnTrue(CLIMBER.testClimb());
-    // m_secondController.leftBumper().toggleOnFalse(CLIMBER.stopClimb());
-    // m_secondController.rightBumper().toggleOnTrue(CLIMBER.testUnClimb());
-    // m_secondController.rightBumper().toggleOnFalse(CLIMBER.stopClimb());R.climb());
-    //m_secondController.leftBumper().toggleOnTrue(CLIMBER.testClimb());
-    //m_secondController.leftBumper().toggleOnFalse(CLIMBER.stopClimb());
-    //m_secondController.rightBumper().toggleOnTrue(CLIMBER.testUnClimb());
-   // m_secondController.rightBumper().toggleOnFalse(CLIMBER.stopClimb());
-
-
-    m_secondController.leftTrigger().toggleOnTrue(SHOOTER.adjustShooterRotation(1));
     m_secondController.rightTrigger().toggleOnTrue(SHOOTER.adjustShooterRotation(-1));
-
-    // --- TEST CONTROLLER ---
-
-    //m_testController.leftBumper().toggleOnTrue(CLIMBER.testClimb());
-    //m_testController.leftBumper().toggleOnFalse(CLIMBER.stopClimb());
-    //m_testController.rightBumper().toggleOnTrue(CLIMBER.testUnClimb());
-    //m_testController.rightBumper().toggleOnFalse(CLIMBER.stopClimb());
   }
 
 
@@ -194,10 +149,9 @@ public class RobotContainer {
   public void periodic() {
     SHOOTER.periodic();
     SHOOTER.report();
-    DASHBOARD.periodic();
     INTAKE.report();
     LIMELIGHT.report();
-    //CLIMBER.report();
+    //ELEVATOR.report();
   }
   
   public Command getAutonomousCommand() {
