@@ -82,20 +82,12 @@ public class Shooter extends SubsystemBase{
     private double turretRotAbs = 0.0;
     private double turretRotRel = 0.0;
 
-    private double targetX = 4.5;
-    private double targetY = 4.0;
     private double targetDist = 0.0;
 
-    private double shootX = 0;
-    private double shootY = 0;
+    public double x = 0;
+    public double y = 0;
 
     private AimBot aimBot = AimBot.OFF;
-    private Target currentTarget = Target.BLUEHUB;
-    private AutoShoot autoShoot = AutoShoot.OFF;
-
-    private double testAngle = 0;
-
-    private double shootTime = 0.0;
 
 
     SwerveDrive SWERVE;
@@ -192,19 +184,6 @@ public class Shooter extends SubsystemBase{
             powerController1.setSetpoint(targetRPM, ControlType.kVelocity, ClosedLoopSlot.kSlot0);
             powerController2.setSetpoint(targetRPM, ControlType.kVelocity, ClosedLoopSlot.kSlot0);
             
-            if (isRedAlliance()) {
-                currentTarget = Target.REDHUB;
-            } else {
-                currentTarget = Target.BLUEHUB;
-              }
-            });
-        }
-
-    public Command shooterOn(double speedPercentage) {
-            return  Commands.runOnce(() -> {
-            double targetRPM = ShooterConstants.NEO_MAX_RPM * ShooterConstants.POWER_MOTOR_GEAR_RATIO * speedPercentage;
-            powerController1.setSetpoint(targetRPM, ControlType.kVelocity, ClosedLoopSlot.kSlot0);
-            powerController2.setSetpoint(targetRPM, ControlType.kVelocity, ClosedLoopSlot.kSlot0);
             });
         }
 
@@ -226,7 +205,6 @@ public class Shooter extends SubsystemBase{
 
     public Command feederOn() {
         return //new SequentialCommandGroup(
-          
     //Commands.waitSeconds(0.4),
     Commands.runOnce(() -> {
             feederMotor.setControl(feederVelocityVoltage.withVelocity(ShooterConstants.FEEDER_VELOCITY));    
@@ -239,48 +217,11 @@ public class Shooter extends SubsystemBase{
         });
     }
 
-/*    public double getCANcoderAngle () { //everything is in degrees
-        double rotationDegrees = turretCANcoder.getAbsolutePosition().getValueAsDouble() * 360;
-        return rotationDegrees * ShooterConstants.CANCODER_TO_TURRET_RATIO;
-    }*/
-
-    public double getLimelightAngle() {
-      return TURRET_LIMELIGHT.getTurretAngle();
-    }
 
   public void rotateTurret(double targetAngle) {
     turretController.setSetpoint(targetAngle, ControlType.kPosition);
   }
 
-  public boolean isRedAlliance() {
-      var alliance = DriverStation.getAlliance();
-      return alliance.isPresent() && alliance.get() == Alliance.Red;
-   }
-
-  public Command testTurretAngle(double angle) {
-    return Commands.runOnce(() -> {
-      testAngle = angle;
-      turretController.setSetpoint(testAngle, ControlType.kPosition);
-    });
-  }
-
-  public Command testShooter(double speed) {
-    return Commands.runOnce(() -> {
-      powerMotor1.set(speed);
-      powerMotor2.set(speed);
-    });
-  }
-
-  public Command testNewPIDValues() {
-    return Commands.runOnce(() -> {
-      powerConfig.closedLoop.p(SmartDashboard.getNumber("testP", 0));
-      powerConfig.closedLoop.i(SmartDashboard.getNumber("testI", 0));
-      powerConfig.closedLoop.d(SmartDashboard.getNumber("testD", 0));
-      powerConfig.closedLoop.feedForward.kV(SmartDashboard.getNumber("testV", 0));
-      powerMotor1.configure(powerConfig, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters);
-      powerMotor2.configure(powerConfig, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters);
-    });
-  }
 
   public Command adjustShooterSpeed(double increment) {
     return Commands.runOnce(() -> {
@@ -294,30 +235,9 @@ public class Shooter extends SubsystemBase{
     });
   }
 
-  public Command setTarget(String name) {
-    return Commands.runOnce(() -> {
-      if (name.equals("HUB")) {
-          currentTarget = isRedAlliance() ? Target.REDHUB: Target.BLUEHUB;
-      } else if (name.equals("OUTPOST")) {
-          currentTarget = isRedAlliance() ? Target.REDOUTPOST: Target.BLUEOUTPOST;
-      } else if (name.equals("DEPOT")) {
-          currentTarget = isRedAlliance() ? Target.REDDEPOT: Target.BLUEDEPOT;
-      } else {
-        currentTarget = isRedAlliance() ? Target.REDHUB: Target.BLUEHUB;
-      }          
-    });
-  }
 
   public void calcShooterSpeed() {
-    // double targetDistMotion = Math.sqrt(Math.pow(shootX, 2) + Math.pow(shootY, 2)) * ShooterConstants.TIME_TO_SHOOT; // TODO test
-    // double speed = 0.0134 * Math.pow(targetDist, 3) - 0.2288 * Math.pow(targetDist, 2) + 1.3827 * targetDist - 2.3059;
-    /*double speed = -0.013 * Math.pow(targetDist, 2) + 0.1399 * targetDist + 0.1656;
-    if (speed <= 0.4) {
-      speed = 0.4;
-    }*/
     currentShooterSpeed = ShooterConstants.DEFAULT_SHOOTER_SPEED + speedIncrement;
-
-    // currentShooterSpeed = 0.52 + speedIncrement; //TODO test and keep or remove
   }
 
 
@@ -329,14 +249,6 @@ public class Shooter extends SubsystemBase{
     turretYabs = ShooterConstants.VEC_TURRET_LEN*Math.sin(phi)+pos.getY();
   }
 
-  public double getShootTime(double deltaX, double deltaY) {
-    double delta = Math.sqrt(Math.pow(deltaX, 2) + Math.pow(deltaY, 2));
-
-    shootTime = Math.sqrt(Math.abs((2 * (delta - ShooterConstants.DELTA_H) / ShooterConstants.GRAVITATIONAL_C)));
-
-    return shootTime;
-    // return 0.85;
-  }
 
   public void calcTurretAbsRotation() {
 
@@ -344,20 +256,9 @@ public class Shooter extends SubsystemBase{
     double turretAbsVelX = speeds.vxMetersPerSecond; 
     double turretAbsVelY = speeds.vyMetersPerSecond;
     
-    double deltaX = currentTarget.x - turretXabs;
-    double deltaY = currentTarget.y - turretYabs;
-    //double getShootTime = getShootTime(deltaX, deltaY);
-    //double deltaX_rot = deltaX - getShootTime * turretAbsVelX;
-    //double deltaY_rot = deltaY - getShootTime * turretAbsVelY;
-    
-    //SmartDashboard.putNumber("filip delta X", deltaX);
-    //SmartDashboard.putNumber("filip delta y", deltaY);
-    //SmartDashboard.putNumber("shootTime", shootTime);
-    
-    /*
-    turretRotAbs = Math.atan2(shootX, shootY); // TODO test
-    */
-    
+    double deltaX = x - turretXabs;
+    double deltaY = y - turretYabs;
+
     targetDist = Math.sqrt(Math.pow(deltaX, 2) + Math.pow(deltaY, 2));
     if (deltaX >= 0 && deltaY >= 0) {
         turretRotAbs = Math.asin(deltaY/targetDist);
@@ -390,27 +291,6 @@ public class Shooter extends SubsystemBase{
     return Math.toRadians(newRot);
   }
 
-  public void setTarget(double newTargetX, double newTargetY) {
-    targetX = newTargetX;
-    targetY = newTargetY;
-  }
-
-
-  public Rotation2d getTurretRelRot() {
-    return Rotation2d.fromRadians(turretRotRel);
-  }
-
-  public Rotation2d getTurretAbsRot() {
-    return Rotation2d.fromRadians(turretRotAbs);
-  }
-
-  public Pose2d getTurrePosRelRot() {
-    return new Pose2d(turretXabs, turretYabs, Rotation2d.fromRadians(turretRotRel));
-  }
-
-  public Pose2d getTurrePosAbsRot() {
-    return new Pose2d(turretXabs, turretYabs, Rotation2d.fromRadians(turretRotAbs));
-  }
 
   public void rotateStop() {
     turretMotor.stopMotor();
@@ -438,15 +318,6 @@ public class Shooter extends SubsystemBase{
     });
   }
 
-  public Command toggleAutoShooting() {
-    return Commands.runOnce(() -> {
-      if (autoShoot.val) {
-        autoShoot = AutoShoot.OFF;
-      } else {
-        autoShoot = AutoShoot.ON;
-      }
-    });
-  }
 
   public BooleanSupplier inRange() {
     return () -> (targetDist > ShooterConstants.MINIMUM_SHOOTING_DISTANCE);
@@ -474,24 +345,6 @@ public class Shooter extends SubsystemBase{
 
   }
 
-  public void report() {
-    SmartDashboard.putNumber("target_dist", targetDist);
-    SmartDashboard.putNumber("current shooting speed", powerEncoder1.getVelocity());
-    SmartDashboard.putNumber("requested shooting speed", currentShooterSpeed*ShooterConstants.NEO_MAX_RPM*ShooterConstants.POWER_MOTOR_GEAR_RATIO);
-    SmartDashboard.putNumber("calculated relative turret heading", Math.toDegrees(turretRotRel));
-    SmartDashboard.putNumber("requested shooter speed percent", currentShooterSpeed);
-    SmartDashboard.putNumber("current turret angle", turretEncoder.getPosition());
-    SmartDashboard.putNumber("requested turret angle", turretController.getSetpoint());
-    SmartDashboard.putBoolean("aimbot", aimBot.val);
-    SmartDashboard.putBoolean("can shoot?", targetDist > ShooterConstants.MINIMUM_SHOOTING_DISTANCE);
-    //SmartDashboard.putBoolean("autoShooting", autoShoot.val);
-    SmartDashboard.putNumber("shooter speed override", speedIncrement);
-    SmartDashboard.putNumber("turret angular override", Math.toDegrees(rotationIncrement));
-    SmartDashboard.putNumber("turres absAngle", Math.toDegrees(turretRotAbs));
-    SmartDashboard.putNumber("shooter 1 current", powerMotor1.getOutputCurrent());
-    SmartDashboard.putNumber("shooter 2 current", powerMotor2.getOutputCurrent());
-    SmartDashboard.putString("shooter goal", currentTarget.toString());
-  }
 
   private enum AimBot {
     ON(true),
@@ -504,32 +357,4 @@ public class Shooter extends SubsystemBase{
     }
   }
 
-  public enum AutoShoot {
-    ON(true),
-    OFF(false);
-
-    public boolean val;
-
-    private AutoShoot(boolean val) {
-      this.val = val;
-    }
   }
-
-  public enum Target {
-    BLUEHUB(4.625, 4.035),
-    BLUEOUTPOST(2, 2),
-    BLUEDEPOT(2, 6),
-    REDHUB(11.915, 4.035),
-    REDOUTPOST(16.538, 6),
-    REDDEPOT(16.538, 2);
-
-    public double x = 0;
-    public double y = 0;
-
-    private Target(double x, double y) {
-      this.x = x;
-      this.y = y;
-    }
-  }
-
-}
