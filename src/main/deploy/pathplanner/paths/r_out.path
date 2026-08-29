@@ -3,38 +3,43 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.565999091968202,
-        "y": 5.338900424890351
+        "x": 4.445301204819277,
+        "y": 0.665143198090691
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.83249487370198,
-        "y": 5.228425769636788
+        "x": 5.429263059506736,
+        "y": 0.6514108376952733
       },
       "isLocked": false,
-      "linkedName": "shooting1"
+      "linkedName": "rTrench"
     },
     {
       "anchor": {
-        "x": 1.0577108433734939,
-        "y": 4.8108674698795175
+        "x": 7.739514978601996,
+        "y": 1.0
       },
       "prevControl": {
-        "x": 0.755231451008767,
-        "y": 4.798593221414679
+        "x": 6.763686878312986,
+        "y": 0.6865773408253123
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "climbing"
+      "linkedName": "r_balls_start"
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.5,
+      "rotationDegrees": 180.0
+    }
+  ],
   "constraintZones": [],
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 3.0,
-    "maxAcceleration": 7.0,
+    "maxAcceleration": 4.0,
     "maxAngularVelocity": 450.0,
     "maxAngularAcceleration": 500.0,
     "nominalVoltage": 12.0,
@@ -42,13 +47,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 91.3019526725789
+    "rotation": 90.48521409651896
   },
   "reversed": false,
-  "folder": "testing",
+  "folder": "r_shooting",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -39.2445155077394
+    "rotation": 179.59224086496715
   },
-  "useDefaultConstraints": true
+  "useDefaultConstraints": false
 }

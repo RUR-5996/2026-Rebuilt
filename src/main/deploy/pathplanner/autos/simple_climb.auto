@@ -1,0 +1,79 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "named",
+          "data": {
+            "name": "intakeOut"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "aimOn"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "targetHub"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "simple_climb"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "shooterOn"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.6
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "feederOn"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "indexerOn"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "intakeOn"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 8.0
+          }
+        },
+        {
+          "type": "race",
+          "data": {
+            "commands": []
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": true,
+  "folder": null,
+  "choreoAuto": false
+}

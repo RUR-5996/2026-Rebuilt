@@ -1,23 +1,23 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.SwerveConstants;
 import frc.robot.Constants.OperatorConstants;
-import frc.robot.subsystems.SwerveDrive;
-import frc.robot.subsystems.LEDs;
-
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
-//import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.config.RobotConfig;
-import frc.robot.Util.Dashboard;
+
 import frc.robot.subsystems.*;
+import frc.robot.Util.Dashboard;
 
 public class RobotContainer {
 
@@ -27,14 +27,16 @@ public class RobotContainer {
   public Intake INTAKE;
   public SwerveDrive SWERVE;
   public DriveTrain DRIVE_TRAIN;
+  public Limelight LIMELIGHT;
+  //public Climber CLIMBER;
 
-  // 2. Initialize the Controller
-  private final CommandXboxController m_driverController =
-      new CommandXboxController(OperatorConstants.kDriverControllerPort);
+  public Trigger shooterInRange;
 
+  private final CommandXboxController m_driverController = new CommandXboxController(OperatorConstants.kDriverControllerPort);
+  private final CommandXboxController m_secondController = new CommandXboxController(OperatorConstants.kSecondControllerPort);
+  //private final CommandXboxController m_testController = new CommandXboxController(OperatorConstants.kTestControllerPort);
 
   private final SendableChooser<Command> autoChooser;
-  //private static SendableChooser<Command> autoBranchChooser;
   RobotConfig config;
 
 
@@ -45,14 +47,30 @@ public class RobotContainer {
     DASHBOARD = new Dashboard();
     INTAKE = Intake.getInstance();
     DRIVE_TRAIN = DriveTrain.getInstance();
+    LIMELIGHT = Limelight.getInstance("limelight-robot");
+    //CLIMBER = Climber.getInstance();
 
-    // register named commands
+    //semi-auto triggersi
+    shooterInRange = new Trigger(SHOOTER.inRange());
+
+    NamedCommands.registerCommand("intakeOn", INTAKE.intakeOn());
+    NamedCommands.registerCommand("intakeOff", INTAKE.intakeOff());
+    NamedCommands.registerCommand("shooterTest", SHOOTER.testShooter(0.25));
+    NamedCommands.registerCommand("turretTest", SHOOTER.testTurretAngle(-180));
+    NamedCommands.registerCommand("shooterOff", SHOOTER.shooterOff());
+    NamedCommands.registerCommand("feederOn", SHOOTER.feederOn());
+    NamedCommands.registerCommand("feederOff", SHOOTER.feederOff());
+    NamedCommands.registerCommand("indexerOn", INDEXER.indexerOn());
+    NamedCommands.registerCommand("indexerOff", INDEXER.indexerOff());
+    NamedCommands.registerCommand("shooterOn", SHOOTER.shooterOn());
     NamedCommands.registerCommand("aimOn", SHOOTER.aimOn());
-    NamedCommands.registerCommand("aimOff", SHOOTER.aimOff());
+    NamedCommands.registerCommand("targetHub", SHOOTER.setTarget("HUB"));
+    NamedCommands.registerCommand("intakeOut", INTAKE.intakeFlipOut());
+    //NamedCommands.registerCommand("climberOut", CLIMBER.unclimb());
+    //NamedCommands.registerCommand("climberIn", CLIMBER.climb());
+    NamedCommands.registerCommand("autoShoot", SHOOTER.shooterOnDefault());
 
-    // 3. Set Default Command for Driving
-    // We pass the joystick inputs to the subsystem's drive method.
-    // Note: Xbox Left Y is usually Forward (X), Left X is Strafe (Y), Right X is Rotation.
+
     SWERVE.setDefaultCommand(
       SWERVE.joystickDrive(
           () -> -m_driverController.getLeftY(), // Map Y (forward) to xSpeed
@@ -66,52 +84,84 @@ public class RobotContainer {
 
     loadPaths();
     autoChooser = AutoBuilder.buildAutoChooser();
-    //autoBranchChooser = AutoBuilder.buildAutoChooser();b
 
     SmartDashboard.putData("Autonomous", autoChooser);
   }
 
 
   private void configureBindings() {
-    // 4. Reset Gyro Binding (Start Button)
-      m_driverController.start().onTrue(SWERVE.resetGyro());
-
-    // 5. Slow Mode Binding (Left Bumper)
-    // While held, slow mode is active; when released, it returns to normal.
-      m_driverController.leftBumper()
-          .onTrue(Commands.runOnce(() -> SWERVE.setSlowmode(true)))
-          .onFalse(Commands.runOnce(() -> SWERVE.setSlowmode(false)));
-    
-    m_driverController.rightTrigger().onTrue(SHOOTER.shooterOn());
-    m_driverController.rightTrigger().onFalse(SHOOTER.shooterOff());
-
-    m_driverController.leftTrigger().onTrue(new ParallelCommandGroup(SHOOTER.feederOn(), INDEXER.indexerOn()));
-    m_driverController.leftTrigger().onFalse(new ParallelCommandGroup(SHOOTER.feederOff(), INDEXER.indexerOff()));
-
-    m_driverController.pov(90).onTrue(SHOOTER.rotateRight());
-    m_driverController.pov(90).onFalse(SHOOTER.rotateStopCommand());
-    m_driverController.pov(270).onTrue(SHOOTER.rotateLeft());
-    m_driverController.pov(270).onFalse(SHOOTER.rotateStopCommand());
-    m_driverController.pov(0).toggleOnTrue(SHOOTER.adjustShooterSpeed(true));
-    m_driverController.pov(180).toggleOnTrue(SHOOTER.adjustShooterSpeed(false));
-
-    //m_driverController.a().onTrue(SWERVE.driveWheelSpins(3));
-    //m_driverController.b().onTrue(SWERVE.spinSteerMotors(3));
-    //m_driverController.x().onTrue(INTAKE.intakeFlipIn());
-    //m_driverController.b().onTrue(INTAKE.intakeFlipOut());
+      
+    // --- DRIVER CONTROLLER ---
+    m_driverController.start().onTrue(SWERVE.resetGyro());
 
     m_driverController.x().onTrue(INTAKE.intakeOn());
     m_driverController.y().onTrue(INTAKE.intakeOff());
 
-    m_driverController.a().onTrue(SHOOTER.aimOn());
-    m_driverController.b().onTrue(SHOOTER.aimOff());
+    m_driverController.a().toggleOnTrue(new SequentialCommandGroup(
+                                  SHOOTER.shooterOn(), 
+                                  new WaitCommand(0.4), 
+                                  new ParallelCommandGroup(SHOOTER.feederOn(), INDEXER.indexerOn(), INTAKE.intakeOn())
+                                  ));
 
-    m_driverController.rightBumper().onTrue(DRIVE_TRAIN.resetSteer());
+    m_driverController.b().toggleOnTrue(new ParallelCommandGroup(
+      SHOOTER.shooterOff(),
+      SHOOTER.feederOff(),
+      INDEXER.indexerOff(),
+      INTAKE.intakeOff()
+    ));  
 
-    // m_driverController.povUp().onTrue(INTAKE.nudgeUp());
-    // m_driverController.povDown().onTrue(INTAKE.nudgeDown());
+    m_driverController.leftBumper().toggleOnTrue(SWERVE.toggleSlowMode());
+    m_driverController.povLeft().toggleOnTrue(SWERVE.resetLeftTrench());
+    m_driverController.povRight().toggleOnTrue(SWERVE.resetRightTrench());
+    
+    // --- SECOND CONTROLLER ---
 
-    m_driverController.povDownLeft().onTrue(SWERVE.driveWheelSpins(3));
+    //m_secondController.rightTrigger().toggleOnTrue(SHOOTER.shooterOn());
+    //m_secondController.rightTrigger().toggleOnTrue(SHOOTER.feederOn());
+    //m_secondController.rightTrigger().toggleOnTrue(INDEXER.indexerOn());
+
+    //m_secondController.rightTrigger().toggleOnFalse(SHOOTER.shooterOff());
+    //m_secondController.rightTrigger().toggleOnFalse(SHOOTER.feederOff());
+    //m_secondController.rightTrigger().toggleOnFalse(INDEXER.indexerOff());
+
+    //m_secondController.y().toggleOnTrue(CLIMBER.climb());
+    //m_secondController.x().toggleOnTrue(CLIMBER.unclimb());
+
+    m_secondController.a().toggleOnTrue(SHOOTER.aimOn());
+    m_secondController.b().toggleOnTrue(SHOOTER.adjustShooterSpeed(0.01));
+    m_secondController.b().toggleOnTrue(SHOOTER.adjustShooterSpeed(-0.01));
+    //m_secondController.b().toggleOnTrue(SWERVE.toggleVision());
+    m_secondController.x().toggleOnTrue(INTAKE.intakeFlipOut());
+
+    //m_secondController.povUp().toggleOnTrue(SHOOTER.adjustShooterSpeed(0.02));
+    //m_secondController.povDown().toggleOnTrue(SHOOTER.adjustShooterSpeed(-0.02));
+
+    m_secondController.povUp().toggleOnTrue(SHOOTER.setTarget("HUB"));
+    m_secondController.povLeft().toggleOnTrue(SHOOTER.setTarget("DEPOT"));
+    m_secondController.povRight().toggleOnTrue(SHOOTER.setTarget("OUTPOST"));
+
+    //m_secondController.povLeft().toggleOnTrue(INTAKE.intakeFlipOut());
+    //m_secondController.b().toggleOnTrue(LIMELIGHT.updateRobotPosition());
+
+    // m_secondController.leftBumper().toggleOnTrue(CLIMBER.testClimb());
+    // m_secondController.leftBumper().toggleOnFalse(CLIMBER.stopClimb());
+    // m_secondController.rightBumper().toggleOnTrue(CLIMBER.testUnClimb());
+    // m_secondController.rightBumper().toggleOnFalse(CLIMBER.stopClimb());R.climb());
+    //m_secondController.leftBumper().toggleOnTrue(CLIMBER.testClimb());
+    //m_secondController.leftBumper().toggleOnFalse(CLIMBER.stopClimb());
+    //m_secondController.rightBumper().toggleOnTrue(CLIMBER.testUnClimb());
+   // m_secondController.rightBumper().toggleOnFalse(CLIMBER.stopClimb());
+
+
+    m_secondController.leftTrigger().toggleOnTrue(SHOOTER.adjustShooterRotation(1));
+    m_secondController.rightTrigger().toggleOnTrue(SHOOTER.adjustShooterRotation(-1));
+
+    // --- TEST CONTROLLER ---
+
+    //m_testController.leftBumper().toggleOnTrue(CLIMBER.testClimb());
+    //m_testController.leftBumper().toggleOnFalse(CLIMBER.stopClimb());
+    //m_testController.rightBumper().toggleOnTrue(CLIMBER.testUnClimb());
+    //m_testController.rightBumper().toggleOnFalse(CLIMBER.stopClimb());
   }
 
 
@@ -131,29 +181,23 @@ public class RobotContainer {
       SwerveConstants.autoConfig,
       config,
       () -> {
-            /*if(DriverStation.getAlliance().get() == DriverStation.Alliance.Blue) {
+            if(DriverStation.getAlliance().get() == DriverStation.Alliance.Red) {
               return true;
             } else {
               return false;
-            }*/
-        return false;
+            }
       },  
       SWERVE 
     );
-
   }
   
-  public void report() {
-
-    /*m_driverController.leftBumper().onTrue(SHOOTER.rotateTurret(90));
-    m_driverController.rightBumper().onTrue(SHOOTER.rotateTurret(-90));*/
-  }
-
   public void periodic() {
     SHOOTER.periodic();
     SHOOTER.report();
     DASHBOARD.periodic();
     INTAKE.report();
+    LIMELIGHT.report();
+    //CLIMBER.report();
   }
   
   public Command getAutonomousCommand() {

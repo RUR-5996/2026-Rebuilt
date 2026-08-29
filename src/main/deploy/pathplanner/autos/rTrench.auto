@@ -7,19 +7,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Rovne"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "right2"
+            "pathName": "rTrench"
           }
         }
       ]
     }
   },
   "resetOdom": true,
-  "folder": null,
+  "folder": "testing",
   "choreoAuto": false
 }

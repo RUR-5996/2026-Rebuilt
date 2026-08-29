@@ -3,6 +3,7 @@ package frc.robot.subsystems;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ShooterConstants;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.Command;
 
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -44,14 +45,22 @@ public class Indexer extends SubsystemBase{
     }
 
     public Command indexerOn() {
-        return Commands.runOnce(() -> {
-            indexerMotor.setControl(indexerVelocityVoltage.withVelocity(30));    
+        return //new SequentialCommandGroup(
+    //Commands.waitSeconds(0.4), 
+    Commands.runOnce(() -> {
+            indexerMotor.setControl(indexerVelocityVoltage.withVelocity(60));    
         });
     }
 
     public Command indexerOff() {
         return Commands.runOnce(() -> {
             indexerMotor.stopMotor();
+        });
+    }
+
+    public Command indexerReverse() {
+        return Commands.runOnce(() -> {
+            indexerMotor.setControl(indexerVelocityVoltage.withVelocity(-40));
         });
     }
 }

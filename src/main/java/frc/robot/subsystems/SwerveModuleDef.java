@@ -11,7 +11,6 @@ import com.ctre.phoenix6.controls.*;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.revrobotics.RelativeEncoder;
-import com.ctre.phoenix6.configs.Slot0Configs;
 
 import frc.robot.Constants.SwerveConstants;
 
@@ -21,9 +20,6 @@ public class SwerveModuleDef {
     public TalonFX driveMotor;
     public TalonFX steerMotor;
 
-    //private TalonFXConfiguration driveConfig = new TalonFXConfiguration();
-    //private TalonFXConfiguration steerConfig = new TalonFXConfiguration();
-    
     // Create Control Requests once to avoid garbage collection pressure
     private final VelocityVoltage m_velocitySetter = new VelocityVoltage(0);
     private final PositionVoltage m_positionSetter = new PositionVoltage(0);
@@ -78,9 +74,9 @@ public class SwerveModuleDef {
 
         steerMotor.getConfigurator().apply(steerConfigs);
 
-        //steerEncoder = steerMotor.getPosition();
+        //m_velocitySetter.EnableFOC = true;
 
-        //resetSteerEncoder(); TODO znovu zapnout
+        resetSteerEncoder();
     }
 
     public void resetSteerEncoder() {

@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.0,
+        "x": 0.45668674698795175,
         "y": 5.0
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.9996306499132785,
-        "y": 6.713303390610261
+        "x": 0.8593717295461729,
+        "y": 4.703613757367037
       },
       "isLocked": false,
-      "linkedName": "TestMid"
+      "linkedName": "depot_climb_3"
     },
     {
       "anchor": {
-        "x": 2.0,
-        "y": 6.0
+        "x": 0.989,
+        "y": 4.754
       },
       "prevControl": {
-        "x": 2.052828919846425,
-        "y": 3.627121328303994
+        "x": 0.6482764488247295,
+        "y": 4.72446945025062
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "TestEnd"
+      "linkedName": "depot_climb_4"
     }
   ],
   "rotationTargets": [],
@@ -33,8 +33,8 @@
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 3.0,
-    "maxAcceleration": 7.0,
+    "maxVelocity": 1.0,
+    "maxAcceleration": 2.0,
     "maxAngularVelocity": 450.0,
     "maxAngularAcceleration": 500.0,
     "nominalVoltage": 12.0,
@@ -42,13 +42,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": 90.0
   },
   "reversed": false,
-  "folder": null,
+  "folder": "depot_climb",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": 90.0
   },
-  "useDefaultConstraints": true
+  "useDefaultConstraints": false
 }

@@ -8,6 +8,8 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.subsystems.DriveTrain;
+import frc.robot.subsystems.Intake;
+import frc.robot.subsystems.SwerveDrive;
 
 /**
  * The methods in this class are called automatically corresponding to each mode, as described in
@@ -18,6 +20,8 @@ public class Robot extends TimedRobot {
   private Command autonomousCommand;
 
   DriveTrain DRIVE_TRAIN;
+  Intake INTAKE;
+  SwerveDrive SWERVE;
   private final RobotContainer robotContainer;
 
   /**
@@ -29,6 +33,9 @@ public class Robot extends TimedRobot {
     // autonomous chooser on the dashboard.
     robotContainer = new RobotContainer();
     DRIVE_TRAIN = DriveTrain.getInstance();
+    INTAKE = Intake.getInstance();
+    SWERVE = SwerveDrive.getInstance();
+    SWERVE.startMatchPos();
   }
 
   /**
@@ -52,6 +59,7 @@ public class Robot extends TimedRobot {
   @Override
   public void disabledInit() {
     DRIVE_TRAIN.setToCoast();
+    INTAKE.coastIntake();
   }
 
   @Override
@@ -62,6 +70,7 @@ public class Robot extends TimedRobot {
   public void autonomousInit() {
     autonomousCommand = robotContainer.getAutonomousCommand();
     DRIVE_TRAIN.setToBrake();
+    INTAKE.brakeIntake();
 
     // schedule the autonomous command (example)
     if (autonomousCommand != null) {
@@ -76,6 +85,7 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopInit() {
     DRIVE_TRAIN.setToBrake();
+    INTAKE.brakeIntake();
     // This makes sure that the autonomous stops running when
     // teleop starts running. If you want the autonomous to
     // continue until interrupted by another command, remove

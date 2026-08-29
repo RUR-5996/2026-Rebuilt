@@ -1,0 +1,145 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "named",
+          "data": {
+            "name": "intakeOut"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "intakeOn"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "l_out"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "aimOn"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "targetHub"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "l_balls"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "l_shoot"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "shooterOn"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.6
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "feederOn"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "indexerOn"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 8.0
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "indexerOff"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "feederOff"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "shooterOff"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "l_return_from_shoot"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "r_balls"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "r_shoot"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "shooterOn"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.6
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "feederOn"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "indexerOn"
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": false,
+  "folder": "testing",
+  "choreoAuto": false
+}

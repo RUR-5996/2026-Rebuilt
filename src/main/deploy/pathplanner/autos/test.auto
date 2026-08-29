@@ -7,13 +7,19 @@
         {
           "type": "path",
           "data": {
-            "pathName": "vpred_a_rotuj"
+            "pathName": "test_1"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "test_2"
           }
         }
       ]
     }
   },
   "resetOdom": true,
-  "folder": null,
+  "folder": "testing",
   "choreoAuto": false
 }
