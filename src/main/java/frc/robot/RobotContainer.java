@@ -142,9 +142,7 @@ public class RobotContainer {
   
   public void periodic() {
     SHOOTER.periodic();
-    INTAKE.report();
     LIMELIGHT.report();
-    //ELEVATOR.report();
   }
   
   public Command getAutonomousCommand() {

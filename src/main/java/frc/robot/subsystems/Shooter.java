@@ -141,7 +141,6 @@ public class Shooter extends SubsystemBase{
             .i(ShooterConstants.TURRET_MOTOR_I)
             .d(ShooterConstants.TURRET_MOTOR_D)
             .positionWrappingEnabled(false);
-            //.feedForward.kV(ShooterConstants.TURRET_MOTOR_V);
         turretConfig.softLimit
             .forwardSoftLimit(ShooterConstants.MAX_TURRET_ANGLE)
             .reverseSoftLimit(ShooterConstants.MIN_TURRET_ANGLE)
@@ -176,7 +175,6 @@ public class Shooter extends SubsystemBase{
     public Command shooterOn() {
         return Commands.runOnce(() -> {
             double targetRPM = ShooterConstants.NEO_MAX_RPM * ShooterConstants.POWER_MOTOR_GEAR_RATIO * currentShooterSpeed;
-            //double targetRPM = ShooterConstants.NEO_MAX_RPM * ShooterConstants.POWER_MOTOR_GEAR_RATIO * 0.25;
             powerController1.setSetpoint(targetRPM, ControlType.kVelocity, ClosedLoopSlot.kSlot0);
             powerController2.setSetpoint(targetRPM, ControlType.kVelocity, ClosedLoopSlot.kSlot0);
             });
@@ -326,7 +324,6 @@ public class Shooter extends SubsystemBase{
     }
 
   }
-
 
   private enum AimBot {
     ON(true),
