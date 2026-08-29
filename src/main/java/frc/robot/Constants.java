@@ -186,7 +186,7 @@ public final class Constants {
     public static final double MAX_VISION_SPIN = 720; // degrees per second TODO test if good
   }
 
-  public static class ColorConstants {
+  public static class colourConstants {
     public static final double RAINBOW = -.99;
     public static final double VIOLET = .91;
     public static final double PINK = .57;
