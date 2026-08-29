@@ -51,8 +51,6 @@ public class RobotContainer {
 
     NamedCommands.registerCommand("intakeOn", INTAKE.intakeOn());
     NamedCommands.registerCommand("intakeOff", INTAKE.intakeOff());
-    NamedCommands.registerCommand("shooterTest", SHOOTER.testShooter(0.25));
-    NamedCommands.registerCommand("turretTest", SHOOTER.testTurretAngle(-180));
     NamedCommands.registerCommand("shooterOff", SHOOTER.shooterOff());
     NamedCommands.registerCommand("feederOn", SHOOTER.feederOn());
     NamedCommands.registerCommand("feederOff", SHOOTER.feederOff());
@@ -60,7 +58,6 @@ public class RobotContainer {
     NamedCommands.registerCommand("indexerOff", INDEXER.indexerOff());
     NamedCommands.registerCommand("shooterOn", SHOOTER.shooterOn());
     NamedCommands.registerCommand("aimOn", SHOOTER.aimOn());
-    NamedCommands.registerCommand("targetHub", SHOOTER.setTarget("HUB"));
     NamedCommands.registerCommand("intakeOut", INTAKE.intakeFlipOut());
     NamedCommands.registerCommand("autoShoot", SHOOTER.shooterOnDefault());
 
@@ -112,9 +109,6 @@ public class RobotContainer {
     m_secondController.b().toggleOnTrue(SHOOTER.adjustShooterSpeed(-0.01));
     m_secondController.x().toggleOnTrue(INTAKE.intakeFlipOut());
 
-    m_secondController.povUp().toggleOnTrue(SHOOTER.setTarget("HUB"));
-    m_secondController.povLeft().toggleOnTrue(SHOOTER.setTarget("DEPOT"));
-    m_secondController.povRight().toggleOnTrue(SHOOTER.setTarget("OUTPOST"));
 
     m_secondController.rightTrigger().toggleOnTrue(SHOOTER.adjustShooterRotation(-1));
   }
@@ -148,7 +142,6 @@ public class RobotContainer {
   
   public void periodic() {
     SHOOTER.periodic();
-    SHOOTER.report();
     INTAKE.report();
     LIMELIGHT.report();
     //ELEVATOR.report();
